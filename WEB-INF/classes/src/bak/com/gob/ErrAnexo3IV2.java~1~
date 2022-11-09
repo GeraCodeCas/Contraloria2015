@@ -1,0 +1,129 @@
+/************************************************************************
+ * Module:  ErrAnexo3IV5.java
+ * Author:  Enrique Martinez
+ * Created: 24.Ene.2003
+ * Purpose: Defines the Class ErrAnexo3IV5
+ ***********************************************************************/
+ 
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo3IV2 {
+//Declaración de Variables
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+private VMatrix		 	oVmResumen;
+
+//Inicializacion de la Clase
+	public ErrAnexo3IV2()  throws SQLException, IOException {
+		oVm					= new VMatrix();
+		oCnn				= new ConnectionJDBC();
+		
+		oVmResumen = new VMatrix();
+	}
+
+//Creación de las Propiedades
+	public String	GetNomina(int iPos) 			{return (String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos);	}
+	public String	GetNombre(int iPos) 			{return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);	}
+	public String	GetSituacion(int iPos) 			{return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	public String	GetComisionadoDE(int iPos) 		{return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	public String	GetComisionadoA(int iPos) 		{return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+ 	public String	GetPeriodoDE(int iPos) 			{return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+	public String	GetPeriodoA(int iPos) 			{return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);	}
+	public String	GetObservacion(int iPos) 		{return (String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);	}
+	public String	GetDescripcion(int iPos) 		{return (String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos);	}
+	public String	GetClaveTipoNomina(int iPos)	{return (String)((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);}
+	public String	GetIdUAdministrativa(int iPos)	{return (String)((Vector)oVm.getVMatrixAll().elementAt(10)).elementAt(iPos);}
+
+	public String GetRsmIdUAdministrativa(int iPos)	{return (String)((Vector)oVmResumen.getVMatrixAll().elementAt(0)).elementAt(iPos);}	
+	public String GetRsmIdUnidadGobierno(int iPos)	{return (String)((Vector)oVmResumen.getVMatrixAll().elementAt(1)).elementAt(iPos);}
+	public String GetRsmRegACargar(int iPos)		{return (String)((Vector)oVmResumen.getVMatrixAll().elementAt(2)).elementAt(iPos);}
+	public String GetRsmRegError(int iPos)			{return (String)((Vector)oVmResumen.getVMatrixAll().elementAt(3)).elementAt(iPos);}
+
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT Nomina, Nombre, Situacion, ComisionadoDE, ComisionadoA, PeriodoDE, PeriodoA, Observacion, DescripcionError FROM ErrAnexo3IV2 WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(9);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("Nomina"), rs.getString("Nombre"), 
+					rs.getString("Situacion"), rs.getString("ComisionadoDE"), rs.getString("ComisionadoA"),
+					rs.getString("PeriodoDE"), rs.getString("PeriodoA"), rs.getString("Observacion"), 
+					rs.getString("DescripcionError")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3IV2.GetAll(int): " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+
+	public int GetAll(String sUsuario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT Nomina, Nombre, Situacion, ComisionadoDE, ComisionadoA, PeriodoDE, PeriodoA, " + 
+			"Observacion, DescripcionError, ClaveTipoNomina, IdUnidadAdministrativa FROM ErrAnexo3IV2RH WHERE UsuarioRH = '" + sUsuario + 
+			"' ORDER BY IdUnidadAdministrativa, ClaveTipoNomina, DescripcionError";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(11);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("Nomina"), rs.getString("Nombre"), 
+					rs.getString("Situacion"), rs.getString("ComisionadoDE"), rs.getString("ComisionadoA"),
+					rs.getString("PeriodoDE"), rs.getString("PeriodoA"), rs.getString("Observacion"), 
+					rs.getString("DescripcionError"), rs.getString("ClaveTipoNomina"), rs.getString("IdUnidadAdministrativa")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3IV2.GetAll(String): " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+
+	public int GetResumen(String sUsuario) throws SQLException, IOException {
+		if(oVmResumen.getNumRows()>0) return oVmResumen.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdUnidadGobierno, IdUnidadAdministrativa, RegACargar, RegError " + 
+			"FROM ResumenAnexo3iv2RH WHERE UsuarioRH = '" + sUsuario + "' ORDER BY IdUnidadGobierno, IdUnidadAdministrativa ";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVmResumen.setVMatrixNumCols(4);
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("IdUnidadAdministrativa"), rs.getString("IdUnidadGobierno"), 
+					rs.getString("RegACargar"), rs.getString("RegError")};
+				oVmResumen.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3IV2.GetResumen(String): " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVmResumen.getNumRows();
+		}
+	}
+}

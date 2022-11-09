@@ -1,0 +1,535 @@
+/*********************************************************************************************************
+ Elaboro:	Jesus Manuel Limon Mireles
+ Lugar:		Monterrey, NL
+ Fecha:		23.Nov.2002
+ Compañia:	CONSISS
+ Modificado: 24.Ene.2003
+ Descripcion:La dirección de las imagenes
+ *********************************************************************************************************/
+package com.gob;
+
+import java.util.*;
+import com.consiss.util.tools.*;
+
+public class hHeaderAnexo {
+  private String sArchivo = "";
+  private char c = '"';
+  private String sSalto = "";
+  private VMatrix vArchivoA;
+  private String sLinkAttach = "Attach\\Anexo";
+
+  public void SetHeader(int iIdFuncionario, int iIdAnexo, String sAnexo,
+                        ArchivoHistorico oArchivo,
+                        ArchivoHistorico oArchivowa, String sAux,
+                        String iProceso, String hsClave, String hsNombreUA,
+                        String hsImagenUG, String hsNombreUG,
+                        String sFuncionarioEntrante,
+                        String sFuncionarioSaliente, String sFecha) {
+    try {
+      sArchivo = "<html>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "<head>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      if (!sAnexo.equals("")) {
+        sArchivo += "	<title>Entrega - Recepción : Anexo " + sAnexo +
+            "</title>"; //CVSP
+      }
+      else {
+        sArchivo += "	<title>Entrega - Recepción : Addendum</title>"; //CVSP
+      }
+      sArchivo +=
+          "	<link rel='stylesheet' type='text/css' href='Styles/Gobierno.css'>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "<script language='JavaScript'>";
+      sArchivo += "	function MouseDentro(texto){ ";
+      sArchivo += "	texto.style.background = '#bebebe'; ";
+      sArchivo += "} ";
+      sArchivo += "function MouseFuera(texto,color){ ";
+      sArchivo += "	texto.style.background = color;";
+      sArchivo += "}";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "function irA(sDireccion){ ";
+      sArchivo += "	window.open( sDireccion, '_self' )";
+      sArchivo += "}";
+      sArchivo += "</script>";
+      sArchivo += "</head>";
+      sArchivo += "<body topmargin='0' leftmargin='0'>";
+      sArchivo +=
+          "<table border='0' cellspacing='0' cellpadding='0' width='100%'>";
+      sArchivo += "	<tr><td colspan='2'>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+
+      sArchivo =
+          "<TABLE border='0' cellpadding='0' cellspacing='0' width='100%'>";
+      sArchivo += "<TR>";
+      sArchivo += "<TD width='100%'>";
+      sArchivo +=
+          "	<TABLE border='0' cellpadding='0' cellspacing='0' width='100%'>";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD><img name='gob' id='gob' height='123.4px' src='images/EscudoDelEstado.jpg'></TD>";
+      sArchivo += "	<TD align='center'>";
+      sArchivo +=
+          "	<br><font class='AnexosTitulo'>Gobierno del Estado de Coahuila<br>";
+      sArchivo += "	" + hsNombreUG + "<br>&nbsp;</font></TD>";
+      sArchivo += "	<TD>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      hsImagenUG = null != hsImagenUG ? hsImagenUG : "";
+      hsImagenUG = hsImagenUG.replace('á', 'a');
+      hsImagenUG = hsImagenUG.replace('é', 'e');
+      hsImagenUG = hsImagenUG.replace('í', 'i');
+      hsImagenUG = hsImagenUG.replace('ó', 'o');
+      hsImagenUG = hsImagenUG.replace('ú', 'u');
+      hsImagenUG = hsImagenUG.replace('ñ', 'n');
+      hsImagenUG = hsImagenUG.replace('Á', 'A');
+      hsImagenUG = hsImagenUG.replace('É', 'E');
+      hsImagenUG = hsImagenUG.replace('Í', 'I');
+      hsImagenUG = hsImagenUG.replace('Ó', 'O');
+      hsImagenUG = hsImagenUG.replace('Ú', 'U');
+      hsImagenUG = hsImagenUG.replace('Ñ', 'N');
+
+      if (!hsImagenUG.equals("")) {
+        sArchivo +=
+            "<img name='logoUnidad' id='logoUnidad' height='55px' src='" +
+            hsImagenUG.substring(3) + "'>";
+      }
+      sArchivo += "	</TD>";
+      sArchivo += "	</TR>";
+      sArchivo += "	</TABLE>";
+      sArchivo += "</TD>";
+      sArchivo += "</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "<TR>";
+      sArchivo += "<TD>";
+      sArchivo +=
+          "	<TABLE border='0' cellpadding='2' cellspacing='0' width='100%'>";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD class='TituloMenu'>Unidad Administrativa:</TD>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TD>&nbsp;" + hsNombreUA + "</TD>";
+      sArchivo += "	<TD width='10PX'>&nbsp;</TD>";
+      sArchivo += "	<TD class='TituloMenu'>Clave:</TD>";
+      sArchivo += "	<TD>&nbsp;" +
+          ( (hsClave + "").equals("null") ? "" : hsClave) + "</TD>";
+      sArchivo += "	</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD></TD>";
+      sArchivo += "	</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD class='TituloMenu'>Fecha:</TD>";
+      sArchivo += "	<TD>&nbsp;" + sFecha.toUpperCase() + "</TD>";
+      sArchivo += "	</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD></TD>";
+      sArchivo += "	</TR>";
+      sArchivo += "	<TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TD class='TituloMenu'>Funcionario Saliente:</TD>";
+      sArchivo += "	<TD>&nbsp;" + sFuncionarioSaliente + "</TD>";
+      sArchivo += "	</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD></TD>";
+      sArchivo += "	</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR>";
+      sArchivo += "	<TD class='TituloMenu'>Funcionario Entrante:</TD>";
+      sArchivo += "	<TD>&nbsp;" + sFuncionarioEntrante + "</TD>";
+      sArchivo += "	</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	</TABLE><br>&nbsp;";
+      sArchivo += "</TD>";
+      sArchivo += "</TR>";
+      sArchivo += "</TABLE>";
+
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "		</td><tr>";
+      sArchivo += "	<tr><td width='135' valign='top'>";
+      sArchivo += "<br>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+
+      sArchivo =
+          "<TABLE cellSpacing=0 cellPadding=0 width='135' align=center border=0>";
+      sArchivo += "	<TBODY>";
+      sArchivo += "	<TR><TD class='TituloMenu' align=middle>ANEXOS</TD></TR>";
+      if (iProceso.equals("2")) {
+        sArchivo += "	<TR onmouseover=" + c +
+            "MouseDentro(this);window.status = 'Adendeum'" + c + " onclick=" +
+            c + "irA('fAdendum.html');" + c + " onmouseout=" + c +
+            "MouseFuera(this,'#ffffff');" + c + ">";
+        sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Adendeum'" + c +
+            " src='Images/Vineta.gif' border=0>&nbsp;Addendum</A></TD></TR>";
+      }
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status='Documentos de Creación, Integración del Organo de Gobierno y Actas de Sesiones'" +
+          c + " onclick=" + c + "irA('fAnexo1i.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Documentos de Creación, Integración del Organo de Gobierno y Actas de Sesiones'" +
+          c + " src='Images/Vineta.gif' border=0>&nbsp;Anexo I.1</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status='Relación de Acuerdos, Convenios, Contratos y Documentos Legales'" +
+          c + " onclick=" + c + "irA('fAnexo1ii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Acuerdos, Convenios, Contratos y Documentos Legales' src='Images/Vineta.gif' border=0>&nbsp;Anexo I.2</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Presupuesto Global del Ejercicio'" +
+          c + " onclick=" + c + "irA('fAnexo2i.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Presupuesto Global del Ejercicio' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.1</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Situación de Fondos Revolventes'" +
+          c + " onclick=" + c + "irA('fAnexo2ii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Situación de Fondos Revolventes' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.2</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Gastos Pendientes de Comprobar'" +
+          c + " onclick=" + c + "irA('fAnexo2iii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Gastos Pendientes de Comprobar' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.3</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Cuentas Bancarias, Inversiones, Depósitos, Títulos o  cualquier otro Contrato con Instituciones de Crédito, Casas de Bolsa u otra Institución Similar'" +
+          c + " onclick=" + c + "irA('fAnexo2iv.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Cuentas Bancarias, Inversiones, Depósitos, Títulos o  cualquier otro Contrato con Instituciones de Crédito, Casas de Bolsa u otra Institución Similar' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.4</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Detalle de la Situación de Bancos'" +
+          c + " onclick=" + c + "irA('fAnexo2iv1.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Detalle de la Situación de Bancos' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.4.1</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Cheques Expedidos sin Entregar '" +
+          c + " onclick=" + c + "irA('fAnexo2iv2.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Cheques Expedidos sin Entregar' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.4.2</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Detalle de Cuentas de Inversiones '" +
+          c + " onclick=" + c + "irA('fAnexo2iv3.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Detalle de Cuentas de Inversiones ' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.4.3</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Documentos y Cuentas por Cobrar'" +
+          c + " onclick=" + c + "irA('fAnexo2v.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Documentos y Cuentas por Cobrar' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.5</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Documentos y Cuentas por Pagar'" +
+          c + " onclick=" + c + "irA('fAnexo2vi.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Documentos y Cuentas por Pagar' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.6</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Estados Financieros Dictaminados '" +
+          c + " onclick=" + c + "irA('fAnexo2vii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Estados Financieros Dictaminados' src='Images/Vineta.gif' border=0>&nbsp;Anexo II.7</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Estructura Organizacional '" + c +
+          " onclick=" + c + "irA('fAnexo3i.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Estructura Organizacional' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.1</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Marco Jurídico de Actuación '" +
+          c + " onclick=" + c + "irA('fAnexo3ii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Marco Jurídico de Actuación' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.2</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Manuales de Organización, Políticas y Normas de Administración Interna'" +
+          c + " onclick=" + c + "irA('fAnexo3iii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Manuales de Organización, Políticas y Normas de Administración Interna' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.3</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Resumen de Plazas Autorizadas'" +
+          c + " onclick=" + c + "irA('fAnexo3iv.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Resumen de Plazas Autorizadas' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Plantilla de Personal '" + c +
+          " onclick=" + c + "irA('fAnexo3iv1.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Plantilla de Personal' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4.1</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Personal con Licencia, Permiso o Comisión '" +
+          c + " onclick=" + c + "irA('fAnexo3iv2.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Personal con Licencia, Permiso o Comisión' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4.2</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Sueldos No Entregados'" +
+          c + " onclick=" + c + "irA('fAnexo3iv3.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Sueldos No Entregados' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4.3</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Vacaciones del Personal Pendientes de Disfrutar'" +
+          c + " onclick=" + c + "irA('fAnexo3iv4.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Vacaciones del Personal Pendientes de Disfrutar' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4.4	</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Expedientes de Personal'" +
+          c + " onclick=" + c + "irA('fAnexo3iv5.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Expedientes de Personal' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4.5</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Programa y Avance de Capacitación del Personal'" +
+          c + " onclick=" + c + "irA('fAnexo3iv6.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Programa y Avance de Capacitación del Personal' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.4.6</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Resumen de Inventarios'" + c +
+          " onclick=" + c + "irA('fAnexo3v.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Resumen de Inventarios' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Mobiliario y Equipo de Oficina'" +
+          c + " onclick=" + c + "irA('fAnexo3v1.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Mobiliario y Equipo de Oficina' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.1	</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Equipo de Cómputo'" +
+          c + " onclick=" + c + "irA('fAnexo3v2.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Equipo de Cómputo' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.2</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Sistemas Desarrollados Internamente'" +
+          c + " onclick=" + c + "irA('fAnexo3v2i.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Sistemas Desarrollados Internamente' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.2.1</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Programas Tipo Paquete '" +
+          c + " onclick=" + c + "irA('fAnexo3v2ii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Programas Tipo Paquete' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.2.2</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Equipo de Video'" + c +
+          " onclick=" + c + "irA('fAnexo3v3.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Equipo de Video' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.3</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Equipo de Transporte y Maquinaria'" +
+          c + " onclick=" + c + "irA('fAnexo3v4.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Equipo de Transporte y Maquinaria' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.4</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Armamento'" + c +
+          " onclick=" + c + "irA('fAnexo3v5.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Armamento' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.5</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Obras de Arte y Decoración'" +
+          c + " onclick=" + c + "irA('fAnexo3v6.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Obras de Arte y Decoración' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.6</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Libros, Publicaciones, Material Bibliográfico e Informativo'" +
+          c + " onclick=" + c + "irA('fAnexo3v7.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Libros, Publicaciones, Material Bibliográfico e Informativo' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.5.7</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Inventario de Almacén'" + c +
+          " onclick=" + c + "irA('fAnexo3vi.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Inventario de Almacén' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.6</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Formas Oficiales'" +
+          c + " onclick=" + c + "irA('fAnexo3vii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Formas Oficiales' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.7</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Sobre Cerrado con la Combinación de Cajas Fuertes'" +
+          c + " onclick=" + c + "irA('fAnexo3viii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Sobre Cerrado con la Combinación de Cajas Fuertes' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.8</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Bienes Inmuebles'" +
+          c + " onclick=" + c + "irA('fAnexo3ix.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Bienes Inmuebles' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.9</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Obras en Proceso'" +
+          c + " onclick=" + c + "irA('fAnexo3x.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Obras en Proceso' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.10</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Obras Terminadas  por Programa'" +
+          c + " onclick=" + c + "irA('fAnexo3xi.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Obras Terminadas  por Programa' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.11</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Anticipos de Obras por Amortizar'" +
+          c + " onclick=" + c + "irA('fAnexo3xii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Anticipos de Obras por Amortizar' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.12</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Compromisos Presidenciales'" +
+          c + " onclick=" + c + "irA('fAnexo3xiii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Compromisos Presidenciales' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.13</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Compromisos Gubernamentales'" +
+          c + " onclick=" + c + "irA('fAnexo3xiv.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Compromisos Gubernamentales' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.14</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Archivo Vigente'" + c +
+          " onclick=" + c + "irA('fAnexo3xv.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Archivo Vigente' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.15</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Respaldos de Archivo en Diskettes o CDs'" +
+          c + " onclick=" + c + "irA('fAnexo3xv1.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Respaldos de Archivo en Diskettes o CDs' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.15.1</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Archivo Muerto'" + c +
+          " onclick=" + c + "irA('fAnexo3xvi.html');" + c + " onmouseout=" + c +
+          "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Archivo Muerto' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.16</A></TD></TR>";
+      sArchivo += "	<TR onmouseover=" + c +
+          "MouseDentro(this);window.status = 'Relación de Asuntos en Trámite'" +
+          c + " onclick=" + c + "irA('fAnexo3xvii.html');" + c + " onmouseout=" +
+          c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Asuntos en Trámite' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.17</A></TD></TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "	<TR onmouseover=" + c + "MouseDentro(this);window.status = 'Relación de Estudios y Proyectos No Desarrollados'" +
+          c + " onclick=" + c + "irA('fAnexo3xviii.html');" + c +
+          " onmouseout=" + c + "MouseFuera(this,'#ffffff');" + c + ">";
+      sArchivo += "	<TD><A class='OpcionMenu'><IMG alt='Relación de Estudios y Proyectos No Desarrollados' src='Images/Vineta.gif' border=0>&nbsp;Anexo III.18</A></TD></TR>";
+      sArchivo += "	</TBODY>	";
+      sArchivo += "</TABLE>		";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo = "	</td>";
+      sArchivo += "	<td valign='top' width='100%'>";
+      sArchivo += "		<TABLE align=center border=0 cellPadding=0 cellSpacing=0 width='100%'><!--De attachment-->";
+      sArchivo += sAux;
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      AnexoArchivo oArchivoA = new AnexoArchivo();
+      vArchivoA = oArchivoA.GetAll(iIdAnexo, iIdFuncionario);
+      if (vArchivoA.getNumRows() > 0) {
+        sArchivo = "	<TR>";
+        sArchivo += "	<TD colspan='3'><b>Archivos Adjuntos (Attachment):</b>";
+        boolean bBandera = false;
+        for (int i = 0; i < vArchivoA.getNumRows(); i++) {
+          String sAnexoArchivo = ( ( (Vector) vArchivoA.getVMatrixAll().
+                                    elementAt(0)).elementAt(i) + "").trim();
+          String sRuta = ( ( (Vector) vArchivoA.getVMatrixAll().elementAt(3)).
+                          elementAt(i) + "").trim();
+          String sArchivos = ( ( (Vector) vArchivoA.getVMatrixAll().elementAt(4)).
+                              elementAt(i) + "").trim();
+          String sLink = ( ( (Vector) vArchivoA.getVMatrixAll().elementAt(5)).
+                          elementAt(i) + "").trim() +
+              ( ( (Vector) vArchivoA.getVMatrixAll().elementAt(4)).elementAt(i) +
+               "").trim();
+          sArchivo += "	<a target='new' onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal' href='" +
+              sLinkAttach + iIdAnexo + "\\" + sArchivos +
+              "'><font color='Blue'>" + sArchivos + "</font></a>";
+          bBandera = true;
+        }
+        oArchivoA.Clear();
+        oArchivowa.Escribe(sArchivo);
+        sArchivo = "	</TR>";
+        oArchivowa.Escribe(sArchivo);
+      }
+      sArchivo = "	</TABLE><!--De attachment-->";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      vArchivoA.RemoveAll();
+      vArchivoA = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en hHeaderAnexo.SetHeader(): " + e);
+    }
+  }
+}

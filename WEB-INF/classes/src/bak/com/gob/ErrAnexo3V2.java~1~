@@ -1,0 +1,105 @@
+/************************************************************************
+ * Module:  ErrAnexo3V2.java
+ * Author:  Jesus Limon
+ * Created: 22.Ene.2003
+ * Purpose: Defines the Class ErrAnexo3V2
+ ***********************************************************************/
+ 
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo3V2 {
+//Declaración de Variables
+private int				iIdFuncionario;
+private String			sClave;
+private String 			sNumFactura;
+private String			sFecha;
+private String 			sConcepto;
+private String			sImporte;
+private String 			sTipo;
+private String 			sDescripcion;
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+
+//Inicializacion de la Clase
+	public ErrAnexo3V2()  throws SQLException, IOException {
+		String sSql;
+		iIdFuncionario	= 0;
+		sClave			= "";
+		sNumFactura		= "";
+		sFecha			= "";
+		sConcepto		= "";
+		sImporte		= "";
+		sTipo			= "";
+		sDescripcion = "";
+		oVm				= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+	}
+
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA) 	{	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() 				{	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	public void 	SetClave(String sDATA) 			{	sClave 			= sDATA;	}
+	public String	GetClave() 						{	return sClave;				}
+	public String	GetClave(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);	}
+	
+	public void 	SetNumFactura(String sDATA) 	{	sNumFactura 	= sDATA;	}
+	public String	GetNumFactura() 				{	return sNumFactura;			}
+	public String	GetNumFactura(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	
+	public void 	SetFecha(String iDATA) 			{	sFecha			= iDATA;	}
+	public String	GetFecha() 						{	return sFecha;				}
+	public String	GetFecha(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	
+	public void 	SetConcepto(String sDATA) 		{	sConcepto 		= sDATA;	}
+	public String	GetConcepto() 					{	return sConcepto;			}
+	public String	GetConcepto(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+	
+	public void 	SetImporte(String sDATA) 		{	sImporte		= sDATA;	}
+	public String	GetImporte() 					{	return sImporte;			}
+	public String	GetImporte(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+	
+	public void 	SetTipo(String sDATA) 			{	sTipo			= sDATA;	}
+	public String	GetTipo() 						{	return sImporte;			}
+	public String	GetTipo(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);	}
+ 	
+	public void 	SetDescripcion(String sDATA) 		{	sDescripcion 		= sDATA;	}
+	public String	GetDescripcion() 					{	return sDescripcion;			}
+	public String	GetDescripcion(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);	}
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdFuncionario, Clave, NumFactura, Fecha, Concepto, Importe, Tipo, DescripcionError FROM ErrAnexo3V2 WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(8);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("IdFuncionario"), rs.getString("Clave"), rs.getString("NumFactura"), 
+									rs.getString("Fecha"), rs.getString("Concepto"), rs.getString("Importe"), 
+									rs.getString("Tipo"), rs.getString("DescripcionError")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3V2.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon + ""), 0);
+	}
+}

@@ -1,0 +1,252 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 25.Oct.2002
+ * Purpose: Defines the Class Municipio
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Adendum {
+
+//Declaración de Variables
+private int 			 iIdRenglon;
+private int 			 iIdFuncionarioAnt;
+private int 			 iIdFuncionarioNvo;
+private int 			 iIdAnexo;
+private String			 sObservacion;
+
+private VMatrix			oVm;
+
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public Adendum()  throws SQLException, IOException {
+		iIdRenglon				= 0;
+		iIdFuncionarioAnt		= 0;
+		iIdFuncionarioNvo		= 0;
+		iIdAnexo				= 0;
+		sObservacion			= "";
+		
+		oVm				= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+	}
+
+ //Creación de las Propiedades
+	public int				GetIdRenglon(int iPos){
+		int iGetIdRenglon = -1;
+		try { iGetIdRenglon = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oAdendum.GetIdRenglon: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdRenglon; }
+	}
+	
+	public void 			SetIdFuncionarioAnt(int iDATA)			{	iIdFuncionarioAnt 	= iDATA;}
+	public int 				GetIdFuncionarioAnt() 					{	return iIdFuncionarioAnt;	}
+	public int				GetIdFuncionarioAnt(int iPos){
+		int iGetIdFuncionarioAnt = -1;
+		try { iGetIdFuncionarioAnt = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oAdendum.GetIdFuncionarioAnt: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionarioAnt; }
+	}
+	
+	public void 			SetIdFuncionarioNvo(int iDATA)			{	iIdFuncionarioNvo 	= iDATA;}
+	public int 				GetIdFuncionarioNvo() 					{	return iIdFuncionarioNvo;	}
+	public int				GetIdFuncionarioNvo(int iPos){
+		int iGetIdFuncionarioNvo = -1;
+		try { iGetIdFuncionarioNvo = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oAdendum.GetIdFuncionarioNvo: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionarioNvo; }
+	}
+	
+	public void 			SetIdAnexo(int iDATA)			{	iIdAnexo 	= iDATA;}
+	public int 				GetIdAnexo() 					{	return iIdAnexo;	}
+	public int				GetIdAnexo(int iPos){
+		int iGetIdAnexo = -1;
+		try { iGetIdAnexo = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oAdendum.GetIdAnexo: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos)); }
+		finally{ return iGetIdAnexo; }
+	}
+	
+	public void 			SetObservacion(String sDATA) 			{	sObservacion 		= sDATA;}
+	public String			GetObservacion() 						{	return sObservacion;	}
+	public String			GetObservacion(int iPos)				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos); }
+//Metodos públicos
+	
+	public VMatrix GetAllAnt(int pIdFuncionarioAnt) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdRenglon, IdFuncionarioAnt, IdFuncionarioNvo, IdAnexo, Observacion FROM Adendum WHERE IdFuncionarioAnt = " + pIdFuncionarioAnt;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(5);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdRenglon"), rs.getString("IdFuncionarioAnt"), rs.getString("IdFuncionarioNvo"), 
+										rs.getString("IdAnexo"), rs.getString("Observacion") };
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("oAdendum.GetAllAnt: No se ejecutó con exito  " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm; 
+		}
+	}
+	
+	public VMatrix GetAllNvo(int pIdFuncionarioNvo) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdRenglon, IdFuncionarioAnt, IdFuncionarioNvo, IdAnexo, Observacion FROM Adendum WHERE IdFuncionarioNvo = " + pIdFuncionarioNvo;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(5);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdRenglon"), rs.getString("IdFuncionarioAnt"), rs.getString("IdFuncionarioNvo"), 
+										rs.getString("IdAnexo"), rs.getString("Observacion") };
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("oAdendum.GetAllNvo: No se ejecutó con exito  " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm; 
+		}
+	}
+	
+	public boolean Insert(int pIdFuncionarioAnt, int pIdFuncionarioNvo, int pIdAnexo, String pObservacion) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "INSERT INTO Adendum(IdFuncionarioAnt, IdFuncionarioNvo, IdAnexo, Observacion) VALUES (" + 
+					pIdFuncionarioAnt + ", " + pIdFuncionarioNvo + ", " + pIdAnexo + ", '" + pObservacion + "')";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAdendum.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Update(int pIdRenglon, int pIdAnexo, String pObservacion) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "UPDATE Adendum SET Observacion = '" + pObservacion + "', IdAnexo = " + pIdAnexo + 
+					" WHERE IdRenglon = " + pIdRenglon;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAdendum.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "DELETE FROM Adendum WHERE IdRenglon = " + pIdRenglon;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAdendum.Delete: " + e + " SQL:" + sSql);
+		return false;
+		}
+	}
+	
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAdendum.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAdendum.html");
+			
+			Adendum oAdendum = new Adendum();
+			Anexo	oAnexo = new Anexo();
+			sAnexo = "";
+			sAux = "\n				<tr><td class='TituloParrafo' width='70%'>&nbsp;&nbsp;ADENDUM&nbsp;&nbsp;</td></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			sArchivo = "\n	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+			sArchivo += "\n		<TR align='middle'>";
+			sArchivo += "\n			<td class='TituloMenu'>RENGLON</TD>";
+			sArchivo += "\n			<td class='TituloMenu'>ANEXO</TD>";
+			sArchivo += "\n			<td class='TituloMenu'>OBSERVACION</TD>";
+			sArchivo += "\n		</TR>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			int intContador = 0;
+			String sBackColor = "";
+			for(int i=0;i<oAdendum.GetAllNvo(iIdFuncionario).getNumRows();i++){
+				int iIdRenglon		= oAdendum.GetIdRenglon(i);
+				int iIdAnexoAdendum	= oAdendum.GetIdAnexo(i);
+				String sObservacion	= oAdendum.GetObservacion(i);
+				intContador = intContador + 1;
+				if(intContador%2 == 0){
+					sBackColor = "#ffffff";
+				}else{
+					sBackColor = "#eeeeee";
+				}
+				sArchivo = "\n		<TR align='left' bgcolor='" +sBackColor + "'";
+				sArchivo += "\n			onMouseOver = 'MouseDentro(this);'";
+				sArchivo += "\n			onMouseOut  = " + c + "MouseFuera(this,'" +sBackColor + "');" + c + ">";
+				sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + iIdRenglon + "</a></TD>";
+				sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + oAnexo.GetClave(oAnexo.GetPos(iIdAnexoAdendum)) + "</a></TD>";
+				sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sObservacion + "</a></TD>";
+				sArchivo += "\n		</TR>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n	</TABLE>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+		
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();
+
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Adendum.setHistory: " + e );
+			sError = " - Adendum.setHistory: " + e ;
+		}
+		return sError;
+	}
+//Metodos Internos
+}

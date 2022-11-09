@@ -1,0 +1,172 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 12.Nov.2002
+ * Purpose: Defines the Class AvanceUnidadGobierno
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class AvanceUnidadGobierno {
+
+//Declaración de Variables
+private int 			iIdUnidadGobierno;
+private String 			sNombreUnidadGobierno;
+private String 			sIdUnidadAdministrativa;
+private String 			sNombreUnidadAdministrativa;
+private String 			sIdCargo;
+private String 			sNombreCargo;
+private String 			sIdFuncionario;
+private String			sNombreFuncionario;
+private String			sEstatus0;
+private String			sEstatus1;
+private String			sEstatus2;
+private String			sEstatus3;
+private String			sEstatus4;
+
+private VMatrix		    oVm;
+private ConnectionJDBC	oCnn;
+
+//Inicializacion de la Clase
+public AvanceUnidadGobierno()  throws SQLException, IOException {
+		String sSql;
+		iIdUnidadGobierno				= 0;
+		sNombreUnidadGobierno			= "";
+  	    sIdUnidadAdministrativa			= "";
+		sNombreUnidadAdministrativa		= "";
+		sIdCargo						= "";
+		sNombreCargo					= "";
+		sIdFuncionario				    = "";
+		sNombreFuncionario				= "";
+		sEstatus0						= "";
+		sEstatus1						= "";
+		sEstatus2						= "";
+		sEstatus3						= "";
+		sEstatus4						= "";
+		oVm					= new VMatrix();
+		oCnn							= new ConnectionJDBC();
+		
+		
+	/*	oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		oCnn.Open();
+		ResultSet oRs = null;
+		
+	}
+//Creación de las Propiedades
+	
+	public void 	SetIdFuncionario(String sDATA) 		{	sIdFuncionario 		= sDATA;	}
+	public String	GetIdFuncionario() 					{	return sIdFuncionario;			}
+	public String	GetIdFuncionario(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos);			}
+	
+	public void 	SetIdUnidadGobierno(int iDATA){	iIdUnidadGobierno 	= iDATA;	}
+	public int		GetIdUnidadGobierno() {	return iIdUnidadGobierno;		}
+	public int		GetIdUnidadGobierno(int iPos){
+		int iGetIdUnidadGobierno = -1;
+		try { iGetIdUnidadGobierno = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdUnidadGobierno: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdUnidadGobierno; }
+	}
+	
+	public void 	SetNombreUnidadGobierno(String sDATA) 		{	sNombreUnidadGobierno 		= sDATA;	}
+	public String	GetNombreUnidadGobierno() 					{	return sNombreUnidadGobierno;			}
+	public String	GetNombreUnidadGobierno(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);			}
+	
+	public void 	SetIdUnidadAdministrativa(String sDATA) 		{	sIdUnidadAdministrativa 		= sDATA;	}
+	public String	GetIdUnidadAdministrativa() 					{	return sIdUnidadAdministrativa;			}
+    public String	GetIdUnidadAdministrativa(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);			}
+	
+	public void 	SetNombreUnidadAdministrativa(String sDATA) 		{	sNombreUnidadAdministrativa 		= sDATA;	}
+	public String	GetNombreUnidadAdministrativa() 					{	return sNombreUnidadAdministrativa;			}
+	public String	GetNombreUnidadAdministrativa(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);			}
+	
+	public void 	SetIdCargo(String sDATA) 		{	sIdCargo 		= sDATA;	}
+	public String	GetIdCargo() 					{	return sIdCargo;			}
+	public String	GetIdCargo(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);			}
+	
+	public void 	SetNombreCargo(String sDATA) 		{	sNombreCargo 		= sDATA;	}
+	public String	GetNombreCargo() 					{	return sNombreCargo;			}
+	public String	GetNombreCargo(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);			}
+	
+	public void 	SetNombreFuncionario(String sDATA) 		{	sNombreFuncionario 		= sDATA;	}
+	public String	GetNombreFuncionario() 					{	return sNombreFuncionario;			}
+	public String	GetNombreFuncionario(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);			}
+	
+	public void 	SetEstatus0(String sDATA) 		{	sEstatus0 		= sDATA;	}
+	public String	GetEstatus0() 					{	return sEstatus0;			}
+	public String	GetEstatus0(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos);			}
+	
+	public void 	SetEstatus1(String sDATA) 		{	sEstatus1 		= sDATA;	}
+	public String	GetEstatus1() 					{	return sEstatus1;			}
+	public String	GetEstatus1(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);			}
+	
+	public void 	SetEstatus2(String sDATA) 		{	sEstatus2 		= sDATA;	}
+	public String	GetEstatus2() 					{	return sEstatus2;			}
+	public String	GetEstatus2(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(10)).elementAt(iPos);			}
+		
+	public void 	SetEstatus3(String sDATA) 		{	sEstatus3 		= sDATA;	}
+	public String	GetEstatus3() 					{	return sEstatus3;			}
+	public String	GetEstatus3(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(11)).elementAt(iPos);			}
+	
+	public void 	SetEstatus4(String sDATA) 		{	sEstatus4 		= sDATA;	}
+	public String	GetEstatus4() 					{	return sEstatus4;			}
+	public String	GetEstatus4(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(12)).elementAt(iPos);			}
+	
+//Metodos públicos
+	public int GetAll(int pIdUnidadGobierno) throws SQLException, IOException {
+				 if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT 	F.IdFuncionario, UG.IdUnidadGobierno, UG.Nombre as NombreUnidadGobierno, UA.IdUnidadAdministrativa,";
+       	sSql = sSql + " UA.Nombre as NombreUnidadAdministrativa, C.IdCargo, C.Nombre as NombreCargo,";
+       	sSql = sSql + " F.Nombre + ' ' + F.ApePaterno + ' ' + F.ApeMaterno as NombreFuncionario,";
+		sSql = sSql + " Estatus0 =  (select count(*) from anexoEstatus a where f.idFuncionario = a.idFuncionario and estatus = '0'),";
+		sSql = sSql + " Estatus1 =  (select count(*) from anexoEstatus a where f.idFuncionario = a.idFuncionario and estatus = '1'),";
+		sSql = sSql + " Estatus2 =  (select count(*) from anexoEstatus a where f.idFuncionario = a.idFuncionario and estatus = '2'),";
+		sSql = sSql + " Estatus3 =  (select count(*) from anexoEstatus a where f.idFuncionario = a.idFuncionario and estatus = '3'),";
+		sSql = sSql + " Estatus4 =  (select count(*) from anexoEstatus a where f.idFuncionario = a.idFuncionario and estatus = '4') ";
+		sSql = sSql + " FROM (((UnidadGobierno UG";
+		sSql = sSql + " INNER JOIN UnidadAdministrativa UA";
+		sSql = sSql + " ON UG.IdUnidadGobierno = UA.IdUnidadGobierno)";
+		sSql = sSql + " INNER JOIN Cargo C";
+		sSql = sSql + " ON UA.IdUnidadAdministrativa = C.IdUnidadAdministrativa)";
+		sSql = sSql + " INNER JOIN Funcionario F";
+		sSql = sSql + " ON C.IdCargo = F.IdCargo)";
+		sSql = sSql + " WHERE F.Estatus = 1 ";
+		
+		if ( pIdUnidadGobierno  != 0){
+		sSql = sSql + " AND UG.IdUnidadGobierno = " + pIdUnidadGobierno;
+		//sSql = sSql + " WHERE UG.IdUnidadGobierno = " + pIdUnidadGobierno;
+		}
+		
+		sSql = sSql + " ORDER BY NombreUnidadGobierno, NombreUnidadAdministrativa,";
+    	sSql = sSql + " NombreCargo, NombreFuncionario, F.IdFuncionario";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(13);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdFuncionario") , rs.getString("IdUnidadGobierno"), rs.getString("NombreUnidadGobierno"), 
+									 rs.getString("IdUnidadAdministrativa"), rs.getString("NombreUnidadAdministrativa"), 
+									 rs.getString("IdCargo"), rs.getString("NombreCargo"), rs.getString("NombreFuncionario"), 
+									 rs.getString("Estatus0"), rs.getString("Estatus1"), rs.getString("Estatus2"), rs.getString("Estatus3"), rs.getString("Estatus4")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en AvanceUnidadGobierno.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+
+	
+}

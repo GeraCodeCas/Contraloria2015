@@ -1,0 +1,190 @@
+/************************************************************************
+ * Module:  Anexo.java
+ * Author:  Jesus Limon
+ * Created: 29.Oct.2002
+ * Purpose: Defines the Class Usuario
+ * Ultima Modificacion:	
+ * By:		
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.*;
+import com.consiss.util.tools.*;
+
+public class Sesion {
+
+//Declaración de Variables
+private int				iIdSesion;
+private String			sIdUsuario;
+private String 			sFecha;
+private String 			sDireccionIP;
+private String 			sEstatus;
+private String 			sFechaCierre;
+private String			sAbierto = "0";
+private String			sCierreAplicacion = "1";
+private String			sCierreBloqueada = "2";
+private VMatrix 		oVm;
+private ConnectionJDBC 	oCnn;
+
+//Inicializacion de la Clase
+	public Sesion()  throws SQLException, IOException {
+		iIdSesion		= 0;
+		sIdUsuario		= "";
+		sFecha			= "";
+		sDireccionIP	= "";
+		sEstatus		= "";
+		sFechaCierre	= "";
+		oVm			= new VMatrix();
+		oCnn		= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+	}
+//Creación de las Propiedades IdSesion    IdUsuario Fecha      DireccionIP     Estatus
+	public int		GetIdSesion(int iPos)		{
+		int iGetIdSesion = -1;
+		try { iGetIdSesion = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oSesion.GetIdSesion: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdSesion; }
+	}
+	
+	public String	GetFecha() 					{	return sFecha;			}
+	public String	GetFecha(int iPos) 			{	return ((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+	public String	GetDireccionIP() 			{	return sDireccionIP;	}
+	public String	GetDireccionIP(int iPos) 	{	return ((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+
+	public String	GetEstatus() 				{	return sEstatus;	}
+	public String	GetEstatus(int iPos) 		{	return ((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos).toString();	}
+	
+	public String	GetFechaCierre(int iPos) 	{	return ((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos).toString();	}
+		
+	public String	GetEstatusAbierto()				{	return sAbierto;			}
+	public String	GetEstatusCierreAplicacion()	{	return sCierreAplicacion;	}
+	public String	GetEstatusCierreBloqueada()		{	return sCierreBloqueada;	}
+
+//Metodos públicos
+	public boolean Get(String pIdSesion) throws SQLException, IOException {
+		String sSql;
+		ResultSet oRs;
+		sSql = "SELECT Fecha, DireccionIP, Estatus, FechaCierre " + 
+		" FROM Sesion WHERE IdSesion = " + pIdSesion;
+		try{
+			oCnn.Open();
+			oRs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(5);
+			if (oRs.next()) {
+				CargaDatos(oRs.getString("Fecha"), oRs.getString("DireccionIP"), oRs.getString("Estatus"), oRs.getString("FechaCierre") );
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oSesion.Get: " + e + " SQL:" + sSql);
+		}finally{
+			oCnn.Close(); 
+			return true; 
+		}
+	}
+	
+	public VMatrix GetAll(int pIdUsuario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		String sSql;
+		ResultSet oRs;
+		sSql = "SELECT IdSesion, Fecha, DireccionIP, Estatus, FechaCierre " + 
+		" FROM Sesion WHERE IdUsuario = " + pIdUsuario + " AND Estatus = " + sAbierto;
+		try{
+			oCnn.Open();
+			oRs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(5);
+			while (oRs.next()) {
+				String sTemp [] = 	{oRs.getString("IdSesion"), oRs.getString("Fecha"), oRs.getString("DireccionIP"), oRs.getString("Estatus"), oRs.getString("FechaCierre")};
+				oVm.setVMatrixRow(sTemp);
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oSesion.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			oCnn.Close(); 
+			return oVm; 
+		}
+	}
+	public int GetPos(int pIdUsuario, String pIdSesion) throws SQLException, IOException {
+		GetAll(pIdUsuario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdSesion + ""), 0);
+	}
+	
+	public int Inicia(String pIdUsuario, String pDireccionIP) throws SQLException, IOException {
+		String sSql = "";
+		iIdSesion = 0;
+		try{
+			CierreBloqueo(pIdUsuario);
+			sSql = "SELECT ISNULL(MAX(IdSesion), 0) AS MaxId FROM Sesion";
+			oCnn.Open();
+			ResultSet oRs;
+			oRs = oCnn.Execute(sSql);
+			if(oRs.next()){ iIdSesion = oRs.getInt("MaxId") + 1; }
+			oRs.close();
+			oRs = null;
+			Utilerias oUtil = new Utilerias();
+			String sFecha = oUtil.sGetDate(oUtil.GetFecha(), "dd/MM/yyyy hh:mm:ss");
+			sSql = "INSERT INTO Sesion(IdSesion, IdUsuario, Fecha, DireccionIP, Estatus) VALUES (" +
+				iIdSesion + ", '" + pIdUsuario + "', '" + sFecha + "', '" + pDireccionIP + "', '" + sAbierto + "')";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+		}catch(Throwable e){
+			System.out.println("Error en oSesion.Inicia: " + e + " SQL:" + sSql);
+		}
+		oCnn.Close();
+		return iIdSesion;
+	}
+	
+	public boolean CierreBloqueo(String pIdUsuario) throws SQLException, IOException {
+		String sSql = "", sFechaCierre;
+		try{
+			Utilerias oUtil = new Utilerias();
+			sFechaCierre = oUtil.sGetDate(oUtil.GetFecha(), "dd/MM/yyyy");
+			
+			sSql = "UPDATE Sesion SET Estatus = '" + sCierreBloqueada + "', FechaCierre = '" + sFechaCierre + "' " + 
+			" WHERE IdUsuario = " + pIdUsuario + " AND Estatus = " + sAbierto ;
+		
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oSesion.Cierre: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	public boolean CierreAplicacion(String pIdSesion) throws SQLException, IOException {
+		String sSql = "", sFechaCierre;
+		try{
+			Utilerias oUtil = new Utilerias();
+			sFechaCierre = oUtil.sGetDate(oUtil.GetFecha(), "dd/MM/yyyy hh:mm:ss");
+			
+			sSql = "UPDATE Sesion SET Estatus = '" + sCierreAplicacion + "', FechaCierre = '" + sFechaCierre + "' " + 
+			" WHERE IdSesion = " + pIdSesion ;
+		
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oSesion.Cierre: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	private void CargaDatos(String pFecha, String pDireccionIP, String pEstatus, String pFechaCierre){
+		sFecha			= pFecha;
+		sDireccionIP	= pDireccionIP;
+		sEstatus		= pEstatus;
+		sFechaCierre	= pFechaCierre;
+	}
+}

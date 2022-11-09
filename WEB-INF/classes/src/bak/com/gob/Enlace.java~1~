@@ -1,0 +1,261 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 24.Oct.2002
+ * Purpose: Defines the Class Usuario Enlace
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Enlace {
+
+//Declaración de Variables
+private int 			 iIdEnlace;
+private String 			 sNombre;
+private String 			 sApePaterno;
+private String 			 sApeMaterno;
+private int 			 iIdUsuario;
+private int 			 iIdUnidadGobierno;
+private int				 iTipoUsuario;
+private String			 sNombreUnidadGobierno;
+private VMatrix			 vmEnlace;
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public Enlace()  throws SQLException, IOException {
+		iIdEnlace			= 0;
+		sNombre					= "";
+		sApePaterno				= "";
+		sApeMaterno				= "";
+		iIdUsuario				= 0;
+		iIdUnidadGobierno		= 0;
+		iTipoUsuario			= 0;
+		sNombreUnidadGobierno	= "";
+		
+		vmEnlace	= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+	/*	oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+	}
+
+ //Creación de las Propiedades
+	public void 			SetIdEnlace(int iDATA)		{	iIdEnlace 	= iDATA;}
+	public int 				GetIdEnlace() 				{	return iIdEnlace;	}
+	public int				GetIdEnlace(int iPos)		{
+		int iGetIdEnlace = -1;
+		try { iGetIdEnlace = java.lang.Integer.parseInt((((Vector)vmEnlace.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oEnlace.GetIdEnlace: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmEnlace.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdEnlace; }
+	}
+	
+	public void 			SetNombre(String sDATA) 		{	sNombre 		= sDATA;}
+	public String			GetNombre() 					{	return sNombre;	}
+	public String			GetNombre(int iPos)				{	return ((Vector)vmEnlace.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+	public void 			SetApePaterno(String sDATA)		{	sApePaterno 	= sDATA;}
+	public String			GetApePaterno() 				{	return sApePaterno;	}
+	public String			GetApePaterno(int iPos)			{	return ((Vector)vmEnlace.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+	
+	public void 			SetApeMaterno(String sDATA)		{	sApeMaterno 	= sDATA;}
+	public String			GetApeMaterno() 				{	return sApeMaterno;	}
+	public String			GetApeMaterno(int iPos)			{	return ((Vector)vmEnlace.getVMatrixAll().elementAt(3)).elementAt(iPos).toString();	}
+	
+	public void 			SetIdUsuario(int iDATA)			{	iIdUsuario 	= iDATA;}
+	public int 				GetIdUsuario() 					{	return iIdUsuario;	}
+	public int				GetIdUsuario(int iPos)			{
+		int iGetIdUsuario = -1;
+		try { iGetIdUsuario = java.lang.Integer.parseInt((((Vector)vmEnlace.getVMatrixAll().elementAt(4)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oEnlace.GetIdUsuario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmEnlace.getVMatrixAll().elementAt(4)).elementAt(iPos)); }
+		finally{ return iGetIdUsuario; }
+	}
+	
+	public void 			SetIdUnidadGobierno(int iDATA)			{	iIdUnidadGobierno 	= iDATA;}
+	public int 				GetIdUnidadGobierno() 					{	return iIdUnidadGobierno;	}
+	public int				GetIdUnidadGobierno(int iPos)		{
+		int iGetIdUnidadGobierno = -1;
+		try { iGetIdUnidadGobierno = java.lang.Integer.parseInt((((Vector)vmEnlace.getVMatrixAll().elementAt(5)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oEnlace.GetIdUnidadGobierno: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmEnlace.getVMatrixAll().elementAt(5)).elementAt(iPos)); }
+		finally{ return iGetIdUnidadGobierno; }
+	}
+
+	public int				GetTipoUsuario(int iPos)		{	return ((Vector)vmEnlace.getVMatrixAll().elementAt(6)).elementAt(iPos)!=null?java.lang.Integer.parseInt(((Vector)vmEnlace.getVMatrixAll().elementAt(6)).elementAt(iPos).toString()):0;	}
+	public int 				GetTipoUsuario() 				{	return iTipoUsuario;	}
+	
+	
+	public void 			SetNombreUnidadGobierno(String sDATA)		{	sNombreUnidadGobierno 	= sDATA;}
+	public String			GetNombreUnidadGobierno() 				{	return sNombreUnidadGobierno;	}
+	public String			GetNombreUnidadGobierno(int iPos)			{	return ((Vector)vmEnlace.getVMatrixAll().elementAt(7)).elementAt(iPos).toString();	}
+//Metodos públicos
+	public boolean GetUsuario(int pIdUsuario) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT a.IdEnlace, a.Nombre, a.ApePaterno, a.ApeMaterno, a.IdUsuario, a.IdUnidadGobierno, " + 
+			"a.TipoUsuario, b.Nombre as NombreUnidadGobierno FROM Enlace a, UnidadGobierno b " + 
+			"WHERE a.IdUnidadGobierno = b.IdUnidadGobierno AND a.IdUsuario = " + pIdUsuario;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdEnlace"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getInt("IdUsuario"), 
+					rs.getInt("IdUnidadGobierno"), rs.getInt("TipoUsuario"), rs.getString("NombreUnidadGobierno"));
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;	
+	}
+
+	public boolean Get(int pIdEnlace) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+//		sSql = "SELECT IdEnlace, Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, IdUnidadGobierno, Email, TipoUsuario FROM Enlace WHERE IdEnlace = " + pIdEnlace;
+		sSql = "SELECT a.IdEnlace, a.Nombre, a.ApePaterno, a.ApeMaterno, IdUsuario, a.IdUnidadGobierno, " + 
+			"Email, a.TipoUsuario, b.Nombre as NombreUnidadGobierno FROM Enlace a, UnidadGobierno b " + 
+			"WHERE a.IdUnidadGobierno = b.IdUnidadGobierno AND IdEnlace = " + pIdEnlace;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdEnlace"), rs.getString("Nombre"), rs.getString("ApePaterno"), rs.getString("ApeMaterno"), 
+					   rs.getInt("IdUsuario"), rs.getInt("IdUnidadGobierno"), 
+					   rs.getInt("TipoUsuario"), rs.getString("NombreUnidadGobierno"));
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;	
+	}
+	
+	public int GetAll(int pTipoUsuario) throws SQLException, IOException {
+		if(vmEnlace.getNumRows()>0) return vmEnlace.getNumRows();
+		String sSql = "";
+		//System.out.println(sSql);
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT a.IdEnlace, a.Nombre, a.ApePaterno, a.ApeMaterno, a.IdUsuario, a.IdUnidadGobierno, a.TipoUsuario, b.Nombre as NombreUnidadGobierno FROM Enlace a INNER JOIN  UnidadGobierno b  ON a.IdUnidadGobierno = b.IdUnidadGobierno WHERE a.TipoUsuario = " + pTipoUsuario;
+			rs = oCnn.Execute(sSql);
+			vmEnlace.setVMatrixNumCols(8);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdEnlace"), rs.getString("Nombre"), rs.getString("ApePaterno"), 	rs.getString("ApeMaterno"),	
+				rs.getString("IdUsuario"), rs.getString("IdUnidadGobierno"), rs.getString("TipoUsuario"), rs.getString("NombreUnidadGobierno")};
+				vmEnlace.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oEnlace.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmEnlace.getNumRows();
+		}
+	}
+	
+	public int GetAll(int pTipoUsuario, int pIdUnidadGobierno) throws SQLException, IOException {
+		if(vmEnlace.getNumRows()>0) return vmEnlace.getNumRows();
+		String sSql = "";
+		//System.out.println(sSql);
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT a.IdEnlace, a.Nombre, a.ApePaterno, a.ApeMaterno, a.IdUsuario, a.IdUnidadGobierno, a.TipoUsuario, b.Nombre as NombreUnidadGobierno " + 
+				"FROM Enlace a INNER JOIN  UnidadGobierno b  ON a.IdUnidadGobierno = b.IdUnidadGobierno " +
+				"WHERE (a.IdUnidadGobierno = " + pIdUnidadGobierno + " OR " + pIdUnidadGobierno + " = 0) " + 
+				"AND a.TipoUsuario = " + pTipoUsuario + " ORDER BY b.Nombre, a.ApePaterno, a.ApeMaterno, a.Nombre ";
+			rs = oCnn.Execute(sSql);
+			vmEnlace.setVMatrixNumCols(8);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdEnlace"), rs.getString("Nombre"), rs.getString("ApePaterno"), 	rs.getString("ApeMaterno"),	
+				rs.getString("IdUsuario"), rs.getString("IdUnidadGobierno"), rs.getString("TipoUsuario"), rs.getString("NombreUnidadGobierno")};
+				vmEnlace.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oEnlace.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmEnlace.getNumRows();
+		}
+	}
+	
+	public int Insert(String pNombre, String pApePaterno, String pApeMaterno, 
+			int	pIdUsuario, int	pIdUnidadGobierno, int pTipoUsuario) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			iIdEnlace = 0;
+			sSql = "SELECT ISNULL(MAX(IdEnlace), 0) AS MaxId FROM Enlace";
+			ResultSet oRs;
+			oRs = oCnn.Execute(sSql);
+			if(oRs.next()){ iIdEnlace = oRs.getInt("MaxId"); }
+			oRs.close();
+			oRs = null;
+			iIdEnlace++;
+			sSql = "INSERT INTO Enlace(IdEnlace, Nombre, ApePaterno, ApeMaterno, IdUsuario, IdUnidadGobierno, TipoUsuario) VALUES (" +
+				iIdEnlace + ", '" + pNombre + "', '" + pApePaterno + "', '" + pApeMaterno + "', " + pIdUsuario + ", " + pIdUnidadGobierno + ", " + pTipoUsuario + " )";
+			oCnn.Execute(sSql);
+			oCnn.Close();			
+		}catch(Throwable e){
+			System.out.println("Error en oEnlace.Insert: " + e + " SQL:" + sSql);
+		}
+		return iIdEnlace;
+	}
+	
+	
+	
+	public boolean Update(int pIdEnlace, String pNombre, String pApePaterno, String pApeMaterno, 
+			int	pIdUnidadGobierno, int pTipoUsuario) throws SQLException, IOException {
+		oCnn.Open();
+		String sSql = "";
+		try {
+			sSql = "UPDATE Enlace SET Nombre = '" + pNombre + "', ApePaterno = '" + pApePaterno + "', ApeMaterno = '" + pApeMaterno + 
+					"', IdUnidadGobierno = " + pIdUnidadGobierno + ", TipoUsuario = " + pTipoUsuario + " WHERE IdEnlace = " + pIdEnlace;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oEnlace.Update: " + e + " SQL:" + sSql);
+		}
+		return false;		
+	}
+	public boolean Delete(int pIdEnlace) throws SQLException, IOException {
+		oCnn.Open();
+		String sSql = "";
+		try {
+			sSql = "DELETE FROM Enlace WHERE IdEnlace = " + pIdEnlace;
+			oCnn.Execute(sSql);
+			Usuario oUsuario = new Usuario();
+			oUsuario.Delete(iIdUsuario);
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oEnlace.Delete: " + e + " SQL:" + sSql);
+		}
+		oCnn.Close();
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdEnlace, String pNombre, String pApePaterno, String pApeMaterno, 
+			int	pIdUsuario, int	pIdUnidadGobierno, int pTipoUsuario, String pNombreUnidadGobierno){
+		iIdEnlace				= pIdEnlace;
+		sNombre 				= pNombre;
+		sApePaterno				= pApePaterno;
+		sApeMaterno				= pApeMaterno;
+		iIdUsuario				= pIdUsuario;
+		iIdUnidadGobierno		= pIdUnidadGobierno;
+		iTipoUsuario			= pTipoUsuario;
+		sNombreUnidadGobierno	= pNombreUnidadGobierno;
+	}	
+
+}

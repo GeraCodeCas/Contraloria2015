@@ -1,0 +1,114 @@
+/************************************************************************
+ * Module:  ErrAnexo3V1.java
+ * Author:  Jesus Limon
+ * Created: 24.Ene.2003
+ * Purpose: Defines the Class ErrAnexo3V1
+ ***********************************************************************/
+ 
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo3V1 {
+//Declaración de Variables
+private int				iIdFuncionario;
+private String			sNoInventario;
+private String 			sDescripcion;
+private String			sMarca;
+private String 			sModelo;
+private String			sSerie;
+private String 			sValor;
+private String			sUbicacion;
+private String 			sResguardante;
+private String 			sTipo;
+private String			sDescrError;
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+
+//Inicializacion de la Clase
+	public ErrAnexo3V1()  throws SQLException, IOException {
+		String sSql;
+		iIdFuncionario		= 0;
+		sNoInventario		= "";
+		sDescripcion		= "";
+		sMarca				= "";
+		sModelo				= "";
+		sSerie				= "";
+		sValor				= "";
+		sUbicacion			= "";
+		sResguardante		= "";
+		sDescrError						= "";
+		sTipo				= "";
+		oVm					= new VMatrix();
+		oCnn				= new ConnectionJDBC();
+	}
+
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA) 	{	iIdFuncionario 		= iDATA;	}
+	public int		GetIdFuncionario() 				{	return iIdFuncionario;			}
+	public int		GetIdFuncionario(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	public void 	SetNoInventario(String sDATA) 	{	sNoInventario 		= sDATA;	}
+	public String	GetNoInventario() 				{	return sNoInventario;			}
+	public String	GetNoInventario(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);	}
+	public void 	SetDescripcion(String sDATA) 	{	sDescripcion 		= sDATA;	}
+	public String	GetDescripcion() 				{	return sDescripcion;			}
+	public String	GetDescripcion(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	public void 	SetMarca(String iDATA) 			{	sMarca				= iDATA;	}
+	public String	GetMarca() 						{	return sMarca;					}
+	public String	GetMarca(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	public void 	SetModelo(String sDATA)			{	sModelo				= sDATA;	}
+	public String	GetModelo() 					{	return sModelo;					}
+	public String	GetModelo(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+	public void 	SetSerie(String sDATA)			{	sSerie				= sDATA;	}
+	public String	GetSerie() 						{	return sSerie;					}
+	public String	GetSerie(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+	public void 	SetValor(String sDATA)			{	sValor				= sDATA;	}
+	public String	GetValor() 						{	return sValor;					}
+	public String	GetValor(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);	}
+	public void 	SetUbicacion(String sDATA)		{	sUbicacion			= sDATA;	}
+	public String	GetUbicacion() 					{	return sUbicacion;				}
+	public String	GetUbicacion(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);	}
+	public void 	SetResguardante(String sDATA)	{	sResguardante		= sDATA;	}
+	public String	GetResguardante() 				{	return sResguardante;			}
+	public String	GetResguardante(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos);	}
+	public void 	SetTipo(String sDATA)			{	sTipo				= sDATA;	}
+	public String	GetTipo() 						{	return sTipo;					}
+	public String	GetTipo(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);	}
+	public void 	SetDescrError(String sDATA)			{	sDescrError				= sDATA;	}
+	public String	GetDescrError() 						{	return sDescrError;					}
+	public String	GetDescrError(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(10)).elementAt(iPos);	}
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdFuncionario, NoInventario, Descripcion, Marca, Modelo, Serie, Valor, Ubicacion, Resguardante, Tipo, DescripcionError FROM ErrAnexo3V1 WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(11);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("IdFuncionario"), rs.getString("NoInventario"), rs.getString("Descripcion"), 
+									rs.getString("Marca"), rs.getString("Modelo"), rs.getString("Serie"), rs.getString("Valor"),
+									rs.getString("Ubicacion"), rs.getString("Resguardante"), rs.getString("Tipo"), rs.getString("DescripcionError")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3V1.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon + ""), 0);
+	}
+}

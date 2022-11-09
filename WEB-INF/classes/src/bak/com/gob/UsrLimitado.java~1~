@@ -1,0 +1,257 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 31.Oct.2002
+ * Purpose: Defines the Class Usuario Limitado
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class UsrLimitado {
+
+//Declaración de Variables
+private int 			 iIdUsuarioLimitado;
+private int 			 iIdFuncionario;
+private String 			 sNombre;
+private String 			 sApePaterno;
+private String 			 sApeMaterno;
+private String 			 dFecIni;
+private String 			 dFecFin;
+private int 			 iIdUsuario;
+
+private VMatrix			 vmUsr;
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public UsrLimitado()  throws SQLException, IOException {
+		iIdUsuarioLimitado	= 0;
+		iIdFuncionario		= 0;
+		sNombre				= "";
+		sApePaterno			= "";
+		sApeMaterno			= "";
+		dFecIni				= "";
+		dFecFin				= "";
+		iIdUsuario			= 0;
+		
+		vmUsr	= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+	}
+
+ //Creación de las Propiedades
+	public void 			SetIdUsuarioLimitado(int iDATA)		{	iIdUsuarioLimitado 	= iDATA;}
+	public int 				GetIdUsuarioLimitado() 				{	return iIdUsuarioLimitado;	}
+	public int				GetIdUsuarioLimitado(int iPos)		{
+		int iGetIdUsuarioLimitado = -1;
+		try { iGetIdUsuarioLimitado = java.lang.Integer.parseInt((((Vector)vmUsr.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUsrLimitado.GetIdUsuarioLimitado: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUsr.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdUsuarioLimitado; }
+	}
+	
+	public void 			SetIdFuncionario(int iDATA)		{	iIdFuncionario 	= iDATA;}
+	public int 				GetIdFuncionario() 				{	return iIdFuncionario;	}
+	public int				GetIdFuncionario(int iPos)		{
+		int iGetIdFuncionario = -1;
+		try { iGetIdFuncionario = java.lang.Integer.parseInt((((Vector)vmUsr.getVMatrixAll().elementAt(1)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUsrLimitado.GetIdFuncionario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUsr.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionario; }
+	}
+	
+	public void 			SetNombre(String sDATA) 		{	sNombre 		= sDATA;}
+	public String			GetNombre() 					{	return sNombre;	}
+	public String			GetNombre(int iPos)				{	return ((Vector)vmUsr.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+	
+	public void 			SetApePaterno(String sDATA)		{	sApePaterno 	= sDATA;}
+	public String			GetApePaterno() 				{	return sApePaterno;	}
+	public String			GetApePaterno(int iPos)			{	return ((Vector)vmUsr.getVMatrixAll().elementAt(3)).elementAt(iPos).toString();	}
+	
+	public void 			SetApeMaterno(String sDATA)		{	sApeMaterno 	= sDATA;}
+	public String			GetApeMaterno() 				{	return sApeMaterno;	}
+	public String			GetApeMaterno(int iPos)			{	return ((Vector)vmUsr.getVMatrixAll().elementAt(4)).elementAt(iPos).toString();	}
+	
+	public void 			SetFecIni(String dDATA)			{	dFecIni 		= dDATA;}
+	public String			GetFecIni() 					{	return dFecIni;	}
+	public String			GetFecIni(int iPos)				{	return ((Vector)vmUsr.getVMatrixAll().elementAt(5)).elementAt(iPos)!=null?((Vector)vmUsr.getVMatrixAll().elementAt(5)).elementAt(iPos).toString():"";	}
+	
+	public void 			SetFecFin(String dDATA)			{	dFecFin 		= dDATA;}
+	public String			GetFecFin() 					{	return dFecFin;	}
+	public String			GetFecFin(int iPos)				{	return ((Vector)vmUsr.getVMatrixAll().elementAt(6)).elementAt(iPos)!=null?((Vector)vmUsr.getVMatrixAll().elementAt(6)).elementAt(iPos).toString():"";	}
+		
+	public void 			SetIdUsuario(int iDATA)			{	iIdUsuario 	= iDATA;}
+	public int 				GetIdUsuario() 					{	return iIdUsuario;	}
+	public int				GetIdUsuario(int iPos)			{
+		int iGetIdUsuario = -1;
+		try { iGetIdUsuario = java.lang.Integer.parseInt((((Vector)vmUsr.getVMatrixAll().elementAt(7)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUsrLimitado.GetIdUsuario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUsr.getVMatrixAll().elementAt(7)).elementAt(iPos)); }
+		finally{ return iGetIdUsuario; }
+	}
+
+	public String			GetEstatus(int iPos)			{	return ((Vector)vmUsr.getVMatrixAll().elementAt(8)).elementAt(iPos)!=null?((Vector)vmUsr.getVMatrixAll().elementAt(8)).elementAt(iPos)+"":"";	}
+		
+//Metodos públicos
+	public boolean Get(int pIdUsuarioLimitado) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdUsuarioLimitado, IdFuncionario, Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario FROM UsuarioLimitado WHERE IdUsuarioLimitado = " + pIdUsuarioLimitado;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdUsuarioLimitado"), rs.getInt("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getString("FecIni"), rs.getString("FecFin"),	rs.getInt("IdUsuario"));
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+	
+	public int GetCountUsuario(int pIdFuncionario) throws SQLException, IOException {
+		int iGetCountUsuario = 0;
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT Count(IdUsuarioLimitado) CountUsuario FROM UsuarioLimitado WHERE IdFuncionario = " + pIdFuncionario;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			iGetCountUsuario = rs.getInt("CountUsuario");
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return iGetCountUsuario;
+	}
+	
+	public int GetAll() throws SQLException, IOException {
+		if(vmUsr.getNumRows()>0) return vmUsr.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdUsuarioLimitado, IdFuncionario, Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, a.IdUsuario, b.Estatus FROM UsuarioLimitado a, Usuario b WHERE a.IdUsuario = b.IdUsuario";
+		try {
+			rs = oCnn.Execute(sSql);
+			vmUsr.setVMatrixNumCols(8);
+			while (rs.next()) {
+				String saTabla [] = 
+					{rs.getString("IdUsuarioLimitado"), rs.getString("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getString("FecIni"), rs.getString("FecFin"), rs.getString("IdUsuario") };
+				vmUsr.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUsrLimitado.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUsr.getNumRows();
+		}
+	}
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(vmUsr.getNumRows()>0) return vmUsr.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdUsuarioLimitado, IdFuncionario, Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, a.IdUsuario, b.Estatus FROM UsuarioLimitado a, Usuario b WHERE a.IdUsuario = b.IdUsuario AND IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			vmUsr.setVMatrixNumCols(9);
+			while (rs.next()) {
+				String saTabla [] = 
+					{rs.getString("IdUsuarioLimitado"), rs.getString("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getString("FecIni"), rs.getString("FecFin"), rs.getString("IdUsuario"), rs.getString("Estatus") };
+				vmUsr.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUsrLimitado.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUsr.getNumRows();
+		}
+	}
+	public int GetPos(int pIdUsuarioLimitado) throws SQLException, IOException {
+		GetAll();
+		return ((Vector)vmUsr.getVMatrixAll().elementAt(0)).indexOf((pIdUsuarioLimitado+""), 0);
+	}
+	public int Insert(int pIdFuncionario, String pNombre, String pApePaterno, String pApeMaterno, String pFecIni, 
+			String pFecFin, int	pIdUsuario) throws SQLException, IOException {
+		String sSql = "";
+		try {	
+			oCnn.Open();
+			iIdUsuarioLimitado = 0;
+			sSql = "SELECT ISNULL(MAX(IdUsuarioLimitado), 0) AS MaxId FROM UsuarioLimitado";
+			ResultSet oRs;
+			oRs = oCnn.Execute(sSql);
+			if(oRs.next()){ iIdUsuarioLimitado = oRs.getInt("MaxId"); }
+			oRs.close();
+			oRs = null;
+			iIdUsuarioLimitado++;
+			sSql = "INSERT INTO UsuarioLimitado(IdUsuarioLimitado, IdFuncionario, Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario) VALUES (" +
+				iIdUsuarioLimitado + ", " + pIdFuncionario + ", '" + pNombre + "', '" + pApePaterno + "', '" + pApeMaterno + "', " + pFecIni + ", " + 
+				pFecFin + ", " + pIdUsuario + " )";
+			oCnn.Execute(sSql);
+			oCnn.Close();			
+			return iIdUsuarioLimitado;
+		}catch(Throwable e){
+			System.out.println("Error en oUsrLimitado.Insert: " + e + " SQL:" + sSql);
+			return -1;
+		}
+
+	}
+	public boolean Update(int pIdUsuarioLimitado, String pNombre, String pApePaterno, String pApeMaterno, 
+			String pFecIni, String pFecFin, int pIdUsuario, String pEstatus) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "UPDATE UsuarioLimitado SET Nombre = '" + pNombre + "', ApePaterno = '" + pApePaterno + "', ApeMaterno = '" + pApeMaterno + 
+					"', FecIni = " + pFecIni + ", FecFin = " + pFecFin + " WHERE IdUsuarioLimitado = " + pIdUsuarioLimitado;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			Usuario oUsuario = new Usuario();
+			oUsuario.UpdateEstatus(pIdUsuario, pEstatus);
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oUsrLimitado.Update: " + e + " SQL:" + sSql);
+			oCnn.Close();
+			return false;
+		}
+	}
+	
+	public boolean Delete(int pIdUsuarioLimitado) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "DELETE FROM UsuarioLimitado WHERE IdUsuarioLimitado = " + pIdUsuarioLimitado;
+			oCnn.Execute(sSql);
+			//System.out.println(sSql);
+			Usuario oUsuario = new Usuario();
+			oUsuario.Delete(iIdUsuario);
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oUsrLimitado.Delete: " + e + " SQL:" + sSql);
+			oCnn.Close();
+			return false;
+		}
+	}
+//Metodos Internos
+	private void CargaDatos(int pIdUsuarioLimitado, int pIdFuncionario, String pNombre, String pApePaterno, String pApeMaterno, 
+			String pFecIni, String pFecFin, int	pIdUsuario){
+		iIdUsuarioLimitado	= pIdUsuarioLimitado;
+		iIdFuncionario		= pIdFuncionario;
+		sNombre 			= pNombre;
+		sApePaterno			= pApePaterno;
+		sApeMaterno			= pApeMaterno;
+		dFecIni				= pFecIni;
+		dFecFin				= pFecFin;
+		iIdUsuario			= pIdUsuario;
+	}
+}

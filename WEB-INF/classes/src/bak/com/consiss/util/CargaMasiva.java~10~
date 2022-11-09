@@ -1,0 +1,163 @@
+package com.consiss.util;
+
+import com.consiss.db.*;
+import java.sql.*;
+import java.io.IOException;
+
+public class CargaMasiva {
+  private Registro oReg;
+  private CargaMaestro oCarga;
+  private String sArchivo;
+  private String sTabla;
+  private String sProcedimiento;
+  private int[] iCorte;
+  //private int				iCampos;
+  private int iIdFuncionario;
+  private int iRegistrosACargar;
+  private int iRegistrosConError;
+
+  public CargaMasiva() {
+    oReg = new Registro();
+    oCarga = new CargaMaestro();
+    iIdFuncionario = 0;
+    sTabla = "";
+    sArchivo = "";
+    sProcedimiento = "";
+  }
+
+  public void setArchivo(String sTemp) {
+    sArchivo = sTemp;
+  }
+
+  public String getArchivo() {
+    return sArchivo;
+  }
+
+  public void setTabla(String sTemp) {
+    sTabla = sTemp;
+  }
+
+  public String getTabla() {
+    return sTabla;
+  }
+
+  public void setProcedimiento(String sTemp) {
+    sProcedimiento = sTemp;
+  }
+
+  public String getProcedimiento() {
+    return sProcedimiento;
+  }
+
+  public void setCorte(int[] iTemp) {
+    iCorte = iTemp;
+  }
+
+  public int[] getCorte() {
+    return iCorte;
+  }
+
+  public void setIdFuncionario(int iTemp) {
+    iIdFuncionario = iTemp;
+  }
+
+  public int getIdFuncionario() {
+    return iIdFuncionario;
+  }
+
+  public int getRegistrosACargar() {
+    return iRegistrosACargar;
+  }
+
+  public int getRegistrosConError() {
+    return iRegistrosConError;
+  }
+
+  public boolean ProcesaInformacion() throws IOException, SQLException {
+    int j = 0;
+    oReg.setTotalCampos(iCorte);
+    oReg.AbreArchivo(sArchivo);
+    oCarga.setTabla(sTabla);
+    oCarga.setCampos(iCorte.length);
+    oCarga.LimpiaInfo(sTabla);
+
+    // Se abre una sola vez la conexion por toda la iteracion.
+    // (jmarquez1974@hotmail.com)(jaipily@hotmail.com)(2005/02/10)(13:59:00)(gmt -o6:00)(falla en reconexiones).
+    oCarga.getOCnn().Open();
+
+    for (int i = 0; i < oReg.getTotalRegistros(); i++) {
+      String[] sPrueba = oReg.getRegistro();
+      if (!oReg.getVacio()) {
+        oCarga.GrabaInfo(iIdFuncionario, sPrueba);
+        /*
+        j++;
+        if (j == 1500) {
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          j = 0;
+        }
+        */
+      }
+    }
+
+    // Se cierra una sola vez la conexion por toda la iteracion.
+    // (jmarquez1974@hotmail.com)(jaipily@hotmail.com)(2005/02/10)(13:59:00)(gmt -o6:00)(falla en reconexiones).
+    oCarga.getOCnn().Close();
+
+    /* (jmarquez1974@hotmail.com)(2005/01/10)(20:33:00)(gmt -06:00)(mostrando resultados de cargas masivas) */
+    /*oCarga.NormalizaInfo("Carga" + sProcedimiento + " " + iIdFuncionario);*/
+    oCarga.NormalizaInfo("Carga", sProcedimiento, "" + iIdFuncionario);
+    iRegistrosACargar = oCarga.getRegistrosACargar();
+    iRegistrosConError = oCarga.getRegistrosConError();
+
+    oReg.CierraArchivo();
+    oReg.DestruyeArchivo();
+    return true;
+  }
+
+  public boolean ProcesaInformacion(String sUsuario) throws IOException,
+      SQLException {
+    int j = 0;
+    oReg.setTotalCampos(iCorte);
+    oReg.AbreArchivo(sArchivo);
+    oCarga.setTabla(sTabla);
+    oCarga.setCampos(iCorte.length);
+
+    // Se abre una sola vez la conexion por toda la iteracion.
+    // (jmarquez1974@hotmail.com)(jaipily@hotmail.com)(2005/02/10)(13:59:00)(gmt -o6:00)(falla en reconexiones).
+    oCarga.getOCnn().Open();
+
+    for (int i = 0; i < oReg.getTotalRegistros(); i++) {
+      String[] sPrueba = oReg.getRegistro();
+      if (!oReg.getVacio()) {
+        oCarga.GrabaInfo(sUsuario, sPrueba);
+        j++;
+        if (j == 1500) {
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          for (long k = 0; k <= 100000000; k++) {}
+          j = 0;
+        }
+      }
+    }
+
+    // Se cierra una sola vez la conexion por toda la iteracion.
+    // (jmarquez1974@hotmail.com)(jaipily@hotmail.com)(2005/02/10)(13:59:00)(gmt -o6:00)(falla en reconexiones).
+    oCarga.getOCnn().Close();
+
+    /* (jmarquez1974@hotmail.com)(2005/01/10)(20:33:00)(gmt -06:00)(mostrando resultados de cargas masivas) */
+    /*oCarga.NormalizaInfo("Carga" + sProcedimiento + " '" + sUsuario + "'");*/
+    oCarga.NormalizaInfo("Carga", sProcedimiento, sUsuario);
+    iRegistrosACargar = oCarga.getRegistrosACargar();
+    iRegistrosConError = oCarga.getRegistrosConError();
+
+    oReg.CierraArchivo();
+    oReg.DestruyeArchivo();
+    return true;
+  }
+}

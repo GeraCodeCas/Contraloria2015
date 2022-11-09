@@ -1,0 +1,79 @@
+/************************************************************************
+ * Module:  ArchivoHistorico.java
+ * Author:  Jesus Limon
+ * Created: 22.Dic.2002
+ * Purpose:
+ ***********************************************************************/
+ 
+package com.gob;
+import java.io.*;
+
+public class ArchivoHistorico {
+
+//Declaración de Variables
+private String				sPath;
+private String				sFileName;
+private String				sMessage;
+private FileOutputStream 	oFileOut;
+private	PrintWriter 		oPrint;
+
+//Constructor de la clase
+	public ArchivoHistorico(){
+		sPath		= "";
+		sFileName	= "";
+		sMessage	= "";
+	}
+
+//Propiedades
+	public void 	SetDirectorio (String sDATA) 	{	sPath 		= sDATA;}
+	public String	GetDirectorio() 				{	return sPath;		}
+	public void 	SetArchivo (String sDATA) 		{	sFileName 	= sDATA;}
+	public String	GetArchivo() 					{	return sFileName;	}
+	public void 	SetMessage (String sDATA) 		{	sMessage 	= sDATA;}
+	public String	GetMessage() 					{	return sMessage;	}
+
+//Metodos Publicos
+	public boolean AbreArchivo(String vPath, String vArchivo) throws IOException {
+		return this.Archivo(vPath, vArchivo);
+	}	
+	public boolean AbreArchivo() throws IOException {
+		if(sPath.equals("") || sFileName.equals(""))
+			return false;
+		return this.Archivo(sPath, sFileName);
+	}	
+	public void CierraArchivo()throws IOException {
+  		oPrint.close();
+	}
+	public boolean Escribe(String vMessage) throws IOException {
+		if (!vMessage.equals(""))
+		  return EscribeArchivo(vMessage);
+		return false;
+	}
+	public boolean Escribe() throws IOException {
+		if (!sMessage.equals("")){
+		  return EscribeArchivo(sMessage);
+		}
+		return false;
+	}
+
+//Metodos Privados
+	private boolean Archivo(String vPath, String vFileName) throws IOException{
+		sPath 		= vPath;
+		sFileName 	= vFileName;
+
+		File oArchivo 	= new File(vPath + "\\" + vFileName);
+		String dir = oArchivo.getParent(); 
+		if( dir != null) 
+     		new File(dir).mkdirs(); 		
+		if (!(oArchivo.exists()))
+    		oArchivo.createNewFile();
+			oArchivo = null;
+		oFileOut 	= new FileOutputStream(sPath + "\\" + sFileName, true);
+		oPrint 		= new PrintWriter(new OutputStreamWriter(oFileOut));
+		return true;
+	}
+	private boolean EscribeArchivo(String vMessage) throws IOException {	  	
+		oPrint.println(vMessage);		
+	  	return true;
+	}
+}

@@ -1,0 +1,140 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 25.Oct.2002
+ * Purpose: Defines the Class Municipio
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class MensajeRH {
+
+//Declaración de Variables
+private VMatrix 		oVm;
+
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public MensajeRH()  throws SQLException, IOException {
+		oVm			= new VMatrix();
+		oCnn		= new ConnectionJDBC();
+	}
+
+ //Creación de las Propiedades
+	public int		GetRenglon(int iPos)	 			{	return java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)+"");	}
+	public int		GetIdUnidadGobierno(int iPos)		{	return java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos)+"");	}
+	public int		GetIdUnidadAdministrativa(int iPos)	{	return java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos)+"");	}
+	public String	GetTipoMov(int iPos)				{	return ((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos)+"";	}
+	public String	GetValorAnterior(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos)+"";	}
+	public boolean	GetLeido(int iPos){	
+		if( (((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos).toString()).equals("1"))
+			return true;
+		else return false;
+	}
+	
+//Metodos públicos
+	public VMatrix GetAll() throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql = "";
+		sSql = "SELECT IdRenglon, IdUnidadGobierno, IdUnidadAdministrativa, TipoMov, ValorAnterior, Leido FROM MensajeRH ORDER BY IdRenglon";
+		oVm.setVMatrixNumCols(3);
+		try{
+			rs = oCnn.Execute(sSql);
+			while (rs.next()) {
+				String sTemp [] = {rs.getString("IdRenglon"), rs.getString("Observacion"), rs.getString("Leido")};
+				oVm.setVMatrixRow(sTemp);
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+		}catch(Throwable e){
+			System.out.println("Error en oMensajeRH.GetAll: " + e + " SQL:" + sSql);
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return oVm;
+		}finally{
+			return oVm; 
+		}
+	}
+	public VMatrix GetAll(boolean pLeido) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql = "";
+		if(pLeido) 
+			sSql = "SELECT IdRenglon, IdUnidadGobierno, IdUnidadAdministrativa, TipoMov, ValorAnterior, Leido FROM MensajeRH WHERE Leido = 1 ORDER BY IdUnidadGobierno, TipoMov";
+		else
+			sSql = "SELECT IdRenglon, IdUnidadGobierno, IdUnidadAdministrativa, TipoMov, ValorAnterior, Leido FROM MensajeRH WHERE Leido = 0 ORDER BY IdUnidadGobierno, TipoMov";
+		oVm.setVMatrixNumCols(6);
+		try{
+			rs = oCnn.Execute(sSql);
+			while (rs.next()) {
+				String sTemp [] = {rs.getString("IdRenglon"), rs.getString("IdUnidadGobierno"), rs.getString("IdUnidadAdministrativa"), rs.getString("TipoMov"), rs.getString("ValorAnterior"), rs.getString("Leido")};
+				oVm.setVMatrixRow(sTemp);
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+		}catch(Throwable e){
+			System.out.println("Error en oMensajeRH.GetAll(boolean): " + e + " SQL:" + sSql);
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return oVm;
+		}finally{
+			return oVm; 
+		}
+	}
+	
+	public boolean Insert(int pIdUnidadGobierno, int pIdUnidadAdministrativa, char pTipoMov, String pValorAnterior) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "INSERT INTO MensajeRH(IdUnidadGobierno, IdUnidadAdministrativa, TipoMov, ValorAnterior, Leido) VALUES (" + pIdUnidadGobierno + ", " + pIdUnidadAdministrativa + ", '" + pTipoMov + "', '" + pValorAnterior +"', 0)";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oMensajeRH.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+/*
+	public boolean Update(int pCodigo, String pObservacion, String pLeido) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE MensajeRH SET Observacion = '" + pObservacion + "', Leido = " + pLeido + 
+					" WHERE IdRenglon = " + pCodigo;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oMensajeRH.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}*/
+	
+	public boolean Leido(int pCodigo) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE MensajeRH SET Leido = 1 WHERE IdRenglon = " + pCodigo;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oMensajeRH.Leido: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+//Metodos Internos
+
+}

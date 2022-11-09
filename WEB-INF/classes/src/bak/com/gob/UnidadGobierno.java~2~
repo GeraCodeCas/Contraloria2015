@@ -1,0 +1,255 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 28.Oct.2002
+ * Purpose: Defines the Class Unidad Gobierno
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class UnidadGobierno {
+
+//Declaración de Variables
+private int 			 iIdUnidadGobierno;
+private String			 sNombre;
+private String			 sTipoUnidad;
+private String			 sImagen;
+
+private VMatrix			vmUnidad;
+private int 			iNumRows;
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public UnidadGobierno()  throws SQLException, IOException {
+		iIdUnidadGobierno		= 0;
+		sNombre					= "";
+		sTipoUnidad				= "";
+
+		iNumRows				= 0;
+		vmUnidad				= new VMatrix();
+		oCnn					= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+	}
+
+ //Creación de las Propiedades
+	public void 			SetIdUnidadGobierno(int iDATA)		{	iIdUnidadGobierno 	= iDATA;}
+	public int 				GetIdUnidadGobierno() 				{	return iIdUnidadGobierno;	}
+	public int				GetIdUnidadGobierno(int iPos){
+		int iGetIdUnidadGobierno = -1;
+		try { iGetIdUnidadGobierno = java.lang.Integer.parseInt((((Vector)vmUnidad.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUnidadAdministrativa.GetIdUnidadGobierno: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUnidad.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdUnidadGobierno; }
+	}
+	public void 			SetNombre(String sDATA) 			{	sNombre 			= sDATA;}
+	public String			GetNombre() 						{	return sNombre;	}
+	public String			GetNombre(int iPos)					{	return ((Vector)vmUnidad.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+	public void 			SetTipoUnidad(String sDATA) 		{	sTipoUnidad 		= sDATA;}
+	public String			GetTipoUnidad() 					{	return sTipoUnidad;	}
+	public String			GetTipoUnidad(int iPos)				{	return ((Vector)vmUnidad.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+	
+	public String			GetImagen() 						{	return sImagen;	}
+	public String			GetImagen(int iPos)					{	
+		String iGetImagen = (String)((Vector)vmUnidad.getVMatrixAll().elementAt(3)).elementAt(iPos);	
+		return iGetImagen;
+	}
+	
+//Metodos públicos
+	public boolean Get(int pIdUnidadGobierno) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs;
+			sSql = "SELECT IdUnidadGobierno, Nombre, TipoUnidad, Imagen FROM UnidadGobierno WHERE IdUnidadGobierno = " + pIdUnidadGobierno;
+			rs = oCnn.Execute(sSql);
+			if(rs.next()){
+				CargaDatos(rs.getInt("IdUnidadGobierno"), rs.getString("Nombre"), rs.getString("TipoUnidad"), rs.getString("Imagen"));
+				rs.close();
+				rs = null;
+				oCnn.Close();
+				return true;
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.Get: " + e + " SQL:" + sSql);
+			return false;
+		}
+		return false;
+	}
+	
+	public int GetAll() throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT IdUnidadGobierno, Nombre, TipoUnidad, Imagen FROM UnidadGobierno ORDER BY Nombre, IdUnidadGobierno ";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(4);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadGobierno"), rs.getString("Nombre"), rs.getString("TipoUnidad"), rs.getString("Imagen")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad.getNumRows(); 
+		}
+	}
+	
+	public VMatrix GetVM(){
+		return vmUnidad;
+	}
+	
+	public int GetAllEnlace(int pTipoUsuario, int pIdEnlace) throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;		
+			sSql = "SELECT IdUnidadGobierno, Nombre from UnidadGobierno where not IdUnidadGobierno in (select DISTINCT IdUnidadGobierno from Enlace where TipoUsuario = " + pTipoUsuario + 
+				  ") union (select A.IdUnidadGobierno, B.Nombre from Enlace A inner join UnidadGobierno B on A.IdUnidadGobierno = B.IdUnidadGobierno where A.IdEnlace = " + pIdEnlace + ") ";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(2);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadGobierno"), rs.getString("Nombre")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.GetAllEnlace: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad.getNumRows(); 
+		}
+	}
+	
+	public int GetAllEnlace(int pTipoUsuario) throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT IdUnidadGobierno, Nombre from UnidadGobierno where not IdUnidadGobierno in (select DISTINCT IdUnidadGobierno from Enlace where TipoUsuario = " + pTipoUsuario + ") ";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(2);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadGobierno"), rs.getString("Nombre")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.GetAllEnlace: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad.getNumRows(); 
+		}
+	}
+	
+	public int GetPos(int pIdUnidadGobierno) throws SQLException, IOException {
+		GetAll();
+		return ((Vector)vmUnidad.getVMatrixAll().elementAt(0)).indexOf((pIdUnidadGobierno+""), 0);
+	}
+	
+	public VMatrix GetAll(char pTipoUnidad) throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad;
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT IdUnidadGobierno, Nombre, TipoUnidad, Imagen FROM UnidadGobierno WHERE TipoUnidad = '" + pTipoUnidad + "' ORDER BY Nombre, IdUnidadGobierno ";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(4);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadGobierno"), rs.getString("Nombre"), rs.getString("TipoUnidad"), rs.getString("Imagen")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.GetAll(char): " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad; 
+		}
+	}
+	
+	public int GetPos(char pTipoUnidad, int pIdUnidadGobierno) throws SQLException, IOException {
+		GetAll(pTipoUnidad);
+		return ((Vector)vmUnidad.getVMatrixAll().elementAt(0)).indexOf((pIdUnidadGobierno+""), 0);
+	}
+	
+	public boolean Insert(String pNombre, String pTipoUnidad) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "INSERT INTO UnidadGobierno(Nombre, TipoUnidad) VALUES ('" + pNombre + "', '" + pTipoUnidad + "')";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.Insert: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+	public boolean Update(int pIdUnidadGobierno, String pNombre, String pTipoUnidad) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "UPDATE UnidadGobierno SET Nombre = '" + pNombre + "', TipoUnidad = '" + pTipoUnidad + "' WHERE IdUnidadGobierno = " + pIdUnidadGobierno;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.Update: " + e + " SQL:" + sSql);
+			return false;		
+		}
+	}
+	public boolean UpdateImagen(int pIdUnidadGobierno, String pImagen) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "UPDATE UnidadGobierno SET Imagen = '" + pImagen + "' WHERE IdUnidadGobierno = " + pIdUnidadGobierno;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.UpdateImagen: " + e + " SQL:" + sSql);
+		return false;
+		}
+	}
+	public boolean Delete(int pIdUnidadGobierno) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "DELETE FROM UnidadGobierno WHERE IdUnidadGobierno = " + pIdUnidadGobierno;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadGobierno.Delete: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdUnidadGobierno, String pNombre, String pTipoUnidad, String pImagen){
+		iIdUnidadGobierno		= pIdUnidadGobierno;
+		sNombre					= pNombre;
+		sTipoUnidad				= pTipoUnidad;
+		sImagen					= pImagen;
+	}
+}

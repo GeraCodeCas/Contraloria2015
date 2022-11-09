@@ -1,0 +1,95 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 25.Oct.2002
+ * Purpose: Defines the Class Municipio
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Alerta {
+
+//Declaración de Variables
+private String			 sMensaje;
+private VMatrix 		oVm;
+
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public Alerta()  throws SQLException, IOException {
+		sMensaje	= "";
+		oVm			= new VMatrix();
+		oCnn		= new ConnectionJDBC();
+	}
+
+ //Creación de las Propiedades
+	public void 	SetMensaje(String iDATA){	sMensaje 	= iDATA;}
+	public String	GetMensaje() 			{	return sMensaje;	}
+	public int		GetRenglon(int iPos) 	{	return java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)+"");	}
+	public String	GetMensaje(int iPos) 	{	return ((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	public String	GetFechaIni(int iPos) 	{	return ((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+	public String	GetFechaFin(int iPos) 	{	return ((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos).toString();	}
+//Metodos públicos
+	public VMatrix GetAll() throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql = "";
+		sSql = "SELECT IdRenglon, Mensaje, FechaIni, FechaFin FROM Mensaje ORDER BY FechaIni Desc, FechaFin Desc";
+		oVm.setVMatrixNumCols(4);
+		try{
+			rs = oCnn.Execute(sSql);
+			while (rs.next()) {
+				String sTemp [] = {rs.getString("IdRenglon"), rs.getString("Mensaje"), rs.getString("FechaIni"), rs.getString("FechaFin")};
+				oVm.setVMatrixRow(sTemp);
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+		}catch(Throwable e){
+			System.out.println("Error en oAlerta.GetAll: " + e + " SQL:" + sSql);
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return oVm;
+		}finally{
+			return oVm; 
+		}
+	}
+	
+	public boolean Insert(String sMensaje, String pFechaHoraIni, String pFechaHoraFin) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "INSERT INTO Mensaje(Mensaje, FechaIni, FechaFin) VALUES ('" + sMensaje + "', '" + pFechaHoraIni + "', '" + pFechaHoraFin + "' )";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAlerta.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+
+	public boolean Update(int pCodigo, String pMensaje, String pFechaHoraIni, String pFechaHoraFin ) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Mensaje SET Mensaje = '" + pMensaje + "', FechaIni = '" + pFechaHoraIni + 
+					"', FechaFin = '" + pFechaHoraFin + "' WHERE IdRenglon = " + pCodigo;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAlerta.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+//Metodos Internos
+
+}

@@ -1,0 +1,212 @@
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 18/10/2004 12:36:51 a.m.
+// Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
+// Decompiler options: packimports(3) 
+// Source File Name:   VMatrix.java
+
+package com.consiss.util.tools;
+
+import java.util.Vector;
+
+public class VMatrix
+{
+
+    public VMatrix()
+    {
+        vmatrix = new Vector();
+        columnKey = new Vector();
+        inSize = true;
+        tableDefTag = "<table align='center' border='1' bgcolor='white' cellpadding='1' cellspacing='0'>";
+        trDefTag = "<tr>";
+        tdDefTag = "<td>";
+        isUniKey = false;
+    }
+
+    public void RemoveAll()
+    {
+        try
+        {
+            setVMatrixNumCols(0);
+            columnKey.removeAllElements();
+            vmatrix.removeAllElements();
+            n = 0;
+            vmatrixSize = 0;
+            inSize = true;
+        }
+        catch(Throwable _ex) { }
+    }
+
+    public Vector getMatchKeyRow(String s)
+    {
+        Vector vector = new Vector();
+        try
+        {
+            int i = columnKey.indexOf(s);
+            if(columnKey.contains(s))
+            {
+                for(int j = 0; j <= vmatrixSize - 1; j++)
+                {
+                    Vector vector1 = new Vector();
+                    vector1 = (Vector)vmatrix.elementAt(j);
+                    vector.addElement(vector1.elementAt(i));
+                }
+
+            }
+        }
+        catch(Throwable _ex) { }
+        return vector;
+    }
+
+    public int getNumCols()
+    {
+        return vmatrixSize;
+    }
+
+    public int getNumRows()
+    {
+        return n;
+    }
+
+    public Vector getVMatrixAll()
+    {
+        return vmatrix;
+    }
+
+    public String getVMatrixHTML()
+    {
+        Vector vector = new Vector();
+        String s = "";
+        s = s + tableDefTag;
+        for(int i = 0; i <= columnKey.size() - 1; i++)
+        {
+            s = s + trDefTag;
+            for(int j = 0; j <= vmatrixSize - 1; j++)
+            {
+                Vector vector1 = (Vector)vmatrix.elementAt(j);
+                s = s + tdDefTag + vector1.elementAt(i) + "</td>";
+            }
+
+            s = s + "</tr>";
+        }
+
+        s = s + "</table>";
+        return s;
+    }
+
+    public void setRemoveKeyRow(String s)
+    {
+        int i = 0;
+        try
+        {
+            int j = columnKey.indexOf(s);
+            if(j >= 0)
+            {
+                columnKey.removeElementAt(j);
+                n = columnKey.size();
+                vmatrix.setElementAt(columnKey, i);
+                for(int k = 1; k <= vmatrixSize - 1; k++)
+                {
+                    Vector vector = new Vector();
+                    vector = (Vector)vmatrix.elementAt(k);
+                    vector.removeElementAt(j);
+                    vmatrix.setElementAt(vector, k);
+                }
+
+            }
+        }
+        catch(Throwable _ex) { }
+    }
+
+    public boolean setSwitchTypeKey()
+    {
+        if(!isUniKey)
+            isUniKey = true;
+        else
+            isUniKey = false;
+        return isUniKey;
+    }
+
+    public void setTDTag(String s)
+    {
+        tdDefTag = s;
+    }
+
+    public void setTRTag(String s)
+    {
+        trDefTag = s;
+    }
+
+    public void setTableTag(String s)
+    {
+        tableDefTag = s;
+    }
+
+    public final void setVMatrixNumCols(int i)
+    {
+        vmatrixSize = i;
+        if(inSize)
+        {
+            inSize = false;
+            for(int j = 0; j <= vmatrixSize - 1; j++)
+                vmatrix.addElement(new Vector());
+
+        }
+    }
+
+    public void setVMatrixRow(String as[])
+    {
+        int i = 0;
+        try
+        {
+            int j = columnKey.indexOf(as[0]);
+            if(!columnKey.contains(as[0]))
+            {
+                columnKey.addElement(as[0]);
+                n = columnKey.size();
+                vmatrix.setElementAt(columnKey, i);
+                for(int k = 1; k <= vmatrixSize - 1; k++)
+                {
+                    Vector vector = new Vector();
+                    vector = (Vector)vmatrix.elementAt(k);
+                    vector.addElement(as[k]);
+                    vmatrix.setElementAt(vector, k);
+                }
+
+            } else
+            if(!isUniKey)
+            {
+                for(int l = 1; l <= vmatrixSize - 1; l++)
+                {
+                    Vector vector1 = new Vector();
+                    vector1 = (Vector)vmatrix.elementAt(l);
+                    vector1.setElementAt(as[l], j);
+                    vmatrix.setElementAt(vector1, l);
+                }
+
+            } else
+            {
+                columnKey.addElement(as[0]);
+                n = columnKey.size();
+                vmatrix.setElementAt(columnKey, i);
+                for(int i1 = 1; i1 <= vmatrixSize - 1; i1++)
+                {
+                    Vector vector2 = new Vector();
+                    vector2 = (Vector)vmatrix.elementAt(i1);
+                    vector2.addElement(as[i1]);
+                    vmatrix.setElementAt(vector2, i1);
+                }
+
+            }
+        }
+        catch(Throwable _ex) { }
+    }
+
+    private Vector vmatrix;
+    private Vector columnKey;
+    private int vmatrixSize;
+    private int n;
+    private boolean inSize;
+    private String tableDefTag;
+    private String trDefTag;
+    private String tdDefTag;
+    private boolean isUniKey;
+}

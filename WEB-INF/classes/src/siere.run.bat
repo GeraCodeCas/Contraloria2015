@@ -1,0 +1,1 @@
+"c:\JBuilder8\jdk1.4\bin\java" -cp .;siere.jar;%CLASS_PATH_SECOMAC% secomac.utilerias.APSistema

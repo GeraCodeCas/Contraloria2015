@@ -1,0 +1,1 @@
+<jsp:useBean id="oVMAlertas" class="com.consiss.util.tools.VMatrix" scope="application"/>

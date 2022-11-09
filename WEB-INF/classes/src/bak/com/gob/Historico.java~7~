@@ -1,0 +1,2558 @@
+/************************************************************************
+ * Module:  Historico.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 29.Oct.2002
+ * Purpose: Defines the Class Historico
+ ***********************************************************************/
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.*;
+import com.consiss.util.tools.*;
+
+public class Historico {
+  //Declaración de Variables
+  private int iIdFuncionario;
+  private String sNombre;
+  private String sCargo;
+  private String sUnidadAdministrativa;
+  private String sRuta1;
+  private String sRuta2;
+  private String sFechaHistoria;
+  private String sArchivoZip;
+  private String sAvance = "";
+  private int iEnProceso = 0;
+  private VMatrix oVm;
+  private ConnectionJDBC oCnn;
+  //Inicializacion de la Clase
+  public Historico() throws SQLException, IOException {
+    iIdFuncionario = 0;
+    sNombre = "";
+    sCargo = "";
+    sUnidadAdministrativa = "";
+    sRuta1 = "";
+    sRuta2 = "";
+    oVm = new VMatrix();
+    oCnn = new ConnectionJDBC();
+    //oCnn.Open();
+  }
+
+  public static void main(String[] args) {
+    try {
+      long lstart = (new java.util.Date()).getTime();
+      String sIdFuncionario = args[0];
+      String iProceso = args[1];
+      String sIdFuncionarioNvo = args[2];
+      Utilerias oUtil = new Utilerias();
+      String sError =
+          saveHistory(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          oUtil.GetFecha());
+      long lend = (new java.util.Date()).getTime();
+      System.out.println(
+          "Tiempo Total de Conversion: "
+          + (lend - lstart) / 1000
+          + " segundos.");
+      System.out.println(sError);
+    }
+    catch (Throwable e) {
+      System.out.println("Error Historico.main():" + e);
+    }
+  }
+
+  //Creación de las Propiedades
+  public void SetIdFuncionario(int iDATA) {
+    iIdFuncionario = iDATA;
+  }
+
+  public int GetIdFuncionario() {
+    return iIdFuncionario;
+  }
+
+  public int GetIdFuncionario(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)
+        != null
+        ? java.lang.Integer.parseInt(
+        ( (Vector) oVm.getVMatrixAll().elementAt(0))
+        .elementAt(iPos)
+        .toString())
+        : 0;
+  }
+
+  public void SetNombre(String sDATA) {
+    sNombre = sDATA;
+  }
+
+  public String GetNombre() {
+    return sNombre;
+  }
+
+  public String GetNombre(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(1)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(1))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public void SetCargo(String sDATA) {
+    sCargo = sDATA;
+  }
+
+  public String GetCargo() {
+    return sCargo;
+  }
+
+  public String GetCargo(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(2)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(2))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public void SetUnidadAdministrativa(String sDATA) {
+    sUnidadAdministrativa = sDATA;
+  }
+
+  public String GetUnidadAdministrativa() {
+    return sUnidadAdministrativa;
+  }
+
+  public String GetUnidadAdministrativa(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(3)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(3))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public void SetRuta1(String sDATA) {
+    sRuta1 = sDATA;
+  }
+
+  public String GetRuta1() {
+    return sRuta1;
+  }
+
+  public String GetRuta1(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(4)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(4))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public void SetRuta2(String sDATA) {
+    sRuta2 = sDATA;
+  }
+
+  public String GetRuta2() {
+    return sRuta2;
+  }
+
+  public String GetRuta2(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(5)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(5))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public String GetFecha() {
+    return sFechaHistoria;
+  }
+
+  public String GetFecha(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(6)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(6))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public String GetArchivoZip() {
+    return sArchivoZip;
+  }
+
+  public String GetArchivoZip(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(7)).elementAt(iPos)
+        != null
+        ? ( (Vector) oVm.getVMatrixAll().elementAt(7))
+        .elementAt(iPos)
+        .toString()
+        : "";
+  }
+
+  public String GetProceso(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(8)).elementAt(iPos) + "";
+  }
+
+  public String GetObservaciones(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(9)).elementAt(iPos) + "";
+  }
+
+  //Metodos públicos
+  public boolean Get(int pIdFuncionario, String pFecha) throws SQLException,
+      IOException {
+    ResultSet rs;
+    String sSql;
+    sSql =
+        "SELECT IdFuncionario, Nombre, Cargo, UnidadAdministrativa, Ruta1, Ruta2, Fecha, ArchivoZip FROM Historico WHERE IdFuncionario = "
+        + pIdFuncionario
+        + " AND Fecha = '"
+        + pFecha
+        + "'";
+    try {
+      oCnn.Open();
+      rs = oCnn.Execute(sSql);
+      if (rs.next()) {
+        CargaDatos(
+            rs.getInt("IdFuncionario"),
+            rs.getString("Nombre"),
+            rs.getString("Cargo"),
+            rs.getString("UnidadAdministrativa"),
+            rs.getString("Ruta1"),
+            rs.getString("Ruta2"),
+            rs.getString("Fecha"),
+            rs.getString("ArchivoZip"));
+        rs.close();
+        rs = null;
+        oCnn.Close();
+        return true;
+      }
+      rs.close();
+      rs = null;
+      oCnn.Close();
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Historico.Get: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public int GetAll(int pIdUnidadGobierno) throws SQLException, IOException {
+    if (oVm.getNumRows() > 0) {
+      return oVm.getNumRows();
+    }
+    oCnn.Open();
+    ResultSet rs = null;
+    String sSql;
+    //sSql = "SELECT IdFuncionario, Nombre, Cargo, UnidadAdministrativa, Ruta1, Ruta2, Fecha, ArchivoZip FROM Historico ORDER BY Nombre, Fecha DESC";
+    sSql =
+        "SELECT A.IdFuncionario, A.Nombre, A.Cargo, A.UnidadAdministrativa, A.Ruta1, A.Ruta2,A.Fecha, A.ArchivoZip , B.IdFuncionario, B.IdCargo, C.IdCargo, C.IdUnidadAdministrativa, "
+        + " D.IdUnidadAdministrativa, D.IdUnidadGobierno, E.IdUnidadGobierno, Proceso, Observaciones FROM Historico A , Funcionario B, Cargo C, UnidadAdministrativa D, UnidadGobierno E"
+        + " WHERE A.IdFuncionario = B.IdFuncionario"
+        + " AND B.IdCargo = C.IdCargo"
+        + " AND C.IdUnidadAdministrativa = D.IdUnidadAdministrativa"
+        + " AND D.IdUnidadGobierno = E.IdUnidadGobierno"
+        + " AND (D.IdUnidadGobierno = "
+        + pIdUnidadGobierno
+        + " OR "
+        + pIdUnidadGobierno
+        + " = 0) "
+        + " ORDER BY A.Nombre, A.Fecha DESC";
+    try {
+      rs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(10);
+      oVm.setSwitchTypeKey();
+      while (rs.next()) {
+        String saTabla[] = {
+            rs.getString("IdFuncionario"),
+            rs.getString("Nombre"),
+            rs.getString("Cargo"),
+            rs.getString("UnidadAdministrativa"),
+            rs.getString("Ruta1"),
+            rs.getString("Ruta2"),
+            rs.getString("Fecha"),
+            rs.getString("ArchivoZip"),
+            rs.getString("Proceso"),
+            rs.getString("Observaciones")};
+        oVm.setVMatrixRow(saTabla);
+      }
+      rs.close();
+      rs = null;
+    }
+    catch (Throwable e) {
+      System.out.println(
+          "Error en Historico.GetAll: " + e + " SQL:" + sSql);
+    }
+    finally {
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+      return oVm.getNumRows();
+    }
+  }
+
+  private boolean Insert(
+      int pIdFuncionario,
+      String pNombre,
+      String pCargo,
+      String pUnidadAdministrativa,
+      String pRuta1,
+      String pRuta2,
+      String pArchivoZip,
+      String pProceso,
+      java.util.Date dFecha,
+      String pObservaciones) throws SQLException, IOException {
+    Utilerias oUtil = new Utilerias();
+    String sSql = "";
+    String sFecha = oUtil.sGetDate(dFecha, "dd.MMM.yyyy.HH.mm");
+    try {
+      sSql =
+          "INSERT INTO Historico(IdFuncionario, Nombre, Cargo, UnidadAdministrativa, Ruta1, Ruta2, Fecha, ArchivoZip, Proceso, Observaciones) ";
+      sSql += "VALUES("
+          + pIdFuncionario
+          + ", '"
+          + pNombre
+          + "', '"
+          + pCargo
+          + "', '"
+          + pUnidadAdministrativa
+          + "', ";
+      sSql += "'"
+          + pRuta1
+          + "', '"
+          + pRuta2
+          + "', '"
+          + sFecha
+          + "', '"
+          + pArchivoZip
+          + "', '"
+          + pProceso
+          + "', '"
+          + pObservaciones
+          + "') ";
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println(
+          "Error en Historico.Insert: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  //Metodos Internos
+  private void CargaDatos(
+      int pIdFuncionario,
+      String pNombre,
+      String pCargo,
+      String pUnidadAdministrativa,
+      String pRuta1,
+      String pRuta2,
+      String pFecha,
+      String pArchivoZip) {
+    iIdFuncionario = pIdFuncionario;
+    sNombre = pNombre;
+    sCargo = pCargo;
+    sUnidadAdministrativa = pUnidadAdministrativa;
+    sRuta1 = pRuta1;
+    sRuta2 = pRuta2;
+    sFechaHistoria = pFecha;
+    sArchivoZip = pArchivoZip;
+  }
+
+  public String setStartProcess(
+      String sIdFuncionario,
+      String iProceso,
+      String sIdFuncionarioNvo) {
+    try {
+      //InsertAvance(sIdFuncionario, iProceso, sIdFuncionarioNvo);
+      String line = null;
+      Runtime oRuntime = Runtime.getRuntime();
+      String classPath =
+          /*
+          ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\mssqlserver.jar;"
+          + ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\msbase.jar;"
+          + ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\msutil.jar;"
+          + ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\Consiss.jar;"
+          + ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\Consiss2.jar;"
+          + ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\Entrega.jar;"
+          + ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\classes"
+      */
+          // mODIFICADO PARA NUEVA INTEGRACION EN UN SOLO JAR SIERE.JAR.
+          ConnectionWEB.getSourceWeb()
+          + "\\WEB-INF\\lib\\siere.jar"
+          ;
+      char c2 = '"';
+      String sProc =
+          /* (jmarquez1974@hotmail.com)
+          "java -classpath "
+          */
+          "C:\\JBuilder9\\jdk1.4\\jre\\bin\\java -classpath"
+          + c2
+          + classPath
+          + c2
+          + " com.gob.Historico "
+          + c2
+          + sIdFuncionario
+          + c2
+          + " "
+          + c2
+          + iProceso
+          + c2
+          + " "
+          + c2
+          + sIdFuncionarioNvo
+          + c2;
+      System.out.println(sProc);
+      Process oProcess = oRuntime.exec(sProc);
+      /*
+          InputStreamReader isr=
+       new InputStreamReader(oProcess.getInputStream());
+          BufferedReader br1= new BufferedReader(isr);
+          while ((line= br1.readLine()) != null) {
+       System.out.println(line);
+          }
+          isr.close();
+          br1.close();
+          InputStreamReader ose=
+       new InputStreamReader(oProcess.getErrorStream());
+          BufferedReader br2= new BufferedReader(ose);
+          line= null;
+          while ((line= br2.readLine()) != null) {
+       System.out.println(line);
+          }
+          ose.close();
+          br2.close();
+       */
+      oRuntime.runFinalization();
+      oRuntime = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Historico.setStartProcess():" + e);
+    }
+    finally {
+      return "1.1";
+    }
+  }
+
+  public boolean InsertAvance(
+      String pIdFuncionario,
+      String pProceso,
+      String pIdFuncionarioNvo) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql =
+          "DELETE HistoricoAvance WHERE IdFuncionario = "
+          + pIdFuncionario
+          + " AND Proceso = '"
+          + pProceso
+          + "' AND IdFuncionarioNvo = "
+          + pIdFuncionarioNvo;
+      oCnn.Execute(sSql);
+      sSql =
+          "INSERT INTO HistoricoAvance(IdFuncionario, Proceso, IdFuncionarioNvo, Avance, EnProceso) ";
+      sSql += "VALUES("
+          + pIdFuncionario
+          + ", '"
+          + pProceso
+          + "', "
+          + pIdFuncionarioNvo
+          + ", 'Inicia...', 1) ";
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println(
+          "Error en Historico.InsertAvance: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public boolean UpdateAvance(
+      String pIdFuncionario,
+      String pProceso,
+      String pIdFuncionarioNvo,
+      String pAvance,
+      int pEnProceso) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql =
+          "UPDATE HistoricoAvance SET Avance = '"
+          + pAvance
+          + "', EnProceso = "
+          + pEnProceso
+          + " WHERE IdFuncionario = "
+          + pIdFuncionario
+          + " AND Proceso = '"
+          + pProceso
+          + "' AND IdFuncionarioNvo = "
+          + pIdFuncionarioNvo;
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println(
+          "Error en Historico.UpdateAvance: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public String GetAvance(
+      String pIdFuncionario,
+      String pProceso,
+      String pIdFuncionarioNvo) {
+    ResultSet rs;
+    String sSql;
+    sSql =
+        /* "SELECT Avance, EnProceso FROM HistoricoAvance WITH (NOLOCK) WHERE IdFuncionario = " */
+        // Correccion por que Oracle no utiliza NOLOCK es por default el no bloqueo.
+        // (jmarquez1974@hotmail.com)(2004/11/27)(17:43:00)(gmt -06:00).
+        "SELECT Avance, EnProceso FROM HistoricoAvance WHERE IdFuncionario = "
+        + pIdFuncionario
+        + " AND Proceso = '"
+        + pProceso
+        + "' AND IdFuncionarioNvo = "
+        + pIdFuncionarioNvo;
+    try {
+      oCnn.Open();
+      rs = oCnn.Execute(sSql);
+      if (rs.next()) {
+        sAvance = rs.getString("Avance");
+        iEnProceso = rs.getInt("EnProceso");
+      }
+      rs.close();
+      rs = null;
+      oCnn.Close();
+    }
+    catch (Throwable e) {
+      System.out.println(
+          "Error en Historico.GetAvance: " + e + " SQL:" + sSql);
+      rs = null;
+    }
+    return sAvance;
+  }
+
+  public int GetEnProceso() {
+    return iEnProceso;
+  }
+
+  public static String saveHistory(
+      String sIdFuncionario,
+      String iProceso,
+      String sIdFuncionarioNvo,
+      java.util.Date dFecha) {
+    String sError = "", sRutaHistoria = "", sRutaAttach = "";
+    ArchivoHistorico oArchivo = null;
+    ArchivoHistorico oArchivowa = null;
+    Historico oHist = null;
+    try {
+      System.out.println("Funcionario Anterior:" + sIdFuncionario);
+      System.out.println("Funcionario Nuevo:" + sIdFuncionarioNvo);
+      System.out.println("Fecha:" + dFecha);
+      System.out.println("Etapa Inicio");
+      int iIdFuncionario = java.lang.Integer.parseInt(sIdFuncionario);
+      Funcionario oFuncionario = new Funcionario();
+      Cargo oCargo = new Cargo();
+      UnidadAdministrativa oAdmin = new UnidadAdministrativa();
+      UnidadGobierno oUnidadGobierno = new UnidadGobierno();
+      Utilerias oUtil = new Utilerias();
+      oHist = new Historico();
+      oHist.InsertAvance(sIdFuncionario, iProceso, sIdFuncionarioNvo);
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Arrancando Proceso...",
+          1);
+      String sRutaBase = com.consiss.db.ConnectionWEB.getSourceWeb();
+      String sRutaDataWeb = com.consiss.db.ConnectionWEB.getDataWeb();
+      String sRutaImagenes = sRutaBase + "\\Images";
+      String sRutaStyles = sRutaBase + "\\Styles";
+      if (oFuncionario.Get(iIdFuncionario)) {
+        if (oCargo.Get(oFuncionario.GetIdCargo())) {
+          oAdmin.Get(oCargo.GetIdUnidadAdministrativa());
+        }
+      }
+      String sUnidadAdministrativa = oAdmin.GetNombre();
+      Acta oActa = new Acta();
+      if (iProceso.equals("0") || iProceso.equals("1")) {
+        // ENTONCES LA INFORMACION PERTENECE AL FUNCIONARIO QUE ESTA POR SALIR
+        oActa.Get(iIdFuncionario);
+      }
+      else {
+        oActa.Get(iIdFuncionario);
+      }
+      String sFuncionarioSaliente = oActa.GetNombreEntrega();
+      String sFuncionarioEntrante = oActa.GetNombreRecibe();
+      String sCargo = oCargo.GetNombre();
+      String sUAdministrativa = oAdmin.GetNombre();
+      String sFechaCreacion = oUtil.sGetDate(dFecha, "yyyyMMdd HHmm");
+      String sRutaWAttach =
+          "\\History\\WAttachment\\"
+          + iIdFuncionario
+          + "-"
+          + oFuncionario.GetNombre()
+          + " "
+          + oFuncionario.GetApePaterno()
+          + " "
+          + oFuncionario.GetApeMaterno()
+          + "("
+          + sFechaCreacion
+          + ")";
+      String sRutaWOAttach =
+          "\\History\\WOAttachment\\"
+          + iIdFuncionario
+          + "-"
+          + oFuncionario.GetNombre()
+          + " "
+          + oFuncionario.GetApePaterno()
+          + " "
+          + oFuncionario.GetApeMaterno()
+          + "("
+          + sFechaCreacion
+          + ")";
+      sRutaHistoria = sRutaDataWeb + sRutaWOAttach;
+      sRutaAttach = sRutaDataWeb + sRutaWAttach;
+      oFuncionario.Get(iIdFuncionario);
+      int iIdCargo = oFuncionario.GetIdCargo();
+      String sFuncionario =
+          oFuncionario.GetNombre()
+          + " "
+          + oFuncionario.GetApePaterno()
+          + " "
+          + oFuncionario.GetApeMaterno();
+      oCargo.Get(iIdCargo);
+      int iIdUnidadAdministrativa = oCargo.GetIdUnidadAdministrativa();
+      oAdmin.Get(iIdUnidadAdministrativa);
+      int iIdUnidadGobierno = oAdmin.GetIdUnidadGobierno();
+      oUnidadGobierno.Get(iIdUnidadGobierno);
+      String sRutaImagenesUG =
+          com.consiss.db.ConnectionWEB.getDataWeb() + "\\Imagenes";
+      String sImagenes = sRutaHistoria + "\\Images";
+      String sImagenesUG = sRutaHistoria + "\\Imagenes";
+      String sStyles = sRutaHistoria + "\\Styles";
+      String sImagenesAttach = sRutaAttach + "\\Images";
+      String sImagenesUGAttach = sRutaAttach + "\\Imagenes";
+      String sStylesAttach = sRutaAttach + "\\Styles";
+      String sAttachAttach = sRutaAttach + "\\Attach";
+      String sAttach =
+          sRutaDataWeb + "\\Attachment\\Funcionario" + sIdFuncionario;
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Creando Encabezado...",
+          1);
+      //De uso general
+      // START ENCABEZADO
+      Funcionario oHFuncionario = new Funcionario();
+      Cargo oHCargo = new Cargo();
+      UnidadAdministrativa oHUnidadAdministrativa =
+          new UnidadAdministrativa();
+      UnidadGobierno oHUnidadGobierno = new UnidadGobierno();
+      oHFuncionario.Get(iIdFuncionario);
+      int hIdCargo = oHFuncionario.GetIdCargo();
+      oHCargo.Get(hIdCargo);
+      int hIdUnidadAdministrativa = oHCargo.GetIdUnidadAdministrativa();
+      oHUnidadAdministrativa.Get(hIdUnidadAdministrativa);
+      String hsNombreUA = oHUnidadAdministrativa.GetNombre();
+      String hsClave = oHUnidadAdministrativa.GetClave();
+      int hIdUnidadGobierno = oHUnidadAdministrativa.GetIdUnidadGobierno();
+      oHUnidadGobierno.Get(hIdUnidadGobierno);
+      String hsNombreUG = oHUnidadGobierno.GetNombre();
+      String hsImagenUG =
+          oHUnidadGobierno.GetImagen() != null
+          && ! (oHUnidadGobierno.GetImagen() + "").trim().equals("")
+          ? oHUnidadGobierno.GetImagen()
+          : "";
+      Utilerias oHUtil = new Utilerias();
+      String sFecha =
+          "AL "
+          + oHUtil.sGetDate(oHUtil.GetFecha(), "dd")
+          + " DE "
+          + oHUtil.GetMesLargo(
+          java.lang.Integer.parseInt(
+          oHUtil.sGetDate(oHUtil.GetFecha(), "MM")))
+          + " DE "
+          + oHUtil.sGetDate(oHUtil.GetFecha(), "yyyy");
+      // END ENCABEZADO
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Copiando Archivos...",
+          1);
+      oHFuncionario = null;
+      oHCargo = null;
+      oHUnidadAdministrativa = null;
+      oHUnidadGobierno = null;
+      oHUtil = null;
+      Copy CC = new Copy();
+      Copy.Copy(sRutaImagenes, sImagenes);
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Copiando Imagenes...",
+          1);
+      CC.CopyImagenes(sRutaImagenesUG, sImagenesUG, hIdUnidadGobierno);
+      Copy.Copy(sRutaStyles, sStyles);
+      Copy.Copy(sRutaImagenes, sImagenesAttach);
+      CC.CopyImagenes(
+          sRutaImagenesUG,
+          sImagenesUGAttach,
+          hIdUnidadGobierno);
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Copiando Estilos...",
+          1);
+      Copy.Copy(sRutaStyles, sStylesAttach);
+      Copy.Copy(sAttach, sAttachAttach);
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Copiando Ejecutables...",
+          1);
+      Copy.Copy(
+          com.consiss.db.ConnectionWEB.getSourceWeb()
+          + "\\AutoRun\\WINOPEN.EXE",
+          sRutaHistoria + "\\WINOPEN.EXE");
+      Copy.Copy(
+          com.consiss.db.ConnectionWEB.getSourceWeb()
+          + "\\AutoRun\\AutoRun.inf",
+          sRutaHistoria + "\\AutoRun.inf");
+      Copy.Copy(
+          com.consiss.db.ConnectionWEB.getSourceWeb()
+          + "\\AutoRun\\icono.ico",
+          sRutaHistoria + "\\icono.ico");
+      CC = null;
+      String sArchivo = "";
+      oArchivo = new ArchivoHistorico();
+      oArchivowa = new ArchivoHistorico();
+      System.out.println("Creando el Indice...");
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Creando el Indice...",
+          1);
+      oArchivo.AbreArchivo(sRutaHistoria, "index.html");
+      oArchivowa.AbreArchivo(sRutaAttach, "index.html");
+      sArchivo = "\n<html>";
+      sArchivo += "\n<head>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "\n	<title>Entrega - Recepción : Indice</title>";
+      sArchivo
+          +=
+          "\n	<link rel='stylesheet' type='text/css' href='Styles/Gobierno.css'>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "\n	<script language='JavaScript'>";
+      sArchivo += "\n			function MouseDentro(texto){";
+      sArchivo += "\n			texto.style.background = '#bebebe';";
+      sArchivo += "\n		}";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "\n		function MouseFuera(texto,color){";
+      sArchivo += "\n			texto.style.background = color;";
+      sArchivo += "\n		}";
+      sArchivo += "\n		function irA(sDireccion){";
+      sArchivo += "\n			window.open( sDireccion, '_self' )";
+      sArchivo += "\n		}";
+      sArchivo += "\n	</script>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      sArchivo += "\n</head>";
+      sArchivo += "\n<body topmargin='0' leftmargin='0'>";
+      sArchivo
+          +=
+          "\n<table border='0' cellspacing='0' cellpadding='0' width='100%'>";
+      sArchivo += "\n	<tr><td colspan='2'>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      sArchivo = "";
+      // ENCABEZADO INICIO
+      hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+      ohHeaderAnexo.SetHeader(
+          iIdFuncionario,
+          0,
+          "",
+          oArchivo,
+          oArchivowa,
+          "",
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      // ENCABEZADO FIN
+      sArchivo = "\n		</td>";
+      sArchivo += "\n	</tr>";
+      sArchivo += "\n</table>";
+      sArchivo += "\n</body>";
+      sArchivo += "\n</html>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      oArchivo.CierraArchivo();
+      oArchivowa.CierraArchivo();
+      System.out.println(
+          "Anexo I.1, Anexo I.2, Anexo II.1, Anexo II.2, Anexo II.3...");
+      //1
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo I.1, Anexo I.2, Anexo II.1, Anexo II.2, Anexo II.3...",
+          1);
+      Anexo1I oAnexo1I = new Anexo1I();
+      sError =
+          oAnexo1I.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo I.2, Anexo II.1, Anexo II.2, Anexo II.3, Anexo II.4...");
+      //2
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo I.2, Anexo II.1, Anexo II.2, Anexo II.3, Anexo II.4...",
+          1);
+      Anexo1II oAnexo1II = new Anexo1II();
+      sError =
+          sError
+          + oAnexo1II.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.1, Anexo II.2, Anexo II.3, Anexo II.4, Anexo II.4.1...");
+      //3
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.1, Anexo II.2, Anexo II.3, Anexo II.4, Anexo II.4.1...",
+          1);
+      Anexo2I oAnexo2I = new Anexo2I();
+      sError =
+          sError
+          + oAnexo2I.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.2, Anexo II.3, Anexo II.4, Anexo II.4.1, Anexo II.4.2...");
+      //4
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.2, Anexo II.3, Anexo II.4, Anexo II.4.1, Anexo II.4.2...",
+          1);
+      Anexo2II oAnexo2II = new Anexo2II();
+      sError =
+          sError
+          + oAnexo2II.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.3, Anexo II.4, Anexo II.4.1, Anexo II.4.2, Anexo II.4.3...");
+      //5
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.3, Anexo II.4, Anexo II.4.1, Anexo II.4.2, Anexo II.4.3...",
+          1);
+      Anexo2III oAnexo2III = new Anexo2III();
+      sError =
+          sError
+          + oAnexo2III.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.4, Anexo II.4.1, Anexo II.4.2, Anexo II.4.3, Anexo II.5...");
+      //6
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.4, Anexo II.4.1, Anexo II.4.2, Anexo II.4.3, Anexo II.5...",
+          1);
+      Anexo2IV oAnexo2IV = new Anexo2IV();
+      sError =
+          sError
+          + oAnexo2IV.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.4.1, Anexo II.4.2, Anexo II.4.3, Anexo II.5, Anexo II.6...");
+      //7
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.4.1, Anexo II.4.2, Anexo II.4.3, Anexo II.5, Anexo II.6...",
+          1);
+      Anexo2IV1 oAnexo2IV1 = new Anexo2IV1();
+      sError =
+          sError
+          + oAnexo2IV1.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.4.2, Anexo II.4.3, Anexo II.5, Anexo II.6, Anexo II.7...");
+      //8
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.4.2, Anexo II.4.3, Anexo II.5, Anexo II.6, Anexo II.7...",
+          1);
+      Anexo2IV2 oAnexo2IV2 = new Anexo2IV2();
+      sError =
+          sError
+          + oAnexo2IV2.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.4.3, Anexo II.5, Anexo II.6, Anexo II.7, Anexo III.1...");
+      //9
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.4.3, Anexo II.5, Anexo II.6, Anexo II.7, Anexo III.1...",
+          1);
+      Anexo2IV3 oAnexo2IV3 = new Anexo2IV3();
+      sError =
+          sError
+          + oAnexo2IV3.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.5, Anexo II.6, Anexo II.7, Anexo III.1, Anexo III.2...");
+      //10
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.5, Anexo II.6, Anexo II.7, Anexo III.1, Anexo III.2...",
+          1);
+      Anexo2V oAnexo2V = new Anexo2V();
+      sError =
+          sError
+          + oAnexo2V.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.6, Anexo II.7, Anexo III.1, Anexo III.2, Anexo III.3...");
+      //11
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.6, Anexo II.7, Anexo III.1, Anexo III.2, Anexo III.3...",
+          1);
+      Anexo2VI oAnexo2VI = new Anexo2VI();
+      sError =
+          sError
+          + oAnexo2VI.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo II.7, Anexo III.1, Anexo III.2, Anexo III.3, Anexo III.4...");
+      //12
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo II.7, Anexo III.1, Anexo III.2, Anexo III.3, Anexo III.4...",
+          1);
+      Anexo2VII oAnexo2VII = new Anexo2VII();
+      sError =
+          sError
+          + oAnexo2VII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.1, Anexo III.2, Anexo III.3, Anexo III.4, Anexo III.4.1...");
+      //13
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.1, Anexo III.2, Anexo III.3, Anexo III.4, Anexo III.4.1...",
+          1);
+      Anexo3I oAnexo3I = new Anexo3I();
+      sError =
+          sError
+          + oAnexo3I.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.2, Anexo III.3, Anexo III.4, Anexo III.4.1, Anexo III.4.2...");
+      //14
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.2, Anexo III.3, Anexo III.4, Anexo III.4.1, Anexo III.4.2...",
+          1);
+      Anexo3II oAnexo3II = new Anexo3II();
+      sError =
+          sError
+          + oAnexo3II.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.3, Anexo III.4, Anexo III.4.1, Anexo III.4.2, Anexo III.4.3...");
+      //15
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.3, Anexo III.4, Anexo III.4.1, Anexo III.4.2, Anexo III.4.3...",
+          1);
+      Anexo3III oAnexo3III = new Anexo3III();
+      sError =
+          sError
+          + oAnexo3III.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4, Anexo III.4.1, Anexo III.4.2, Anexo III.4.3, Anexo III.4.4...");
+      //16
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4, Anexo III.4.1, Anexo III.4.2, Anexo III.4.3, Anexo III.4.4...",
+          1);
+      Anexo3IV oAnexo3IV = new Anexo3IV();
+      sError =
+          sError
+          + oAnexo3IV.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4, Anexo III.4.1, Anexo III.4.2, Anexo III.4.3, Anexo III.4.4...");
+      //17
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4.1, Anexo III.4.2, Anexo III.4.3, Anexo III.4.4, Anexo III.4.5...",
+          1);
+      Anexo3IV1 oAnexo3IV1 = new Anexo3IV1();
+      sError =
+          sError
+          + oAnexo3IV1.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4.2, Anexo III.4.3, Anexo III.4.4, Anexo III.4.5, Anexo III.4.6...");
+      //18
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4.2, Anexo III.4.3, Anexo III.4.4, Anexo III.4.5, Anexo III.4.6...",
+          1);
+      Anexo3IV2 oAnexo3IV2 = new Anexo3IV2();
+      sError =
+          sError
+          + oAnexo3IV2.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4.3, Anexo III.4.4, Anexo III.4.5, Anexo III.4.6, Anexo III.5...");
+      //19
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4.3, Anexo III.4.4, Anexo III.4.5, Anexo III.4.6, Anexo III.5...",
+          1);
+      Anexo3IV3 oAnexo3IV3 = new Anexo3IV3();
+      sError =
+          sError
+          + oAnexo3IV3.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4.4, Anexo III.4.5, Anexo III.4.6, Anexo III.5, Anexo III.5.1...");
+      //20
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4.4, Anexo III.4.5, Anexo III.4.6, Anexo III.5, Anexo III.5.1...",
+          1);
+      Anexo3IV4 oAnexo3IV4 = new Anexo3IV4();
+      sError =
+          sError
+          + oAnexo3IV4.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4.5, Anexo III.4.6, Anexo III.5, Anexo III.5.1, Anexo III.5.2...");
+      //21
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4.5, Anexo III.4.6, Anexo III.5, Anexo III.5.1, Anexo III.5.2...",
+          1);
+      Anexo3IV5 oAnexo3IV5 = new Anexo3IV5();
+      sError =
+          sError
+          + oAnexo3IV5.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.4.6, Anexo III.5, Anexo III.5.1, Anexo III.5.2, Anexo III.5.2.1...");
+      //22
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.4.6, Anexo III.5, Anexo III.5.1, Anexo III.5.2, Anexo III.5.2.1...",
+          1);
+      Anexo3IV6 oAnexo3IV6 = new Anexo3IV6();
+      sError =
+          sError
+          + oAnexo3IV6.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      Anexo3V1 oAnexo3V1 = new Anexo3V1();
+      Anexo3V2 oAnexo3V2 = new Anexo3V2();
+      Anexo3V2I oAnexo3V2I = new Anexo3V2I();
+      Anexo3V2II oAnexo3V2II = new Anexo3V2II();
+      Anexo3V3 oAnexo3V3 = new Anexo3V3();
+      Anexo3V4 oAnexo3V4 = new Anexo3V4();
+      Anexo3V5 oAnexo3V5 = new Anexo3V5();
+      Anexo3V6 oAnexo3V6 = new Anexo3V6();
+      Anexo3V7 oAnexo3V7 = new Anexo3V7();
+      System.out.println(
+          "Anexo III.5, Anexo III.5.1, Anexo III.5.2, Anexo III.5.2.1, Anexo III.5.2.2....");
+      //23
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5, Anexo III.5.1, Anexo III.5.2, Anexo III.5.2.1, Anexo III.5.2.2....",
+          1);
+      // ANEXO 3V
+      try {
+        oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3V.html");
+        oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3V.html");
+        String sSalto = "";
+        String sAnexo = "III.5";
+        int iIdAnexo = 23;
+        AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+        oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+        String sEstatus = oAnexoEstatus.GetEstatus();
+        String sAux =
+            "<tr><TD colspan='3' class='TituloParrafo' width='100%'>&nbsp;&nbsp;ANEXO III.5 - RESUMEN DE INVENTARIOS</TD></tr>"
+            + sSalto;
+        // ENCABEZADO INICIO
+        ohHeaderAnexo.SetHeader(
+            iIdFuncionario,
+            iIdAnexo,
+            sAnexo,
+            oArchivo,
+            oArchivowa,
+            sAux,
+            iProceso,
+            hsClave,
+            hsNombreUA,
+            hsImagenUG,
+            hsNombreUG,
+            sFuncionarioEntrante,
+            sFuncionarioSaliente,
+            sFecha);
+        // ENCABEZADO FIN
+        if (!sEstatus.equals("0")) {
+          oAnexo3V1.GetResumen(iIdFuncionario);
+          int iEscritorios = oAnexo3V1.GetResumen("1");
+          int iSilleria = oAnexo3V1.GetResumen("2");
+          int iArchiveros = oAnexo3V1.GetResumen("3");
+          int iMaquinas = oAnexo3V1.GetResumen("4");
+          int iFotocopiadoras = oAnexo3V1.GetResumen("5");
+          int iFax = oAnexo3V1.GetResumen("6");
+          int iOtros1 = oAnexo3V1.GetResumen("7");
+          oAnexo3V2.GetResumen(iIdFuncionario);
+          int iMinicomputadoras = oAnexo3V2.GetResumen("1");
+          int iMicrocomputadoras = oAnexo3V2.GetResumen("2");
+          int iImpresoras = oAnexo3V2.GetResumen("3");
+          int iOtros2 = oAnexo3V2.GetResumen("4");
+          int iSistemas = oAnexo3V2I.GetResumen(iIdFuncionario);
+          int iProgramas = oAnexo3V2II.GetResumen(iIdFuncionario);
+          oAnexo3V3.GetResumen(iIdFuncionario);
+          int iMonitores = oAnexo3V3.GetResumen("1");
+          int iVideocaseteras = oAnexo3V3.GetResumen("2");
+          int iCamaras = oAnexo3V3.GetResumen("3");
+          int iProyectores = oAnexo3V3.GetResumen("4");
+          oAnexo3V4.GetResumen(iIdFuncionario);
+          int iPickUp = oAnexo3V4.GetResumen("1");
+          int i5Pasajeros = oAnexo3V4.GetResumen("2");
+          int iAutobuses = oAnexo3V4.GetResumen("3");
+          int iAviones = oAnexo3V4.GetResumen("4");
+          int iPatrullas = oAnexo3V4.GetResumen("5");
+          int iAmbulancias = oAnexo3V4.GetResumen("6");
+          int iCamiones = oAnexo3V4.GetResumen("7");
+          int iOtros3 = oAnexo3V4.GetResumen("8");
+          int iArmamento = oAnexo3V5.GetResumen(iIdFuncionario);
+          oAnexo3V6.GetResumen(iIdFuncionario);
+          int iCuadros = oAnexo3V6.GetResumen("1");
+          int iMurales = oAnexo3V6.GetResumen("2");
+          int iEsculturas = oAnexo3V6.GetResumen("3");
+          int iOtros4 = oAnexo3V6.GetResumen("4");
+          oAnexo3V7.GetResumen(iIdFuncionario);
+          int iLibros = oAnexo3V7.GetResumen("1");
+          int iPublicaciones = oAnexo3V7.GetResumen("2");
+          int iMaterial = oAnexo3V7.GetResumen("3");
+          int iOtros5 = oAnexo3V7.GetResumen("4");
+          sArchivo =
+              "	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>"
+              + sSalto;
+          sArchivo += "		<TR align='middle'>" + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu' align='center'>Concepto</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu' align='center'>Total</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu' align='center'>Cantidades</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu' align='center'>Cantidades</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu' align='center'>Cantidades</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu' align='center'>Cantidades</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          sArchivo += "		<TR align='middle'>" + sSalto;
+          sArchivo
+              +=
+              "			<td class='TituloMenu' rowspan='2'>Mobiliario y Equipo de Oficina</TD>"
+              + sSalto;
+          sArchivo
+              +=
+              "			<td align='center' rowspan='2' bgcolor='#eeeeee' valign='middle'>"
+              + (iEscritorios
+                 + iSilleria
+                 + iArchiveros
+                 + iMaquinas
+                 + iFotocopiadoras
+                 + iFax
+                 + iOtros1)
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>escritorios</b><br>"
+              + iEscritorios
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>sillería</b><br>"
+              + iSilleria
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>archiveros</b><br>"
+              + iArchiveros
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              +=
+              "			<td align='center' rowspan='2' valign='middle'><b>otros</b><br>"
+              + iOtros1
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo =
+              "		<TR align='middle' bgcolor='#eeeeee'>"
+              + sSalto;
+          sArchivo
+              +=
+              "			<td align='center' valign='top'><b>máquinas escribir</b><br>"
+              + iMaquinas
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>fotocopiadoras</b><br>"
+              + iFotocopiadoras
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>fax</b><br>"
+              + iFax
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "		<TR align='middle'>" + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu'>Equipo de Computo</TD>"
+              + sSalto;
+          sArchivo += "			<td align='center'>"
+              + (iMinicomputadoras
+                 + iMicrocomputadoras
+                 + iImpresoras
+                 + iOtros2)
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              +=
+              "			<td align='center' valign='top'><b>minicomputadoras</b><br>"
+              + iMinicomputadoras
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              +=
+              "			<td align='center' valign='top'><b>microcomputadoras</b><br>"
+              + iMicrocomputadoras
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>impresoras</b><br>"
+              + iImpresoras
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>otros</b><br>"
+              + iOtros2
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "		<TR align='middle'>" + sSalto;
+          sArchivo
+              +=
+              "			<td class='TituloMenu'>Sistemas Desarrollados Internamente</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' bgcolor='#eeeeee'>"
+              + iSistemas
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "		<TR align='middle'>" + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu'>Programas Tipo Paquete</TD>"
+              + sSalto;
+          sArchivo += "			<td align='center'>"
+              + iProgramas
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo =
+              "		<TR align='middle' bgcolor='#eeeeee'>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu'>Equipo de Video</TD>"
+              + sSalto;
+          sArchivo += "			<td align='center'>"
+              + (iMonitores
+                 + iVideocaseteras
+                 + iCamaras
+                 + iProyectores)
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>monitores</b><br>"
+              + iMonitores
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>videocaseteras</b><br>"
+              + iVideocaseteras
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>cámaras</b><br>"
+              + iCamaras
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>proyectores</b><br>"
+              + iProyectores
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "		<TR align='middle'>" + sSalto;
+          sArchivo
+              +=
+              "			<td class='TituloMenu' rowspan='2'>Equipo de Transporte y Maquinaria</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' rowspan='2' bgcolor='#eeeeee'>"
+              + (iPickUp
+                 + i5Pasajeros
+                 + iAutobuses
+                 + iAviones
+                 + iPatrullas
+                 + iAmbulancias
+                 + iCamiones
+                 + iOtros3)
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>pick up</b><br>"
+              + iPickUp
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>5 pasajeros</b><br>"
+              + i5Pasajeros
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>autobuses</b><br>"
+              + iAutobuses
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>aviones</b><br>"
+              + iAviones
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo =
+              "		<TR align='middle' bgcolor='#eeeeee'>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>patrullas</b><br>"
+              + iPatrullas
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>ambulancias</b><br>"
+              + iAmbulancias
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              +=
+              "			<td align='center' valign='top'><b>camiones 10 ton</b><br>"
+              + iCamiones
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>otros</b><br>"
+              + iOtros3
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "		<TR align='middle'>" + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu'>Armamento</TD>"
+              + sSalto;
+          sArchivo += "			<td align='center'>"
+              + iArmamento
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><br>&nbsp;</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo =
+              "		<TR align='middle' bgcolor='#eeeeee'>"
+              + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu'>Obras de Arte y Decoración</TD>"
+              + sSalto;
+          sArchivo += "			<td align='center'>"
+              + (iCuadros + iMurales + iEsculturas + iOtros4)
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>cuadros</b><br>"
+              + iCuadros
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>murales</b><br>"
+              + iMurales
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>esculturas</b><br>"
+              + iEsculturas
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>otros</b><br>"
+              + iOtros4
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "		<TR align='middle'>" + sSalto;
+          sArchivo
+              += "			<td class='TituloMenu'>Libros, Publicaciones y Material Bibliográfico e Informativo</TD>"
+              + sSalto;
+          sArchivo += "			<td align='center'>"
+              + (iLibros + iPublicaciones + iMaterial + iOtros5)
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>libros</b><br>"
+              + iLibros
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>publicaciones</b><br>"
+              + iPublicaciones
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>material bibliográfico e informativo</b><br>"
+              + iMaterial
+              + "</TD>"
+              + sSalto;
+          sArchivo
+              += "			<td align='center' valign='top'><b>otros</b><br>"
+              + iOtros5
+              + "</TD>"
+              + sSalto;
+          sArchivo += "		</TR>" + sSalto;
+          sArchivo += "	</TABLE>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "";
+        }
+        else {
+          sArchivo += "<TABLE width='100%'>" + sSalto;
+          sArchivo
+              += "	<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>"
+              + sSalto;
+          sArchivo += "</TABLE>" + sSalto;
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+          sArchivo = "";
+        }
+        sArchivo = "</td>" + sSalto;
+        sArchivo += "</tr>" + sSalto;
+        sArchivo += "</table>" + sSalto;
+        sArchivo += "</body>" + sSalto;
+        sArchivo += "</html>" + sSalto;
+        oArchivo.Escribe(sArchivo);
+        oArchivowa.Escribe(sArchivo);
+        oArchivo.CierraArchivo();
+        oArchivowa.CierraArchivo();
+      }
+      catch (Throwable e) {
+        System.out.println("Error en Anexo3V.setHistory: " + e);
+        sError = sError + ", Anexo1I.setHistory: " + e;
+      }
+      System.out.println(
+          "Anexo III.5.1, Anexo III.5.2, Anexo III.5.2.1, Anexo III.5.2.2, Anexo III.5.3...");
+      //24
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.1, Anexo III.5.2, Anexo III.5.2.1, Anexo III.5.2.2, Anexo III.5.3...",
+          1);
+      sError =
+          sError
+          + oAnexo3V1.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.2, Anexo III.5.2.1, Anexo III.5.2.2, Anexo III.5.3, Anexo III.5.4...");
+      //25
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.2, Anexo III.5.2.1, Anexo III.5.2.2, Anexo III.5.3, Anexo III.5.4...",
+          1);
+      sError =
+          sError
+          + oAnexo3V2.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.2.1, Anexo III.5.2.2, Anexo III.5.3, Anexo III.5.4, Anexo III.5.5...");
+      //26
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.2.1, Anexo III.5.2.2, Anexo III.5.3, Anexo III.5.4, Anexo III.5.5...",
+          1);
+      sError =
+          sError
+          + oAnexo3V2I.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.2.2, Anexo III.5.3, Anexo III.5.4, Anexo III.5.5, Anexo III.5.6...");
+      //27
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.2.2, Anexo III.5.3, Anexo III.5.4, Anexo III.5.5, Anexo III.5.6...",
+          1);
+      sError =
+          sError
+          + oAnexo3V2II.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.3, Anexo III.5.4, Anexo III.5.5, Anexo III.5.6, Anexo III.5.7...");
+      //28
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.3, Anexo III.5.4, Anexo III.5.5, Anexo III.5.6, Anexo III.5.7...",
+          1);
+      sError =
+          sError
+          + oAnexo3V3.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.4, Anexo III.5.5, Anexo III.5.6, Anexo III.5.7, Anexo III.6...");
+      //29
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.4, Anexo III.5.5, Anexo III.5.6, Anexo III.5.7, Anexo III.6...",
+          1);
+      sError =
+          sError
+          + oAnexo3V4.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.5, Anexo III.5.6, Anexo III.5.7, Anexo III.6, Anexo III.7...");
+      //30
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.5, Anexo III.5.6, Anexo III.5.7, Anexo III.6, Anexo III.7...",
+          1);
+      sError =
+          sError
+          + oAnexo3V5.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.6, Anexo III.5.7, Anexo III.6, Anexo III.7, Anexo III.8...");
+      //31
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.6, Anexo III.5.7, Anexo III.6, Anexo III.7, Anexo III.8...",
+          1);
+      sError =
+          sError
+          + oAnexo3V6.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.5.7, Anexo III.6, Anexo III.7, Anexo III.8, Anexo III.9...");
+      //32
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.5.7, Anexo III.6, Anexo III.7, Anexo III.8, Anexo III.9...",
+          1);
+      sError =
+          sError
+          + oAnexo3V7.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.6, Anexo III.7, Anexo III.8, Anexo III.9, Anexo III.10...");
+      //33
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.6, Anexo III.7, Anexo III.8, Anexo III.9, Anexo III.10...",
+          1);
+      Anexo3VI oAnexo3VI = new Anexo3VI();
+      sError =
+          sError
+          + oAnexo3VI.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.7, Anexo III.8, Anexo III.9, Anexo III.10, Anexo III.11...");
+      //34
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.7, Anexo III.8, Anexo III.9, Anexo III.10, Anexo III.11...",
+          1);
+      Anexo3VII oAnexo3VII = new Anexo3VII();
+      sError =
+          sError
+          + oAnexo3VII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.8, Anexo III.9, Anexo III.10, Anexo III.11, Anexo III.12...");
+      //35
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.8, Anexo III.9, Anexo III.10, Anexo III.11, Anexo III.12...",
+          1);
+      Anexo3VIII oAnexo3VIII = new Anexo3VIII();
+      sError =
+          sError
+          + oAnexo3VIII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.9, Anexo III.10, Anexo III.11, Anexo III.12, Anexo III.13...");
+      //36
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.9, Anexo III.10, Anexo III.11, Anexo III.12, Anexo III.13...",
+          1);
+      Anexo3IX oAnexo3IX = new Anexo3IX();
+      sError =
+          sError
+          + oAnexo3IX.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.10, Anexo III.11, Anexo III.12, Anexo III.13, Anexo III.14...");
+      //37
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.10, Anexo III.11, Anexo III.12, Anexo III.13, Anexo III.14...",
+          1);
+      Anexo3X oAnexo3X = new Anexo3X();
+      sError =
+          sError
+          + oAnexo3X.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.11, Anexo III.12, Anexo III.13, Anexo III.14, Anexo III.15...");
+      //38
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.11, Anexo III.12, Anexo III.13, Anexo III.14, Anexo III.15...",
+          1);
+      Anexo3XI oAnexo3XI = new Anexo3XI();
+      sError =
+          sError
+          + oAnexo3XI.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.12, Anexo III.13, Anexo III.14, Anexo III.15, Anexo III.15.1...");
+      //39
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.12, Anexo III.13, Anexo III.14, Anexo III.15, Anexo III.15.1...",
+          1);
+      Anexo3XII oAnexo3XII = new Anexo3XII();
+      sError =
+          sError
+          + oAnexo3XII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.13, Anexo III.14, Anexo III.15, Anexo III.15.1, Anexo III.16...");
+      //40
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.13, Anexo III.14, Anexo III.15, Anexo III.15.1, Anexo III.16...",
+          1);
+      Anexo3XIII oAnexo3XIII = new Anexo3XIII();
+      sError =
+          sError
+          + oAnexo3XIII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.14, Anexo III.15, Anexo III.15.1, Anexo III.16, Anexo III.17...");
+      //41
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.14, Anexo III.15, Anexo III.15.1, Anexo III.16, Anexo III.17...",
+          1);
+      Anexo3XIV oAnexo3XIV = new Anexo3XIV();
+      sError =
+          sError
+          + oAnexo3XIV.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.15, Anexo III.15.1, Anexo III.16, Anexo III.17, Anexo III.18...");
+      //42
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.15, Anexo III.15.1, Anexo III.16, Anexo III.17, Anexo III.18...",
+          1);
+      Anexo3XV oAnexo3XV = new Anexo3XV();
+      sError =
+          sError
+          + oAnexo3XV.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println(
+          "Anexo III.15.1, Anexo III.16, Anexo III.17, Anexo III.18...");
+      //43
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.15.1, Anexo III.16, Anexo III.17, Anexo III.18...",
+          1);
+      Anexo3XV1 oAnexo3XV1 = new Anexo3XV1();
+      sError =
+          sError
+          + oAnexo3XV1.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println("Anexo III.16, Anexo III.17, Anexo III.18...");
+      //44
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.16, Anexo III.17, Anexo III.18...",
+          1);
+      Anexo3XVI oAnexo3XVI = new Anexo3XVI();
+      sError =
+          sError
+          + oAnexo3XVI.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println("Anexo III.17, Anexo III.18...");
+      //45
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.17, Anexo III.18...",
+          1);
+      Anexo3XVII oAnexo3XVII = new Anexo3XVII();
+      sError =
+          sError
+          + oAnexo3XVII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      System.out.println("Anexo III.18...");
+      //46
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Anexo III.18...",
+          1);
+      Anexo3XVIII oAnexo3XVIII = new Anexo3XVIII();
+      sError =
+          sError
+          + oAnexo3XVIII.setHistory(
+          iIdFuncionario,
+          sRutaHistoria,
+          sRutaAttach,
+          iProceso,
+          hsClave,
+          hsNombreUA,
+          hsImagenUG,
+          hsNombreUG,
+          sFuncionarioEntrante,
+          sFuncionarioSaliente,
+          sFecha);
+      if (iProceso.equals("2")) {
+        System.out.println("Adendum...");
+        oHist.UpdateAvance(
+            sIdFuncionario,
+            iProceso,
+            sIdFuncionarioNvo,
+            "Adendum...",
+            1);
+        Adendum oAdendum = new Adendum();
+        sError =
+            sError
+            + oAdendum.setHistory(
+            java.lang.Integer.parseInt(sIdFuncionarioNvo),
+            sRutaHistoria,
+            sRutaAttach,
+            iProceso,
+            hsClave,
+            hsNombreUA,
+            hsImagenUG,
+            hsNombreUG,
+            sFuncionarioEntrante,
+            sFuncionarioSaliente,
+            sFecha);
+      }
+      System.out.println("Comprimiendo...");
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Comprimiendo...",
+          1);
+      Compressor.Compress(sRutaHistoria + ".zip", sRutaHistoria);
+      com.gob.EntregaEstatus oEntregaEstatus =
+          new com.gob.EntregaEstatus();
+      com.gob.AnexoArchivo oAnexoArchivo = new com.gob.AnexoArchivo();
+      VMatrix vArchivoA;
+      if (iProceso.equals("1")) {
+        oEntregaEstatus.Insert(
+            iIdFuncionario,
+            EntregaEstatus.GetEstatusValidadaPorEnlace(),
+            oUtil.sGetDate(oUtil.GetFecha(), "yyyyMMddHHmmss"),
+            "Validada y Cerrada por Enlace Responsable");
+        // BLOQUEAR USUARIOS
+        oFuncionario.Get(iIdFuncionario);
+        oFuncionario.UpdateEstatus(
+            iIdFuncionario,
+            Funcionario.GetEstatusBaja(),
+            oFuncionario.GetIdUsuario());
+      }
+      else if (iProceso.equals("2")) {
+        System.out.println("Cambiando a Nuevo Funcionario...");
+        oHist.UpdateAvance(
+            sIdFuncionario,
+            iProceso,
+            sIdFuncionarioNvo,
+            "Cambiando a Nuevo Funcionario...",
+            1);
+        int iIdFuncionarioNvo =
+            java.lang.Integer.parseInt(sIdFuncionarioNvo);
+        int iIdFuncionarioAnt =
+            java.lang.Integer.parseInt(sIdFuncionario);
+        // INSERTAMOS ESTATUS DE CIERRE A LA ENTREGA ANTERIOR
+        oEntregaEstatus.Insert(
+            iIdFuncionarioAnt,
+            EntregaEstatus.GetEstatusValidadaPorNuevoFuncionario(),
+            oUtil.sGetDate(oUtil.GetFecha(), "yyyyMMddHHmmss"),
+            "Entrega Validada Por Nuevo Funcionario");
+        // CAMBIAMOS LOS ANEXOS DE FUNCIONARIO ANTERIOR A NUEVO
+        oFuncionario.CambiaFuncionarioAntANvo(
+            iIdFuncionarioAnt,
+            iIdFuncionarioNvo);
+        // CAMBIAMOS LOS ATTACHMENT DEL ANTERIOR FUNCIONARIO AL NUEVO
+        String sRutaBaseWeb = "../Attachment";
+        String sRutaDataWFunAnt =
+            sRutaDataWeb
+            + "/Attachment/Funcionario"
+            + iIdFuncionarioAnt;
+        String sRutaDataWFunNvo =
+            sRutaDataWeb
+            + "/Attachment/Funcionario"
+            + iIdFuncionarioNvo;
+        String sRutaBaseDFunNvo =
+            "/Attachment/Funcionario" + iIdFuncionarioNvo;
+        Copy.Copy(sRutaDataWFunAnt, sRutaDataWFunNvo);
+        vArchivoA = oAnexoArchivo.GetAll(iIdFuncionarioAnt);
+        for (int i = 0; i < vArchivoA.getNumRows(); i++) {
+          String sIdAnexo =
+              ( ( (Vector) vArchivoA.getVMatrixAll().elementAt(1))
+               .elementAt(i)
+               + "")
+              .trim();
+          String sArchivoAnexo =
+              ( ( (Vector) vArchivoA.getVMatrixAll().elementAt(4))
+               .elementAt(i)
+               + "")
+              .trim();
+          String sRutaAcceso2 = sRutaBaseDFunNvo + "/Anexo" + sIdAnexo;
+          String sRutaWeb =
+              sRutaBaseWeb
+              + "/Funcionario"
+              + iIdFuncionarioNvo
+              + "/Anexo"
+              + sIdAnexo
+              + "/";
+          oAnexoArchivo.Insert(
+              java.lang.Integer.parseInt(sIdAnexo),
+              iIdFuncionarioNvo,
+              sRutaAcceso2,
+              sArchivoAnexo,
+              sRutaWeb);
+        }
+        // CAMBIAMOS ESTATUS DEL FUNCIONARIO
+        oFuncionario.Get(iIdFuncionarioNvo);
+        oFuncionario.UpdateEstatus(
+            iIdFuncionarioNvo,
+            Funcionario.GetEstatusActivo(),
+            oFuncionario.GetIdUsuario());
+        // INSERTAMOS ESTATUS DE INICIADA A LA ENTREGA NUEVA
+        oEntregaEstatus.Insert(
+            iIdFuncionarioNvo,
+            EntregaEstatus.GetEstatusNoIniciada(),
+            oUtil.sGetDate(oUtil.GetFecha(), "yyyyMMddHHmmss"),
+            "Reinicia Entrega con Datos Anteriores");
+        // ULTIMA FOTO PARA EL FUNCIONARIO NUEVO, PUES ESTE AHORA TIENE LOS ANEXOS Y EL ADENDUM
+        // CAMBIA EL ESTATUS DE LA SESION DEL ACTUAL FUNCIONARIO
+        /*PAGE			session.putValue("sEstatusEntrega", oEntregaEstatus.GetEstatusNoIniciada()+"");*/
+            /*PAGE			session.putValue("sEstatus", oFuncionario.GetEstatusActivo());*/
+      }
+      System.out.println("Terminó Proceso.");
+      oHist.UpdateAvance(
+          sIdFuncionario,
+          iProceso,
+          sIdFuncionarioNvo,
+          "Terminó Proceso.",
+          0);
+      oHist.Insert(
+          iIdFuncionario,
+          sFuncionario,
+          sCargo,
+          sUnidadAdministrativa,
+          sRutaWAttach,
+          sRutaWOAttach,
+          sRutaWOAttach + ".zip",
+          iProceso,
+          dFecha,
+          sError);
+    }
+    catch (Throwable e) {
+      try {
+        if (oHist == null) {
+          oHist = new Historico();
+        }
+        oHist.UpdateAvance(
+            sIdFuncionario,
+            iProceso,
+            sIdFuncionarioNvo,
+            "...",
+            -1);
+      }
+      catch (SQLException e1) {
+        System.out.println(e1);
+        e1.printStackTrace();
+      }
+      catch (IOException e1) {
+        System.out.println(e1);
+        e1.printStackTrace();
+      }
+      System.out.println("Error en Historico.saveHistory: " + e);
+      sError = sError + ", Historico.saveHistory: " + e;
+    }
+    finally {
+      try {
+        oArchivo.AbreArchivo(sRutaHistoria, "Error.log");
+        oArchivowa.AbreArchivo(sRutaAttach, "Error.log");
+        oArchivo.Escribe(sError);
+        oArchivowa.Escribe(sError);
+        oArchivo.CierraArchivo();
+        oArchivowa.CierraArchivo();
+      }
+      catch (Throwable z) {
+        System.out.println(
+            "Error en Historico.saveHistory.finally: " + z);
+      }
+    }
+    oArchivo = null;
+    oArchivowa = null;
+    return sError;
+  }
+}

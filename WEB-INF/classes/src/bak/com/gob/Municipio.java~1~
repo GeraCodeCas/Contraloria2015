@@ -1,0 +1,138 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 25.Oct.2002
+ * Purpose: Defines the Class Municipio
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Municipio {
+
+//Declaración de Variables
+private int 			 iIdMunicipio;
+private String			 sNombre;
+
+private VMatrix			vmMun;
+private int 			iNumRows;
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public Municipio()  throws SQLException, IOException {
+		iIdMunicipio= 0;
+		sNombre		= "";
+		
+		iNumRows	= 0;
+		vmMun		= new VMatrix();
+		oCnn		= new ConnectionJDBC();
+	}
+
+ //Creación de las Propiedades
+	public void 			SetIdMunicipio(int iDATA)			{	iIdMunicipio 	= iDATA;}
+	public int 				GetIdMunicipio() 					{	return iIdMunicipio;	}
+	public int				GetIdMunicipio(int iPos){
+		int iGetIdMunicipio = -1;
+		try { iGetIdMunicipio = java.lang.Integer.parseInt((((Vector)vmMun.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oMunicipio.GetIdMunicipio: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmMun.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdMunicipio; }
+	}
+	
+	public void 			SetNombre(String sDATA) 			{	sNombre 		= sDATA;}
+	public String			GetNombre() 						{	return sNombre;	}
+	public String			GetNombre(int iPos)					{	return ((Vector)vmMun.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+//Metodos públicos
+	public boolean Get(int pIdMunicipio) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdMunicipio, Nombre FROM Municipio WHERE IdMunicipio = " + pIdMunicipio;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdMunicipio"), rs.getString("Nombre"));
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+	
+	public VMatrix GetAll() throws SQLException, IOException {
+		if(vmMun.getNumRows()>0) return vmMun;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdMunicipio, Nombre FROM Municipio";
+		try {
+			rs = oCnn.Execute(sSql);
+			vmMun.setVMatrixNumCols(2);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdMunicipio"), rs.getString("Nombre")};
+				vmMun.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("oMunicipio.GetAll: No se ejecutó con exito  " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmMun; 
+		}
+	}
+	public int GetPos(int pIdMunicipio) throws SQLException, IOException {
+		return ((Vector)vmMun.getVMatrixAll().elementAt(0)).indexOf((pIdMunicipio+"").trim(), 0);
+	}
+	
+	public boolean Insert(String pNombre) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "INSERT INTO Municipio(Nombre) VALUES ('" + pNombre + "' )";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oMunicipio.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Update(int pIdMunicipio, String pNombre) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "UPDATE Municipio SET Nombre = '" + pNombre + "' WHERE IdMunicipio = " + pIdMunicipio;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oMunicipio.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Delete(int pIdMunicipio) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "DELETE FROM Municipio WHERE IdMunicipio = " + pIdMunicipio;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oMunicipio.Delete: " + e + " SQL:" + sSql);
+		return false;
+		}
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdMunicipio, String pNombre){
+		iIdMunicipio			= pIdMunicipio;
+		sNombre					= pNombre;
+	}
+}

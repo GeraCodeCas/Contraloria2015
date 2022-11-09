@@ -1,0 +1,600 @@
+/************************************************************************
+ * Module:  Anexo3XVIII.java
+ * Author:  Jesus Limon
+ * Created: 5.Nov.2002
+ * Purpose: Defines the Class Anexo3XVIII
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo3XVIII {
+
+//Declaración de Variables
+//public String ErrorVar;
+private int				iIdAnexo;
+private String 			sNombreAnexo;
+
+private int				iIdRenglon;
+private int 			iIdFuncionario;
+private String 			sConsecutivo;
+private String			sClave;
+private String			sJustificacion;
+private String			sDescripcion;
+private String			sObservacion;
+private	String 			sTecnico;
+private String			sFinanciero;
+private String 			sSocioEconomico;
+private String 			sPlanoEjecutivo;
+private String			sPlanoDetalle;
+
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+private int 			iTipoOrigen;
+//Inicializacion de la Clase
+	public Anexo3XVIII()  throws SQLException, IOException {
+		String sSql 		= "";	
+		iIdRenglon			= 0;
+		iIdFuncionario		= 0;
+		sConsecutivo 		= "";
+		sClave				= "";
+		sJustificacion		= "";
+		sDescripcion		= "";
+		sObservacion		= "";
+		sTecnico			= "";
+		sFinanciero			= "";
+		sSocioEconomico		= "";
+		sPlanoEjecutivo		= "";
+		sPlanoDetalle		= "";	
+		oVm					= new VMatrix();
+		oCnn				= new ConnectionJDBC();
+		oCnn.Open();
+		ResultSet oRs = null;
+		sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo III.18'";
+		try {
+			oRs = oCnn.Execute(sSql);
+			if (oRs.next()) {
+				iIdAnexo 		= oRs.getInt("IdAnexo");
+				sNombreAnexo	= oRs.getString("Nombre");
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3XVIII.init: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+		}
+	}
+
+
+//Creación de las Propiedades
+	public int		GetIdAnexo() 					{	return iIdAnexo;			}
+	public String	GetNombreAnexo() 				{	return sNombreAnexo;		}
+
+//	public void 	SetIdRenglon(int iDATA) 			{	iIdRenglon 		= iDATA;	}
+	public int		GetIdRenglon() 						{	return iIdRenglon;			}
+	public int		GetIdRenglon(int iPos) 				{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+//	public void 	SetIdFuncionario(int iDATA) 		{	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() 					{	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos) 			{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos));	}
+//	public void 	SetConsecutivo(String sDATA) 		{	sConsecutivo			= sDATA;	}
+	public String	GetConsecutivo() 					{	return sConsecutivo;				}
+	public String	GetConsecutivo(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+//	public void 	SetClave(String sDATA) 				{	sClave		= sDATA;			}
+	public String	GetClave() 							{	return sClave;					}
+	public String	GetClave(int iPos) 					{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+//	public void 	SetJustificacion(String iDATA) 		{	sJustificacion	= iDATA;		}
+	public String	GetJustificacion() 					{	return sJustificacion;			}
+	public String	GetJustificacion(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+//	public void 	SetDescripcion(String iDATA) 		{	sDescripcion	= iDATA;		}
+	public String	GetDescripcion() 					{	return sDescripcion;			}
+	public String	GetDescripcion(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+//	public void 	SetObservacion(String sDATA) 		{	sObservacion	= sDATA;		}
+	public String	GetObservacion() 					{	return sObservacion;			}
+	public String	GetObservacion(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);	}
+//	public void 	SetTecnico(String iDATA) 			{	sTecnico 		= iDATA;		}
+	public String	GetTecnico() 						{	return sTecnico;				}
+	public String	GetTecnico(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);	}
+//	public void 	SetFinanciero(String iDATA) 		{	sFinanciero 		= iDATA;	}
+	public String	GetFinanciero() 					{	return sFinanciero;				}
+	public String	GetFinanciero(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos);	}
+//	public void 	SetSocioEconomico(String iDATA) 	{	sSocioEconomico		= iDATA;	}
+	public String	GetSocioEconomico() 				{	return sSocioEconomico;			}
+	public String	GetSocioEconomico(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);	}
+//	public void 	SetPlanoEjecutivo(String iDATA) 	{	sPlanoEjecutivo 		= iDATA;}
+	public String	GetPlanoEjecutivo() 				{	return sPlanoEjecutivo;			}
+	public String	GetPlanoEjecutivo(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(10)).elementAt(iPos);	}
+//	public void 	SetPlanoDetalle(String iDATA) 		{	sPlanoDetalle 		= iDATA;	}
+	public String	GetPlanoDetalle() 					{	return sPlanoDetalle;			}
+	public String	GetPlanoDetalle(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(11)).elementAt(iPos);	}
+
+
+//Metodos públicos
+	public int Get(int pIdFuncionario, int idRenglon)throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdRenglon, IdFuncionario, Consecutivo, Clave, Justificacion, Descripcion, Observacion, Tecnico, Financiero, SocioEconomico, PlanoEjecutivo, PlanoDetalle FROM Anexo3XVIII WHERE IdFuncionario = " + pIdFuncionario + " AND IdRenglon = " + idRenglon;
+		try {
+			rs = oCnn.Execute(sSql);
+			if (rs.next()) {
+				iIdRenglon 		=  	java.lang.Integer.parseInt(rs.getString("IdRenglon"));
+				iIdFuncionario 	=  	java.lang.Integer.parseInt(rs.getString("IdFuncionario"));
+				sConsecutivo	=	rs.getString("Consecutivo");
+				sClave			=	rs.getString("Clave");
+				sJustificacion	=	rs.getString("Justificacion");
+				sDescripcion	=	rs.getString("Descripcion");
+				sObservacion 	=	rs.getString("Observacion");
+				sTecnico		=	rs.getString("Tecnico");
+				sFinanciero		=	rs.getString("Financiero");
+				sSocioEconomico	=	rs.getString("SocioEconomico");
+				sPlanoEjecutivo	=	rs.getString("PlanoEjecutivo");
+				sPlanoDetalle	= 	rs.getString("PlanoDetalle");
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3XVIII.GetAll: " + e + " SQL: " + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return -1;
+		}
+	}
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdRenglon, IdFuncionario, Consecutivo, Clave, Justificacion, Descripcion, Observacion, Tecnico, Financiero, SocioEconomico, PlanoEjecutivo, PlanoDetalle FROM Anexo3XVIII WHERE IdFuncionario = " + pIdFuncionario + " ORDER BY Consecutivo, Clave";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(12);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdRenglon"), rs.getString("IdFuncionario"), rs.getString("Consecutivo"), 
+									rs.getString("Clave"), rs.getString("Justificacion"), rs.getString("Descripcion"), rs.getString("Observacion"), 
+									rs.getString("Tecnico"), rs.getString("Financiero"), rs.getString("SocioEconomico"), 
+									rs.getString("PlanoEjecutivo"),rs.getString("PlanoDetalle")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3XVIII.GetAll: " + e + " SQL: " + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetPos(int pIdFuncionario, int pIdRenglon, int pTipoOrigen) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon+""), 0);
+	}
+	
+	public boolean Insert(int pIdFuncionario, String pConsecutivo, String pClave, String pJustificacion, String pDescripcion, 
+							String pObservacion, String pTecnico, String pFinanciero, String pSocioEconomico, String pPlanoEjecutivo, 
+							String pPlanoDetalle) throws SQLException, IOException {
+		String sSql;
+		sSql	= "";
+
+		oCnn.Open();
+		ResultSet rs = null;
+		sSql = "SELECT IdRenglon, IdFuncionario, Consecutivo FROM Anexo3XVIII WHERE Consecutivo = '" + pConsecutivo + "' AND IdFuncionario = " + pIdFuncionario; 
+		try {
+			rs = oCnn.Execute(sSql);
+			if (rs.next()) {
+				this.Update(rs.getInt("IdRenglon"), pIdFuncionario, pConsecutivo, pClave, pJustificacion, pDescripcion, 
+							pObservacion, pTecnico, pFinanciero, pSocioEconomico, pPlanoEjecutivo, pPlanoDetalle);
+			}else{
+				sSql = "INSERT INTO Anexo3XVIII(IdFuncionario, Consecutivo, Clave, Justificacion, Descripcion, Observacion, Tecnico, Financiero, SocioEconomico, PlanoEjecutivo, PlanoDetalle) ";
+				sSql += "VALUES (" + pIdFuncionario + ", ";
+				sSql += "'" + pConsecutivo + "', ";
+				sSql += "'" + pClave + "', ";
+				sSql += "'" + pJustificacion + "', ";
+				sSql += "'" + pDescripcion + "', ";
+				sSql += "'" + pObservacion + "', ";
+				sSql += "'" + pTecnico + "', ";
+				sSql += "'" + pFinanciero + "', ";
+				sSql += "'" + pSocioEconomico + "', ";
+				sSql += "'" + pPlanoEjecutivo + "', ";
+				sSql += "'" + pPlanoDetalle + "') ";
+System.out.println("SQL: " + sSql);
+				oCnn.Execute(sSql);
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close(); 
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3XVIII.Insert: " + e + " SQL: " + sSql);
+			return false;
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+		}
+	}	
+	public boolean Update(int pIdRenglon, int pIdFuncionario, String pConsecutivo, String pClave, String pJustificacion, String pDescripcion, 
+							String pObservacion, String pTecnico, String pFinanciero, String pSocioEconomico, String pPlanoEjecutivo, 
+							String pPlanoDetalle)throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Anexo3XVIII SET ";
+			sSql += "IdFuncionario 	 	= " + pIdFuncionario + ", ";
+			sSql += "Consecutivo		= '" + pConsecutivo + "', ";
+			sSql += "Clave				= '" + pClave + "', ";
+			sSql += "Justificacion		= '" + pJustificacion + "', ";
+			sSql += "Descripcion 		= '" + pDescripcion + "', ";
+			sSql += "Observacion		= '" + pObservacion + "', ";
+			sSql += "Tecnico			= '" + pTecnico + "', ";
+			sSql += "Financiero			= '" + pFinanciero + "', ";
+			sSql += "SocioEconomico		= '" + pSocioEconomico + "', ";
+			sSql += "PlanoEjecutivo		= '" + pPlanoEjecutivo + "', ";
+			sSql += "PlanoDetalle		= '" + pPlanoDetalle + "' ";
+			sSql += "WHERE IdRenglon 	= " + pIdRenglon;
+			oCnn.Open();
+			System.out.println("SQL: " + sSql);
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3XVIII.Update: " + e + " SQL: " + sSql);
+		}
+		return false;
+	}
+	public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "DELETE FROM Anexo3XVIII WHERE IdRenglon= " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3XVIII.Delete: " + e + " SQL: " + sSql);
+		}
+		return false;
+	}
+	
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3XVIII.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3XVIII.html");
+			
+			sAnexo 		= "III.18";
+			iIdAnexo 	= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 	= oAnexoEstatus.GetEstatus();
+			int iOrigen	= 0;
+			sAux = "<TD  colspan='3' class='TituloParrafo' width='70%'>ANEXO III.18 - RELACIÓN DE PLANES, ESTUDIOS Y PROYECTOS NO DESARROLLADOS.";
+			if(!sEstatus.equals("0")){ //if de estatus
+				sAux +="<br>";
+				sAux +="<br><form name='forma'>";
+				sAux +="&nbsp;&nbsp;Consecutivo:&nbsp;";
+				sAux +="<select class='cmbBox' name='sOrigen' onchange='CambioTipoOrigen();'>";
+				sAux +="<option value='0' >--- Seleccione Consecutivo ---</option>";
+				GetAll(iIdFuncionario);
+				for(int i=0;i<GetAll(iIdFuncionario);i++){
+					int iRenglonPaso		= GetIdRenglon(i)!=-1?		GetIdRenglon(i):0;
+					String 	sOrigenPaso		= GetConsecutivo(i)!=null?	GetConsecutivo(i):"";
+					sAux +="<option value='" + iRenglonPaso + "'>" + sOrigenPaso + "</option>";  
+				}
+				sAux +="</select>";
+				sAux +="</form>";
+			}
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);  
+			sArchivo ="";
+			if(!sEstatus.equals("0")){ //if de estatus
+				for(int i=0;i<GetAll(iIdFuncionario);i++){
+					iOrigen	= GetIdRenglon(i)!=-1?		GetIdRenglon(i):0;
+					String sOrigen = iOrigen + "";
+					
+					sArchivo ="<TABLE id='tbl" + iOrigen + "' style='display:none;' cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+				 	sArchivo +="<tr>";
+					sArchivo +="<td colspan='2'>";
+					sArchivo +="<table border='1' cellspacing='0' cellpadding='0' width='100%' bordercolor='black'>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td class='TituloMenu' align='left' width='220px'> &nbsp;Consecutivo:&nbsp;" + GetConsecutivo(i) + "</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo = "";
+					sArchivo +="<td class='TituloMenu' align='center'>Descripción</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo +="<TR align='middle'>";
+					sArchivo = "";
+					sArchivo +="<td align='left'> &nbsp;Clave:&nbsp;";
+					if(GetClave(i).equals("1")){
+						sArchivo +="1";
+					}else{
+						sArchivo +="2";
+					}
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo = "";
+					sArchivo ="	<br>";
+					sArchivo +="&nbsp;1.- Estudio";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo = "";
+					sArchivo +="<br>";
+					sArchivo +="&nbsp;2.- Proyecto";
+					sArchivo +="<br>";
+					sArchivo +="<br>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="&nbsp;Justificación:";
+					sArchivo +="&nbsp;<textarea readonly class='txtBox' style='border: 0; background-color: transparent; transparent; width:250px; height:100px' name='sJustificacion' id='sJustificacion'>" + GetJustificacion(i) + "</textarea>";
+					sArchivo +="</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<td align='center' style='background-color: white;'><textarea readonly class='txtBox' style='border: 0; background-color: transparent; transparent; width:250px; height:100px' name='sDescripcion' id='sDescripcion'>" + GetDescripcion(i) + "</textarea></td>";
+					sArchivo +="</TR>";
+					sArchivo +="</table>	";
+					sArchivo +="</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="</tr>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td valign='top'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<table border='1' cellspacing='0' cellpadding='0' width='100%' bordercolor='black'>";
+					sArchivo +="<TR align='middle'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<td class='TituloMenu' align='center' colspan='2'>Estudios de Factibilidad</td>";
+					sArchivo +="<td class='TituloMenu' align='center'>Observaciones</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<tr>";
+					sArchivo +="<td width='280px' align='left' rowspan='9' valign='top'>";
+					sArchivo +="<table border='1' cellspacing='0' cellpadding='0' width='100%' bordercolor='black'>";
+					sArchivo +="<TR align='middle'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<td align='center'>&nbsp;</td>";
+					sArchivo +="</TR>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td align='left'> &nbsp;Técnicos</td>";
+					sArchivo +="</TR>";
+					sArchivo +="<TR align='middle'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo ="<td align='left'> &nbsp;Financieros</td>";
+					sArchivo +="</TR>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td align='left'> &nbsp;Socio Económicos</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<tr>";
+					sArchivo +="<td align='left'>¿Se dispone de</td>";
+					sArchivo +="</tr>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td align='left'>Planos Ejecutivos?</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<tr>";
+					sArchivo +="<td align='left'>¿Se dispone de</td>";
+					sArchivo +="</tr>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td align='left'>Planos en Detalle?</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<tr>";
+					sArchivo +="<td align='left'>&nbsp;</td>";
+					sArchivo +="</tr>";
+					sArchivo +="</table>";
+					sArchivo +="</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<td align='left' rowspan='9' valign='top'>";
+					sArchivo +="<table border='1' cellspacing='0' cellpadding='0' width='100%' bordercolor='black'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td width='15px' colspan='2' align='center'>&nbsp;</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<TR align='middle'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo ="<td  width='15px' align='center'>&nbsp;";
+					if(GetTecnico(i).equals("0"))
+			   			sArchivo +="Sí</td>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetTecnico(i).equals("1"))
+			   			sArchivo +="No</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";		
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetFinanciero(i).equals("0"))
+					   sArchivo +="Sí</td>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetFinanciero(i).equals("1"))
+						sArchivo +="No</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetSocioEconomico(i).equals("0"))
+						sArchivo +="Sí</td>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetSocioEconomico(i).equals("1"))
+				   		sArchivo +="No</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td width='15px' colspan='2' align='center'>&nbsp;</td>";
+					sArchivo +="</TR>";
+					sArchivo +="<TR align='middle'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo ="<td  width='15px' align='center'>&nbsp;";
+					if(GetPlanoEjecutivo(i).equals("0"))
+						sArchivo +="Sí</td>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetPlanoEjecutivo(i).equals("1"))
+						sArchivo +="No</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td width='15px' colspan='2' align='center'>&nbsp;</td>";
+					sArchivo +="</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetPlanoDetalle(i).equals("0"))
+						sArchivo +="Sí</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<td  width='15px' align='center'>&nbsp;";
+					if(GetPlanoDetalle(i).equals("1"))
+						sArchivo +="No</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo ="</TR>";
+					sArchivo +="<TR align='middle'>";
+					sArchivo +="<td width='15px' colspan='2' align='center'>&nbsp;</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="</TR>";
+					sArchivo +="</table>";
+					sArchivo +="</td>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<td rowspan='9' align='center' valign='top'>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="<textarea readonly class='txtBox' style='border: 0; background-color: transparent; transparent;overflow-y:hidden; width:100%; height:100%' name='sObservacion' id='sObservacion'>" + GetObservacion(i) + "</textarea></td>";
+					sArchivo +="</tr>" ;
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+					sArchivo +="</TABLE></TD>";
+					sArchivo +="</TR>";
+					sArchivo +="</TABLE>";
+						
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					sArchivo="";
+				} // for
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				sArchivo="";
+				sArchivo +="</td>";
+				sArchivo +="</tr>";
+				sArchivo +="</table>";
+				sArchivo += "</body>";
+				sArchivo += "</html>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				
+				sArchivo = "<script language='JavaScript'>";	
+				sArchivo += "function CambioTipoOrigen(){";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				sArchivo = "";
+				for(int x=0;x<GetAll(iIdFuncionario);x++){
+					int iRenglonPaso		= GetIdRenglon(x)!=-1?		GetIdRenglon(x):0;
+					sArchivo +=	" document.all['tbl" + iRenglonPaso + "'].style.display='none'; ";
+				}
+				sArchivo +=	"if(document.forma.sOrigen.value != 0){";
+				sArchivo +=	"Opcion = 'tbl' + document.forma.sOrigen.value;" ;
+				sArchivo +=	"document.all[Opcion].style.display='';";
+				sArchivo +=	"}";
+				sArchivo +=	"}";
+				sArchivo +=	"</script>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				sArchivo = "";
+			}else{
+				sArchivo +="<TABLE width='100%'>";
+				sArchivo +="<TR>";
+				sArchivo +="<TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD>";
+				sArchivo +="</TR>";
+				sArchivo +="</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+					
+				sArchivo ="	</td>";
+				sArchivo +="</tr>";
+				sArchivo +="</table>";
+				sArchivo += "</body>";
+				sArchivo += "</html>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				sArchivo="";
+			}
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();
+			
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3XVIII.setHistory: " + e );
+			sError = " - Anexo3XVIII.setHistory: " + e ;
+		}
+		return sError;
+	}
+}

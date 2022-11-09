@@ -1,0 +1,110 @@
+/************************************************************************
+ * Module:  ErrAnexo3IX.java
+ * Author:  Sigifredo Vazquez
+ * Created: 21.Abril.2003
+ * Purpose: Defines the Class ErrAnexo3IX
+ ***********************************************************************/
+ 
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo3IX {
+//Declaración de Variables
+private int				iIdFuncionario;
+private String 			sNoExpediente;
+private String			sNoProgresivo;
+private String 			sNombre;
+private String			sDestino;
+private String			sEstadoInmueble;
+private String			sTipoInmueble;
+private String			sTipoAccion;
+private String			sObservacion;
+private String			sDescripcion;
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+
+//Inicializacion de la Clase
+	public ErrAnexo3IX()  throws SQLException, IOException {
+		String sSql;
+		iIdFuncionario		= 0;
+		sNoExpediente		= "";
+		sNoProgresivo		= "";
+		sNombre				= "";
+		sDestino			= "";
+		sEstadoInmueble		= "";
+		sTipoInmueble		= "";
+		sTipoAccion			= "";
+		sObservacion		= "";
+		sDescripcion 		= "";
+		oVm					= new VMatrix();
+		oCnn				= new ConnectionJDBC();
+	}
+
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA) 	{	iIdFuncionario 			= iDATA;	}
+	public int		GetIdFuncionario() 				{	return iIdFuncionario;				}
+	public int		GetIdFuncionario(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	public void 	SetNoExpediente(String sDATA) 	{	sNoExpediente 				= sDATA;	}
+	public String	GetNoExpediente() 				{	return sNoExpediente;						}
+	public String	GetNoExpediente(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);	}
+	public void 	SetNoProgresivo(String iDATA) 		{	sNoProgresivo					= iDATA;	}
+	public String	GetNoProgresivo() 					{	return sNoProgresivo;						}
+	public String	GetNoProgresivo(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	public void 	SetNombre(String iDATA) 		{	sNombre					= iDATA;	}
+	public String	GetNombre() 					{	return sNombre;						}
+	public String	GetNombre(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	public void 	SetDestino(String sDATA){	sDestino		= sDATA;	}
+	public String	GetDestino() 			{	return sDestino;			}
+	public String	GetDestino(int iPos) 	{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+	public void 	SetEstadoInmueble(String sDATA){	sEstadoInmueble		= sDATA;	}
+	public String	GetEstadoInmueble() 			{	return sEstadoInmueble;			}
+	public String	GetEstadoInmueble(int iPos) 	{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+	public void 	SetTipoInmueble(String sDATA){	sTipoInmueble		= sDATA;	}
+	public String	GetTipoInmueble() 			{	return sTipoInmueble;			}
+	public String	GetTipoInmueble(int iPos) 	{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);	}
+	public void 	SetTipoAccion(String sDATA){	sTipoAccion		= sDATA;	}
+	public String	GetTipoAccion() 			{	return sTipoAccion;			}
+	public String	GetTipoAccion(int iPos) 	{	return (String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);	}
+	public void 	SetObservacion(String sDATA){	sObservacion		= sDATA;	}
+	public String	GetObservacion() 			{	return sObservacion;			}
+	public String	GetObservacion(int iPos) 	{	return (String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos);	}
+	public void 	SetDescripcion(String sDATA){	sDescripcion		= sDATA;	}
+	public String	GetDescripcion() 			{	return sDescripcion;			}
+	public String	GetDescripcion(int iPos) 	{	return (String)((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);	}
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdFuncionario, NoExpediente, NoProgresivo, Nombre, Destino, EstadoInmueble,TipoInmueble, TipoAccion, Observaciones, DescripcionError FROM ErrAnexo3IX WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(11);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("IdFuncionario"), rs.getString("NoExpediente"), rs.getString("NoProgresivo"), 
+											rs.getString("Nombre"), rs.getString("Destino"), rs.getString("EstadoInmueble"),
+											rs.getString("TipoInmueble"), rs.getString("TipoAccion"), rs.getString("Observaciones"),
+											rs.getString("DescripcionError")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3IX.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon + ""), 0);
+	}
+}

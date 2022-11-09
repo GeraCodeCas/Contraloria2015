@@ -1,0 +1,440 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 02.Nov.2002
+ * Purpose: Defines the Class Anexo3IV5
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo3IV6 {
+
+//Declaración de Variables
+private int 			iIdFuncionario;
+
+private VMatrix		 	oVm;
+private VMatrix		 	oVmCurso;
+private VMatrix		 	oVmEmpleado;
+private ConnectionJDBC	oCnn;
+
+//Inicializacion de la Clase
+public Anexo3IV6()  throws SQLException, IOException {
+	iIdFuncionario 		= 0;
+
+	oVm					= new VMatrix();
+	oVmCurso			= new VMatrix();
+	oVmEmpleado			= new VMatrix();	
+	oCnn				= new ConnectionJDBC();
+}
+
+public void Close(){
+	oCnn = null;
+	oVm.RemoveAll();
+	oVm	= null;
+	oVmCurso.RemoveAll();
+	oVmCurso = null;
+	oVmEmpleado.RemoveAll();
+	oVmEmpleado	= null;
+}
+
+//Creación de las Propiedades
+
+//	LEE EL ID ANEXO DE LA TABLA DE ANEXO DE LA BASE DE DATOS
+	public int		GetIdAnexo()							{	return 22; };
+	
+//Para el Vmatrix		
+	public String	GetHoras(int iPos)						{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);}
+	public String	GetIns(int iPos)						{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);}
+	
+	public int		GetIdCurso(int iPos)					{	return java.lang.Integer.parseInt((String)((Vector)oVmCurso.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	public String	GetNombreCurso(int iPos)				{	return (String)((Vector)oVmCurso.getVMatrixAll().elementAt(1)).elementAt(iPos);								}
+	
+	public int		GetIdEmpleado(int iPos)					{	return java.lang.Integer.parseInt((String)((Vector)oVmEmpleado.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	public String	GetNombreEmpleado(int iPos)				{	return (String)((Vector)oVmEmpleado.getVMatrixAll().elementAt(1)).elementAt(iPos);								}
+		
+	
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "sel_Anexo3iv6GetAll_SP " + pIdFuncionario;
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(5);
+			int i=0;
+			while (rs.next()) {
+				String saTabla [] = {i+"", rs.getString("IdCurso"), rs.getString("IdEmpleado"), rs.getString("Horas"), rs.getString("Ins")};
+				oVm.setVMatrixRow(saTabla);
+				i++;
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IV6.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	
+	public VMatrix GetVM(int pIdFuncionario) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return oVm;
+	}
+		
+	public int GetPos(int pIdFuncionario, int pIdCurso, int pIdEmpleado) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		boolean flag = true;
+		int		iPos = 0;
+		for(int i=0;i<oVm.getNumRows()&&flag ;i++){
+			int iIdCurso	= java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(i));
+			int iIdEmpleado	= java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(i));
+			if(iIdCurso == pIdCurso && iIdEmpleado == pIdEmpleado) {
+				iPos = i;
+				flag = false;
+			}
+		}	
+		return iPos;
+	}
+	
+	public boolean Insert(int pIdCurso, int pIdEmpleado, String pHoras) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "INSERT INTO Anexo3IV6 (IdCurso, IdEmpleado, Horas) ";
+			sSql = sSql + "VALUES (" + pIdCurso + ", " + pIdEmpleado + ", " + pHoras + ")";
+			//System.out.println("Anexo3IV6.Insert: " + sSql);
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IV6.Insert: " + e + " SQL:" + sSql);
+			return false;			
+		}
+	}
+	
+	public boolean Update(int pIdCurso, int pIdEmpleado, String pHoras) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Anexo3IV6 SET Horas = " + pHoras + " ";
+			sSql = sSql + "WHERE IdCurso = " + pIdCurso + " AND IdEmpleado = " + pIdEmpleado ;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IV6.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+// CURSOS
+	public int GetCursoAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVmCurso.getNumRows()>0) return oVmCurso.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql = "";
+		sSql = "SELECT IdCurso, Nombre FROM Anexo3IV6Curso " + 
+			"WHERE IdFuncionario = " + pIdFuncionario + " ORDER BY Nombre, IdCurso";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVmCurso.setVMatrixNumCols(2);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdCurso"), rs.getString("Nombre")};
+				oVmCurso.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IV6.GetCursosAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVmCurso.getNumRows();
+		}
+	}
+	public int GetCursoPos(int pIdFuncionario, int pIdCurso) throws SQLException, IOException {
+		GetCursoAll(pIdFuncionario);
+		return ((Vector)oVmCurso.getVMatrixAll().elementAt(0)).indexOf((pIdCurso+""), 0);
+	}
+	public int InsertCurso(int pIdFuncionario, String pNombre ) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "SELECT ISNULL(MAX(IdCurso), 0) AS MaxId FROM Anexo3IV6Curso";
+			ResultSet oRs = oCnn.Execute(sSql);
+			int iIdCurso = oRs.next()?oRs.getInt("MaxId"):0; 
+			oRs.close();	oRs = null;
+			sSql = "INSERT INTO Anexo3IV6Curso(IdCurso, IdFuncionario, Nombre) ";
+			sSql = sSql + "VALUES (" + (iIdCurso+1) + ", " + pIdFuncionario + ", '" + pNombre + "')";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return (iIdCurso+1);
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IV6.InsertCurso: " + e + " SQL:" + sSql);
+			return 0;
+		}
+	}
+	public boolean UpdateCurso(int pIdCurso, String pNombre ) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Anexo3IV6Curso SET Nombre = '" + pNombre + "' WHERE IdCurso = " + pIdCurso;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){	
+			System.out.println("Error en Anexo3IV6.UpdateCurso: " + e + " SQL:" + sSql);	
+			return false;
+		}
+	}
+	public boolean DeleteCurso(int pIdCurso) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "DELETE FROM Anexo3IV6 WHERE IdCurso = " + pIdCurso;
+			oCnn.Execute(sSql);
+			sSql = "DELETE FROM Anexo3IV6Curso WHERE IdCurso = " + pIdCurso;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){	
+			System.out.println("Error en Anexo3IV6.DeleteCurso: " + e + " SQL:" + sSql);	
+			return false;
+		}
+	}
+	
+// EMPLEADOS
+	public int GetEmpleadoAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVmEmpleado.getNumRows()>0) return oVmEmpleado.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql = "";
+		sSql = "SELECT IdEmpleado, Nombre FROM Anexo3IV6Empleado WHERE IdFuncionario = " + pIdFuncionario + " ORDER BY Nombre, IdEmpleado";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVmEmpleado.setVMatrixNumCols(2);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdEmpleado"), rs.getString("Nombre")};
+				oVmEmpleado.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IV6.GetEmpleadoAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVmEmpleado.getNumRows();
+		}
+	}
+	public int GetEmpleadoPos(int pIdFuncionario, int pIdEmpleado) throws SQLException, IOException {
+		GetEmpleadoAll(pIdFuncionario);
+		return ((Vector)oVmEmpleado.getVMatrixAll().elementAt(0)).indexOf((pIdEmpleado+""), 0);
+	}
+	public int InsertEmpleado(int pIdFuncionario, String pNombre ) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "SELECT ISNULL(MAX(IdEmpleado), 0) AS MaxId FROM Anexo3IV6Empleado";
+			ResultSet oRs = oCnn.Execute(sSql);
+			int iIdEmpleado = oRs.next()?oRs.getInt("MaxId"):0; 
+			oRs.close();	oRs = null;
+			
+			sSql = "INSERT INTO Anexo3IV6Empleado(IdEmpleado, IdFuncionario, Nombre) ";
+			sSql = sSql + "VALUES (" + (iIdEmpleado+1) + ", " + pIdFuncionario + ", '" + pNombre + "')";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return (iIdEmpleado+1);
+		}catch(Throwable e){	
+			System.out.println("Error en Anexo3IV6.InsertEmpleado: " + e + " SQL:" + sSql);	
+			return 0;
+		}
+	}
+	public boolean UpdateEmpleado(int pIdEmpleado, String pNombre ) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Anexo3IV6Empleado SET Nombre = '" + pNombre + "' WHERE IdEmpleado = " + pIdEmpleado;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IV6.UpdateEmpleado: " + e + " SQL:" + sSql);	
+			return false;
+		}
+		
+	}
+	public boolean DeleteEmpleado(int pIdEmpleado) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "DELETE FROM Anexo3IV6 WHERE IdEmpleado = " + pIdEmpleado;
+			oCnn.Execute(sSql);
+			sSql = "DELETE FROM Anexo3IV6Empleado WHERE IdEmpleado = " + pIdEmpleado;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IV6.DeleteEmpleado: " + e + " SQL:" + sSql);	
+			return false;
+		}	
+	}
+	
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3IV6.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3IV6.html");
+			
+			sAnexo 	= "III.4.6";
+			iIdAnexo= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus= oAnexoEstatus.GetEstatus();
+			sAux = "				<tr><TD colspan='3' class='TituloParrafo' width='100%'>&nbsp;&nbsp;ANEXO III.4.6 - PROGRAMA DE AVANCE Y CAPACITACIÓN DE PERSONAL</TD></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			if(!sEstatus.equals("0") ){ 
+				sArchivo = "	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+				sArchivo += "		<TR align='middle'>";
+				sArchivo += "			<td class='TituloMenu' rowspan='2'>Nombre del Empleado</TD>";
+				sArchivo += "			<td class='TituloMenu' ";
+				sArchivo += GetCursoAll(iIdFuncionario)>0? "colspan=" + GetCursoAll(iIdFuncionario):"";
+				sArchivo += ">Horas Invertidas en cada Curso</TD>";
+				sArchivo += "		<td class='TituloMenu' rowspan='2'>Horas Totales Capacitación</TD>";
+				sArchivo += "	</TR>";
+				sArchivo += "	<TR align='top'>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				if(GetCursoAll(iIdFuncionario)>0){
+					for(int i=0;i<GetCursoAll(iIdFuncionario);i++){
+						sArchivo = "			<td class='TituloMenu' align='center'>" + GetNombreCurso(i) + "</TD>";
+						oArchivo.Escribe(sArchivo);
+						oArchivowa.Escribe(sArchivo);
+					}
+				} else {
+					sArchivo = "			<td class='TituloMenu' align='center'>Curso</TD>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+				}
+				sArchivo = "		</TR>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				
+				GetAll(iIdFuncionario);
+				
+				int intContador = 0;
+				String sBackColor = "";
+				int [] iHorasCursos = new int[GetCursoAll(iIdFuncionario)];
+				int iPos = 0;
+				for(int i=0;i<GetEmpleadoAll(iIdFuncionario);i++){
+					String vIdEmpleado 			= GetIdEmpleado(i)!=-1?GetIdEmpleado(i)+"":"0";
+					String vNombreEmpleado		= GetNombreEmpleado(i)!=null?GetNombreEmpleado(i):"";
+					intContador = intContador + 1;
+					if (intContador%2 == 0){	sBackColor = "#ffffff";	}
+					else{						sBackColor = "#eeeeee"; }
+					sArchivo = "		<TR align='left' bgcolor='" +sBackColor + "' onMouseOver = 'MouseDentro(this);' onMouseOut  = " + c + "MouseFuera(this,'" +sBackColor + "');" + c + ">";
+					sArchivo += "			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" +vNombreEmpleado + "</a></TD>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					if(GetCursoAll(iIdFuncionario)>0){
+					 	int horas = 0;
+						for(int j=0;j<GetCursoAll(iIdFuncionario);j++){
+							horas = horas + java.lang.Integer.parseInt(GetHoras(iPos));
+							iHorasCursos[j] = iHorasCursos[j] + java.lang.Integer.parseInt(GetHoras(iPos));
+							sArchivo = "			<TD align='center'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>";
+							sArchivo += GetHoras(iPos) + "</a></TD>";
+							iPos ++;
+							oArchivo.Escribe(sArchivo);
+							oArchivowa.Escribe(sArchivo);
+						}
+						sArchivo = "			<TD align='center'>" + horas + "</TD>";
+						oArchivo.Escribe(sArchivo);
+						oArchivowa.Escribe(sArchivo);
+					}
+					sArchivo = "		</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+				}
+				sArchivo = "		<TR>";
+				sArchivo += "			<TD class='TituloMenu'>Total Horas Capacitación</TD>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				if(GetCursoAll(iIdFuncionario)>0){
+				 	int horas = 0;
+					for(int j=0;j<GetCursoAll(iIdFuncionario);j++){
+						horas = horas + iHorasCursos[j];
+						sArchivo = "			<TD align='center'>&nbsp;" + iHorasCursos[j] + "</TD>";
+						oArchivo.Escribe(sArchivo);
+						oArchivowa.Escribe(sArchivo);
+					}
+					sArchivo = "			<TD align='center'>" + horas + "</TD>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+				}
+				sArchivo = "		</TR>";
+				sArchivo += "	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				
+			} else {
+				sArchivo = "	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+				sArchivo += "		<TR align='middle'>";
+				sArchivo += "			<TD width='200' class='TituloMenu' rowspan='2'>Nombre del Empleado</TD>";
+				sArchivo += "			<TD width='600' class='TituloMenu'>Horas Invertidas En Cada Curso</TD>";
+				sArchivo += "			<TD width='100' class='TituloMenu' rowspan='2'>Horas Totales Capacitación</TD>";
+				sArchivo += "		</TR>";
+				sArchivo += "	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				
+				sArchivo = "	<TABLE width='100%'>";
+				sArchivo += "		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "	</TABLE>";
+			
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "</td>";
+			sArchivo += "</tr>";
+			sArchivo += "</table>";
+			sArchivo += "</body>";
+			sArchivo += "</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();			
+			
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IV6.setHistory: " + e );
+			sError = "Anexo3IV6.setHistory: " + e ;
+		}
+		return sError;
+	}
+}

@@ -1,0 +1,207 @@
+package com.consiss.util;
+
+import java.sql.*;
+import com.consiss.db.*;
+
+public class CargaMaestro {
+  private ConnectionJDBC oCnn;
+  private String sTabla;
+  private int iCampos;
+  private int iRegistrosACargar;
+  private int iRegistrosConError;
+
+  public CargaMaestro() {
+    iCampos = 0;
+    sTabla = new String();
+    oCnn = new ConnectionJDBC();
+    iRegistrosACargar = 0;
+    iRegistrosConError = 0;
+  }
+
+  public void setTabla(String sTemp) {
+    sTabla = sTemp;
+  }
+
+  public String getTabla() {
+    return sTabla;
+  }
+
+  public void setCampos(int iTemp) {
+    //System.out.println("iCampos:" + iTemp);
+    iCampos = iTemp;
+  }
+
+  public int getCampos() {
+    return iCampos;
+  }
+
+  public int getRegistrosACargar() {
+    return iRegistrosACargar;
+  }
+
+  public int getRegistrosConError() {
+    return iRegistrosConError;
+  }
+
+  public boolean GrabaInfo(int idFuncionario, String[] sData) throws
+      SQLException {
+    String query = "";
+    int i = 0;
+    String sSql;
+    try {
+      query = "INSERT INTO " + sTabla + " VALUES(" + idFuncionario + ", ";
+      for (i = 0; i < sData.length && i < iCampos; i++) {
+        query = query + "'" + sData[i] + "'";
+        if (i < iCampos - 1) {
+          query = query + ", ";
+        }
+      }
+      if (i < iCampos) {
+        for (; i < iCampos; i++) {
+          query = query + "' '";
+          if (i < iCampos - 1) {
+            query = query + ", ";
+          }
+        }
+      }
+      query = query + ")";
+      oCnn.Open();
+      oCnn.Execute(query);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      //sQuery = e.toString();
+      System.out.println("CargaMaestro.GrabaInfo(int, String[]):" + e + " SQL:" +
+                         query);
+      return false;
+    }
+  }
+
+  public boolean GrabaInfo(String sUsuario, String[] sData) throws SQLException {
+    String query = "";
+    int i = 0;
+    String sSql;
+    try {
+      query = "INSERT INTO " + sTabla + " VALUES('" + sUsuario + "', ";
+      for (i = 0; i < sData.length && i < iCampos; i++) {
+        query = query + "'" + sData[i] + "'";
+        if (i < iCampos - 1) {
+          query = query + ", ";
+        }
+      }
+      if (i < iCampos) {
+        for (; i < iCampos; i++) {
+          query = query + "' '";
+          if (i < iCampos - 1) {
+            query = query + ", ";
+          }
+        }
+      }
+      query = query + ")";
+      oCnn.Open();
+      oCnn.Execute(query);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("CargaMaestro.GrabaInfo(String, String[]):" + e +
+                         " SQL:" + query);
+      return false;
+    }
+  }
+
+  /*public boolean NormalizaInfo(String sProcedimiento, String sIdFuncionario) {*/
+
+  public boolean NormalizaInfo(String sPrefijo, String sAnexo, String sIdFuncionario) {
+    /* Ajuste */
+    /* (jmarquez1974@hotmail.com)(2005/01/10)(20:33:00)(gmt -06:00)(mostrando resultados de cargas masivas) */
+    String sProcedimiento = sPrefijo + sAnexo + " " + sIdFuncionario;
+
+    try {
+      ResultSet oRs;
+      oCnn.Open();
+      //System.out.println(sProcedimiento);
+      oRs = oCnn.Execute("Execute " + sProcedimiento);
+      /* (Aqui reportamos un debug de recuperacion de registros cargados exitosamente y con error. (jmarquez1974@hotmail.com)(2005/01/10)(16:25:00) */
+      System.out.println("Informacion: com.consiss.util.CargaMaestro Aqui recupera la informacion de carga.");
+
+      /* (Inicio: Aqui interceptamos la recuperacion de registros cargados exitosamente y con error. (jmarquez1974@hotmail.com)(2005/01/10)(17:10:00) */
+      /* (jmarquez1974@hotmail.com)(2005/01/10)(20:33:00)(gmt -06:00)(mostrando resultados de cargas masivas) */
+      /*resolverRegistrosCargadosYConError (oCnn, oRs, sAnexo, sIdFuncionario);*/
+      oRs = resolverRegistrosCargadosYConError (oCnn, oRs, sAnexo, sIdFuncionario);
+      /*
+      String query = "SELECT (SELECT COUNT(*) FROM " + sAnexo +
+          " WHERE IDFUNCIONARIO = '" + sIdFuncionario +
+          "' AND ULTIMACARGA = '1') AS REGISTROSACARGAR" +
+          ", (SELECT COUNT(*) FROM ERR" + sAnexo + " WHERE IDFUNCIONARIO = '" +
+          sIdFuncionario +
+          "' ) AS REGISTROSCONERROR FROM DUAL";
+      oRs = oCnn.Execute(query);
+      */
+      /* (Fin: Aqui interceptamos la recuperacion de registros cargados exitosamente y con error. (jmarquez1974@hotmail.com)(2005/01/10)(17:10:00) */
+
+      if (oRs != null) {
+        if (oRs.next()) {
+          iRegistrosACargar = oRs.getInt("RegistrosACargar");
+          iRegistrosConError = oRs.getInt("RegistrosConError");
+
+          /* Preferible a complicar el query anterior (jmarquez1974@hotmail.com)(2005/01/17)(11:48:00)(gmt -06:00) */
+          iRegistrosACargar = iRegistrosACargar + iRegistrosConError;
+          /* Preferible a complicar el query anterior (jmarquez1974@hotmail.com)(2005/01/17)(11:48:00)(gmt -06:00) */
+
+        }
+        oRs.close();
+      }
+
+      oRs = null;
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("CargaMaestro.NormalizaInfo:" + e + " SQL:Execute " +
+                         sProcedimiento);
+      return false;
+    }
+  }
+
+  /**
+   * Recupera el numero de registros cargados exitosamente y con error.
+   * (jmarquez1974@hotmail.com)(2005/01/10)(20:33:00)(gmt -06:00)(mostrando resultados de cargas masivas).
+   * @param oCnn La conexion JDBC en cual ejecutar las operaciones.
+   * @param oRs El Result Set para operar los resultados.
+   * @param sAnexo El anexo que hay que consultar.
+   * @param sIdFuncionario El funcionario sobre el cual hay que consultar.
+   * @throws Throwable Excepcion al ejecutar las consultas.
+   * @return El Result Set con el resultado de registros cargados y con error.
+   */
+  public ResultSet resolverRegistrosCargadosYConError(ConnectionJDBC oCnn,
+                                                 ResultSet oRs, String sAnexo,
+                                                 String sIdFuncionario) throws
+      Throwable {
+    oRs = null;
+    String query = "SELECT (SELECT COUNT(*) FROM " + sAnexo +
+        " WHERE IDFUNCIONARIO = '" + sIdFuncionario +
+        "' AND ULTIMACARGA = '1') AS REGISTROSACARGAR" +
+        ", (SELECT COUNT(*) FROM ERR" + sAnexo + " WHERE IDFUNCIONARIO = '" +
+        sIdFuncionario +
+        "' ) AS REGISTROSCONERROR FROM DUAL";
+    oRs = oCnn.Execute(query);
+    return oRs;
+
+  }
+
+  public boolean LimpiaInfo(String sTabla) {
+    try {
+      oCnn.Open();
+      oCnn.Execute("DELETE " + sTabla);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("CargaMaestro.LimpiaInfo:" + e + " SQL:DELETE " +
+                         sTabla);
+      return false;
+    }
+  }
+}

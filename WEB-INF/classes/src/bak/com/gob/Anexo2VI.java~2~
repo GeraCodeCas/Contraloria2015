@@ -1,0 +1,411 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 12.Nov.2002
+ * Purpose: Defines the Class Anexo2VI
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo2VI {
+
+//Declaración de Variables
+private int				iIdAnexo;
+private String 		    sNombreAnexo;
+private int 			iIdFuncionario;
+private int				iIdRenglon;
+private String 			sNumeroDocumento;
+private String 			sNombreAcreedor;
+private String 			sConcepto;
+private String 			sFechaVencimiento;
+private String 			sImporte;
+private String 			sSaldo;
+private VMatrix		    vmFuncionario;
+private long			iGetAllCount;
+private ConnectionJDBC	oCnn;
+
+//Inicializacion de la Clase
+public Anexo2VI()  throws SQLException, IOException {
+		String sSql;
+		iIdAnexo	  			= 0;
+		sNombreAnexo  			= "";
+	    iIdFuncionario 			= 0;
+		iIdRenglon		 	 	= 0;
+		sNumeroDocumento		= "";
+  	    sNombreAcreedor			= "";
+		sConcepto				= "";
+		sFechaVencimiento		= "";
+		sImporte				= "";
+		sSaldo				    = "";
+		vmFuncionario			= new VMatrix();
+		oCnn					= new ConnectionJDBC();
+		iGetAllCount	= 0;
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		oCnn.Open();
+		ResultSet oRs = null;
+		sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo II.6'";
+		try {
+			oRs = oCnn.Execute(sSql);
+			if (oRs.next()) {
+				iIdAnexo 		= oRs.getInt("IdAnexo");
+				sNombreAnexo	= oRs.getString("Nombre");
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo2VI.init: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+		}
+	}
+//Creación de las Propiedades
+public int		GetIdAnexo() 					{	return iIdAnexo;			}
+public String	GetNombreAnexo() 				{	return sNombreAnexo;			}
+public long		GetAllCount()					{	return iGetAllCount; }
+
+// Propiedades del IdRenglon
+	public void SetIdRenglon(int iDATA){	
+				 iIdRenglon 		= iDATA;	
+	}
+	public int GetIdRenglon(){	
+				 return iIdRenglon;
+	}
+
+//Para el Vmatrix	
+	public int GetIdRenglon(int iPos){	
+		  int iIdRenglon = -1;
+		  try{ 
+		       iIdRenglon = java.lang.Integer.parseInt((((Vector)vmFuncionario.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); 
+		  }
+		  catch(Throwable e){ 
+		        System.out.println("oFuncionario.GetIdTipo: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmFuncionario.getVMatrixAll().elementAt(0)).elementAt(iPos)); 
+		  }
+		  finally{ 
+		        return iIdRenglon; 
+		  }
+	}
+// Propiedades del IdRenglon
+	
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos){
+		int iGetIdFuncionario = -1;
+		try { iGetIdFuncionario = java.lang.Integer.parseInt((((Vector)vmFuncionario.getVMatrixAll().elementAt(1)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdFuncionario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmFuncionario.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionario; }
+	}
+	
+	public void 	SetNumeroDocumento(String sDATA) 		{	sNumeroDocumento 		= sDATA;	}
+	public String	GetNumeroDocumento() 					{	return sNumeroDocumento;			}
+	public String	GetNumeroDocumento(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(2)).elementAt(iPos);			}
+	
+	public void 	SetNombreAcreedor(String sDATA) 		{	sNombreAcreedor 		= sDATA;	}
+	public String	GetNombreAcreedor() 					{	return sNombreAcreedor;			}
+    public String	GetNombreAcreedor(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(3)).elementAt(iPos);			}
+	
+	public void 	SetConcepto(String sDATA) 		{	sConcepto 		= sDATA;	}
+	public String	GetConcepto() 					{	return sConcepto;			}
+	public String	GetConcepto(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(4)).elementAt(iPos);			}
+	
+	public void 	SetFechaVencimiento(String sDATA) 		{	sFechaVencimiento 		= sDATA;	}
+	public String	GetFechaVencimiento() 					{	return sFechaVencimiento;			}
+	public String	GetFechaVencimiento(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(5)).elementAt(iPos);			}
+	
+	public void 	SetImporte(String sDATA) 		{	sImporte 		= sDATA;	}
+	public String	GetImporte() 					{	return sImporte;			}
+	public String	GetImporte(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(6)).elementAt(iPos);			}
+	
+	public void 	SetSaldo(String sDATA) 		{	sSaldo 		= sDATA;	}
+	public String	GetSaldo() 					{	return sSaldo;			}
+	public String	GetSaldo(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(7)).elementAt(iPos);			}
+		
+//Metodos públicos
+	public boolean Get(int pIdRenglon) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT  IdRenglon, IdFuncionario, NumeroDocumento, NombreAcreedor, Concepto, FechaVencimiento, Importe, Saldo FROM Anexo2VI WHERE IdRenglon = " + pIdRenglon;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdRenglon"), rs.getInt("IdFuncionario"), 
+					rs.getString("NumeroDocumento"), rs.getString("NombreAcreedor"), 
+					rs.getString("Concepto"), rs.getString("FechaVencimiento"),
+					rs.getString("Importe") , rs.getString("Saldo")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+	
+	public int GetAll(int pIdFuncionario, int pItemsPagina, int pPagina) throws SQLException, IOException {
+	if(vmFuncionario.getNumRows()>0) return vmFuncionario.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		
+		sSql = "sel_Anexo2viCountAll " + pIdFuncionario;
+		//sSql = "SELECT IdRenglon, IdFuncionario, NumeroDocumento, NombreAcreedor, Concepto, FechaVencimiento, Importe, Saldo FROM Anexo2VI WHERE IdFuncionario = " + pIdFuncionario + " ORDER BY NumeroDocumento, NombreAcreedor, Concepto";
+		try {
+			rs = oCnn.Execute(sSql);
+			if (rs.next()) {
+				iGetAllCount = rs.getLong("AllCount");
+			}
+			rs.close();
+			rs = null;
+			sSql = "sel_Anexo2viGetAll " + pIdFuncionario + ", " + pItemsPagina + ", " + pPagina;
+			rs = oCnn.Execute(sSql);
+			
+			vmFuncionario.setVMatrixNumCols(8);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdRenglon"), rs.getString("IdFuncionario"), 
+					rs.getString("NumeroDocumento"), rs.getString("NombreAcreedor"), 
+					rs.getString("Concepto"), rs.getString("FechaVencimiento"), 
+					rs.getString("Importe"), rs.getString("Saldo")};
+				vmFuncionario.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Funcionario.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmFuncionario.getNumRows();
+		}
+	}
+	
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+				 if(vmFuncionario.getNumRows()>0) return vmFuncionario.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "sel_Anexo2viGetAll_SP " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			vmFuncionario.setVMatrixNumCols(8);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdRenglon"), rs.getString("IdFuncionario"), 
+					rs.getString("NumeroDocumento"), rs.getString("NombreAcreedor"), 
+					rs.getString("Concepto"), rs.getString("FechaVencimiento"), 
+					rs.getString("Importe"), rs.getString("Saldo")};
+				vmFuncionario.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Funcionario.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmFuncionario.getNumRows();
+		}
+	}
+	
+	
+	
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)vmFuncionario.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon+""), 0);
+	}
+	
+	
+	
+	public boolean Insert(int pIdFuncionario, String pNumeroDocumento, String pNombreAcreedor, String pConcepto, String pFechaVencimiento, String pImporte, String pSaldo) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			sSql = "INSERT INTO Anexo2VI(IdFuncionario, NumeroDocumento, NombreAcreedor, Concepto, FechaVencimiento, Importe, Saldo, UltimaCarga) ";
+			sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+			sSql = sSql + "'" + pNumeroDocumento + "', ";
+			sSql = sSql + "'" + pNombreAcreedor + "', ";
+			sSql = sSql + "'" + pConcepto + "', ";
+			sSql = sSql + "'" + pFechaVencimiento + "', ";
+			sSql = sSql + "'" + pImporte + "', ";
+			sSql = sSql + "'" + pSaldo + "', 0)";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VI.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Update(int pIdRenglon, String pNumeroDocumento, String pNombreAcreedor, String pConcepto, String pFechaVencimiento, String pImporte , String pSaldo) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Anexo2VI SET ";
+			sSql = sSql + "NumeroDocumento = '" + pNumeroDocumento + "', ";
+			sSql = sSql + "NombreAcreedor = '" + pNombreAcreedor + "', ";
+			sSql = sSql + "Concepto = '" + pConcepto + "', ";
+			sSql = sSql + "FechaVencimiento = '" + pFechaVencimiento + "', ";
+			sSql = sSql + "Importe = '" + pImporte + "', ";
+			sSql = sSql + "Saldo = '" + pSaldo + "', UltimaCarga = 0 ";
+			sSql = sSql + "WHERE IdRenglon = " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VI.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "DELETE FROM Anexo2VI WHERE IdRenglon = " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VI.Delete: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Undo(int pIdFuncionario) throws SQLException, IOException {
+		String sSql = "";
+        try{
+			sSql = "DELETE FROM Anexo2VI WHERE IdFuncionario = " + pIdFuncionario + " AND UltimaCarga = 1";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VI.Undo: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean DeleteAll(int pIdFuncionario) throws SQLException, IOException {
+	    String sSql = "";
+        try{
+			sSql = "DELETE FROM Anexo2VI WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+                    }catch(Throwable e){
+			System.out.println("Error en Anexo2VI.DeleteAll: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, int	pIdRenglon, String pNumeroDocumento, String pNombreAcreedor, String pConcepto, String pFechaVencimiento, String pImporte, String pSaldo){
+		iIdFuncionario		    = pIdFuncionario;
+		iIdRenglon 				= pIdRenglon;
+		sNumeroDocumento		= pNumeroDocumento;
+		sNombreAcreedor			= pNombreAcreedor;
+		sConcepto		    	= pConcepto;
+		sFechaVencimiento       = pFechaVencimiento;
+		sImporte 				= pImporte;
+		sSaldo			        = pSaldo;
+	}
+	
+	
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo2VI.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo2VI.html");
+			java.text.DecimalFormat FormatoDecimal = new java.text.DecimalFormat("###,##0.00");
+			
+			sAnexo 					= "II.6";
+			iIdAnexo 				= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 				= oAnexoEstatus.GetEstatus();
+			sAux = "\n				<tr><TD  colspan='3' class='TituloParrafo' width='70%'>ANEXO II.6 - RELACIÓN DE DOCUMENTOS Y CUENTAS POR PAGAR</TD></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			sArchivo = "\n	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+			sArchivo += "\n		<TR align='middle'><td class='TituloMenu'>Número de Documento</TD><td class='TituloMenu'>Nombre del Acreedor</TD><td class='TituloMenu'>Concepto</TD><td class='TituloMenu'>Fecha de Vencimiento</TD><td class='TituloMenu'>Importe</TD><td class='TituloMenu'>Saldo</TD></TR>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			if(!sEstatus.equals("0")){
+				int intContador = 0;
+				String sBackColor = "";
+				GetAll(iIdFuncionario);
+				for(int i=0;i<GetAll(iIdFuncionario);i++){
+				    String vIdRenglon 		= GetIdRenglon(i)!=-1?GetIdRenglon(i)+"":"0";
+					String vNumeroDocumento = GetNumeroDocumento(i)!=null?GetNumeroDocumento(i):"";
+					String vNombreAcreedor 	= GetNombreAcreedor(i)!=null?GetNombreAcreedor(i):"";
+					String vConcepto 		= GetConcepto(i)!=null?GetConcepto(i):"";
+					String vFechaVencimiento= GetFechaVencimiento(i)!=null?GetFechaVencimiento(i):"";
+					String vImporte 		= GetImporte(i)!=null?GetImporte(i):"";
+					String vSaldo			= GetSaldo(i)!=null?GetSaldo(i):"";
+					intContador = intContador + 1;
+					if (intContador%2 == 0) {sBackColor = "#ffffff";}
+					else					{sBackColor = "#eeeeee";}
+					sArchivo = "\n		<TR align='left' bgcolor='" + sBackColor + "' ";
+					sArchivo += "\n			onMouseOver = 'MouseDentro(this);'";
+					sArchivo += "\n			onMouseOut  = " + c + "MouseFuera(this,'" + sBackColor + "');" + c + ">";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vNumeroDocumento + "</a></TD>";
+					sArchivo += "\n			<TD >&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vNombreAcreedor + "</a></TD>";
+					sArchivo += "\n			<TD >&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vConcepto + "</a></TD>";
+					sArchivo += "\n			<TD align='center'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vFechaVencimiento + "</a></TD>";
+					sArchivo += "\n			<TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vImporte.equals("")?vImporte:"0")) + "</a>&nbsp;&nbsp;</TD>";
+					sArchivo += "\n			<TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vSaldo.equals("")?vSaldo:"0")) + "</a>&nbsp;&nbsp;</TD>";
+					sArchivo += "\n		</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+					}
+				sArchivo = "\n</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			} else {
+				sArchivo = "\n	</TABLE>";
+				sArchivo += "\n	<TABLE width='100%'>";
+				sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();			
+			
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VI.setHistory: " + e );
+			sError = " - Anexo2VI.setHistory: " + e ;
+		}
+		return sError;
+	}
+}

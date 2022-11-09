@@ -1,0 +1,344 @@
+body, td, input {
+	font-family:Verdana, san-serif;
+	font-size:10px;
+	color:#000000;
+	font-variant : normal;
+}
+.tInicio01 {
+	font-family: "Arial Black";
+	font-size: 25px;
+	color:#000000;
+	font-weight : bolder;
+}
+.tInicio1 {
+	font-family: "Century Gothic";
+	font-size: 20px;
+	color:#000000;
+	position : absolute;
+	font-weight : 900;
+}
+
+.boton {font-family:Verdana, san-serif;
+	cursor:hand;
+	font-size:10px;
+	border-style:outset;
+	border-color:#2010D8;
+	color:#FFFFFF;
+	border-width:1px;
+	height:15px;
+	font-weight:  BOLD;
+	background-color:#2010D8;}
+
+.Anexos{font-family:Verdana, san-serif;
+	font-size:9px;
+	border-style:outset;
+	border-color:navy;
+	color:#000000;
+	border-width:1px;
+	font-weight:  BOLD;
+	background-color:white;
+	}
+
+.AnexosImpr{font-family:Courier New;
+	font-size:11px;
+	color:#000000;
+	font-weight:  BOLD;
+	background-color:white;
+	}
+.AnexosTitulo{
+	font-family:Arial;font-size:14px;font-weight:Bold;
+}
+.TituloMenu{font-family:Verdana, san-serif;
+	font-size:10px;
+	border-style:outset;
+	border-color:#D9BA17;
+	color:#000000;
+	border-width:1px;
+	font-weight:  BOLD;
+	background-color:#E0C018;}
+
+.TituloMenuGrande{
+	font-family:Verdana, san-serif;
+	font-size:12px;
+	border-style:outset;
+	border-color:#D9BA17;
+	color:#000000;
+	border-width:1px;
+	font-weight:  BOLD;
+	background-color:#E0C018;}
+	
+.TituloMenuImpr{font-family:Courier New;
+	font-size:11px;
+	color:#000000;
+	font-weight:  BOLD;
+	border-width:1px;
+	border-color:#000000;
+	}
+	
+.TituloParrafoImpr{font-family:Courier New;
+	font-size:13px;
+	font-weight:  BOLD; 
+	color:#000000;
+}
+
+	
+.ContenidoImpr{font-family:Courier New;
+	font-size:11px;
+	color:#000000;
+}
+
+.ContenidoImpr1Col{font-family:Courier New;
+	font-size:11px;
+	color:#000000;
+	border-width:1px;
+	border-color:#000000;
+	}
+
+	
+.ContenidoImprAbajo{font-family:Courier New;
+	font-size:11px;
+	border-top : 0;
+	border-left : 0;
+	border-right : 0;
+	border-color : Black;
+	color:#000000;
+	border-width:2px;
+}
+
+.ContenidoImprRAbajo{font-family:Courier New;
+	font-size:11px;
+	border-left : 2px;
+	border-top:0;
+	border-color : Black;
+	color:#000000;
+	border-width:2px;
+}
+
+.ContenidoImpr341{font-family:Courier New;
+	font-size:9px;
+	color:#000000;
+}
+
+.ContenidoImprR{font-family:Courier New;
+	font-size:11px;
+	border-left : 2px;
+	border-bottom:0;
+	border-top:0;
+	border-color : Black;
+	color:#000000;
+	border-width:2px;
+}
+
+.ContenidoImprR341{font-family:Courier New;
+	font-size:9px;
+	border-left : 2px;
+	border-bottom:0;
+	border-top:0;
+	border-color : Black;
+	color:#000000;
+	border-width:2px;
+}
+
+.ContenidoImprL{font-family:Courier New;
+	font-size:11px;
+	border-left-width:2px;
+	border-left-color : #000000;
+	border-bottom:0;
+	border-top:0;
+	color:#000000;
+}
+
+.ContenidoImprL341{font-family:Courier New;
+	font-size:9px;
+	border-right : 2px;
+	border-width:2px;
+	border-bottom : 0;
+	border-top:0;
+	border-color : #000000;
+	color:#000000;
+}
+.ContenidoImprB{font-family:Courier New;
+	font-size:4px;
+	border-top:1px;
+	border-color:#000000;
+	border-width:2px;
+}
+
+.SubTitulomenuNegro{
+	font-family:Verdana, san-serif;
+	font-size:11px;
+	bgcolor:#000000;
+	border-width:1px;
+	font-weight:  BOLD;
+	color:#FFFFFF;
+	}
+	
+.TextoOculto{
+	font-family:Verdana, san-serif;
+	font-size:8px;
+	bgcolor:#000000;
+	border-width:1px;
+	font-weight:  BOLD;
+	color:#FFFFFF;
+	}
+	
+.SubTitulomenu{
+	font-family:Verdana, san-serif;
+	cursor:hand;
+	font-size:11px;
+	bgcolor:#FFFFFF;
+	border-width:1px;
+	font-weight:  BOLD;
+	}
+
+.OpcionMenuTd{cursor:hand; }
+.OpcionMenuTdOver{cursor:hand; font-weight:  BOLD;}
+		
+.OpcionMenu{font-family:Verdana, san-serif;
+	cursor:hand;
+	font-size:11px;
+	color:#000000;
+	border-width:1px;}
+	
+.TituloParrafo{font-family:Verdana, san-serif;
+	font-size:13px;
+	font-weight:  BOLD; 
+	color:#000000;
+}
+.TituloEstatus{font-family:Verdana, san-serif;
+	font-size:15px;
+	font-weight:  BOLDER; 
+	color:#000000;
+}
+.SubTituloParrafo{font-family:Verdana, san-serif;
+	font-size:11px;
+	font-weight:  BOLD; 
+	color:#000000;
+}
+
+.ContenidoParrafo{font-family:Verdana, san-serif;
+	font-size:10px;
+	color:#000000;
+}
+
+
+.txtBox {BACKGROUND-COLOR: #FAFBFB; 
+         COLOR: #000000; 
+         FONT-SIZE: 11px;
+	 FONT-FAMILY : Verdana, sans-serif;}
+	
+.txtNumeric {BACKGROUND-COLOR: #FAFBFB; 
+         COLOR: #000000; 
+         FONT-SIZE: 11px;
+				 TEXT-ALIGN:right;
+	 FONT-FAMILY : Verdana, sans-serif;}
+
+.cmbBox {BACKGROUND-COLOR: #FAFBFB; 
+	 COLOR: #000000; 
+	 FONT-SIZE: 11px; 
+	 FONT-FAMILY : Verdana, sans-serif;}
+
+
+.Etiquetafrm {FONT-FAMILY: Verdana,san-serif;
+	      FONT-SIZE: 11px;
+              COLOR: #000000;
+	      background-color:#CECECE;
+ 	      TEXT-ALIGN  : right;
+	      FONT-WEIGHT: BOLD;}
+
+.AyudaEti{
+	font-family:Verdana, san-serif;
+	font-size:13px;
+	font-weight:  BOLD;
+	width:214.3pt;
+	border:solid windowtext 1.0pt;
+	border-top:none;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:31.0pt
+	vertical-align: top;
+	}
+.AyudaEti3{
+	font-family:Verdana, san-serif;
+	font-size:11px;
+
+	width:214.3pt;
+	border:solid windowtext 1.0pt;
+	border-top:none;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:31.0pt
+	vertical-align: top;
+	}
+
+.AyudaEti2{
+	font-family:Verdana, san-serif;
+	font-size:13px;
+	border-style:outset;
+	border-color:#D9BA17;
+	color:#000000;
+	border-width:1px;
+	font-weight:  BOLD;
+	background-color:#E0C018;
+	width:214.3pt;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	}
+.AyudaTxt{
+	font-family:Verdana, san-serif;
+	font-size:11px;
+	
+	width:218.05pt;
+	border-top:none;
+	border-left: none;
+	border-bottom:solid windowtext 1.0pt;
+	border-right:solid windowtext 1.0pt;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:31.0pt
+	}
+
+.AyudaTxtIzq{
+	font-family:Verdana, san-serif;
+	font-size:11px;
+	width:218.05pt;
+	border-top:solid windowtext 1.0pt;
+	border-left: solid windowtext 1.0pt;
+	border-bottom:solid windowtext 1.0pt;
+	border-right:solid windowtext 1.0pt;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:31.0pt
+	}	
+.AyudaTxtDer{
+	font-family:Verdana, san-serif;
+	font-size:11px;
+	width:218.05pt;
+	border-top:solid windowtext 1.0pt;
+	border-left: none;
+	border-bottom:solid windowtext 1.0pt;
+	border-right:solid windowtext 1.0pt;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:31.0pt
+	}	
+.AyudaTit{
+	font-family:Verdana, san-serif;
+	font-size:14px;
+	font-weight:  BOLD;
+	border:none;
+	border-bottom:solid windowtext 1.0pt;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:19.8pt
+  }
+
+  .AyudaTit2{
+	font-family:Verdana, san-serif;
+	font-size:14px;
+	font-weight:  BOLD;
+	border:none;
+	border-bottom:solid windowtext 1.0pt;
+	padding:0cm 3.5pt 0cm 3.5pt;
+	height:19.8pt
+  }	
+  
+@media div.page  { 
+		writing-mode: tb-rl;
+		reference-orientation=0;
+		height: 100%;
+		margin: 10% 0%;
+		}

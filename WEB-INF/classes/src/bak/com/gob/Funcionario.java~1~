@@ -1,0 +1,657 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 24.Oct.2002
+ * Purpose: Defines the Class Usuario Funcionario
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Funcionario {
+
+//Declaración de Variables
+private int 			 iIdFuncionario;
+private String 			 sNombre;
+private String 			 sApePaterno;
+private String 			 sApeMaterno;
+private String 			 dFecIni;
+private String 			 dFecFin;
+private int 			 iIdUsuario;
+private int 			 iIdCargo;
+private String 			 sEmail;
+private int 			 iMaxUsuarios;
+private String 			 sEstatus;
+private int 			 iIdFuncionarioAnt;
+private String 			 sCargo;
+private int 			 iIdUnidadAdministrativa;
+private String 			 sUnidadAdministrativa;
+private int 			 iIdUnidadGobierno;
+private String 			 sUnidadGobierno;
+
+private VMatrix			 oVm;
+private ConnectionJDBC	 oCnn;
+
+private static String	sEstatusBaja						= "0";
+private static String	sEstatusActivo						= "1";
+private static String	sEstatusReActivado					= "2";
+private static String	sRevisandoAntFuncionario			= "3";
+
+//Inicializacion de la Clase
+	public Funcionario()  throws SQLException, IOException {
+		iIdFuncionario			= 0;
+		sNombre					= "";
+		sApePaterno				= "";
+		sApeMaterno				= "";
+		dFecIni					= "";
+		dFecFin					= "";
+		iIdUsuario				= 0;
+		iIdCargo				= 0;
+		sEmail					= "";
+		iMaxUsuarios			= 0;
+		sEstatus				= "";
+		iIdFuncionarioAnt		= 0;
+		sCargo					= "";
+		iIdUnidadAdministrativa	= 0;
+		sUnidadAdministrativa	= "";
+		iIdUnidadGobierno		= 0;
+		sUnidadGobierno			= "";
+		oVm	= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+	}
+
+ //Creación de las Propiedades
+	public void 			SetIdFuncionario(int iDATA)	{	iIdFuncionario 	= iDATA;}
+	public int 				GetIdFuncionario() 			{	return iIdFuncionario;	}
+	public int				GetIdFuncionario(int iPos)	{
+		int iGetIdFuncionario = -1;
+		try { iGetIdFuncionario = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdFuncionario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionario; }
+	}
+	
+	public void 			SetNombre(String sDATA)		{	sNombre 		= sDATA;}
+	public String			GetNombre() 				{	return sNombre;	}
+	public String			GetNombre(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+	public void 			SetApePaterno(String sDATA)	{	sApePaterno 	= sDATA;}
+	public String			GetApePaterno() 			{	return sApePaterno;	}
+	public String			GetApePaterno(int iPos)		{	return ((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+	
+	public void 			SetApeMaterno(String sDATA)	{	sApeMaterno 	= sDATA;}
+	public String			GetApeMaterno() 			{	return sApeMaterno;	}
+	public String			GetApeMaterno(int iPos)		{	return ((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos).toString();	}
+	
+	public void 			SetFecIni(String dDATA)		{	dFecIni 		= dDATA;}
+	public String			GetFecIni() 				{	return dFecIni;	}
+	public String			GetFecIni(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos)!=null?((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos).toString():"";	}
+	
+	public void 			SetFecFin(String dDATA)		{	dFecFin 		= dDATA;}
+	public String			GetFecFin() 				{	return dFecFin;	}
+	public String			GetFecFin(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos)!=null?((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos).toString():"";	}
+		
+	public void 			SetIdUsuario(int iDATA)		{	iIdUsuario 	= iDATA;}
+	public int 				GetIdUsuario() 				{	return iIdUsuario;	}
+	public int				GetIdUsuario(int iPos)		{
+		int iGetIdUsuario = -1;
+		try { iGetIdUsuario = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdUsuario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos)); }
+		finally{ return iGetIdUsuario; }
+	}
+	
+	public void 			SetIdCargo(int iDATA)		{	iIdCargo 	= iDATA;}
+	public int 				GetIdCargo() 				{	return iIdCargo;	}
+	public int				GetIdCargo(int iPos)		{
+		int iGetIdCargo = -1;
+		try { iGetIdCargo = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdCargo: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos)); }
+		finally{ return iGetIdCargo; }
+	}
+
+	public String			GetEmail(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos)!=null?((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos).toString():"";	}
+
+	public int 				GetMaxUsuarios() 			{	return iMaxUsuarios;	}
+	public int				GetMaxUsuarios(int iPos)	{	return ((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos)!=null?java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos).toString()):0;	}
+
+	public String			GetEstatus() 				{	return sEstatus;		}	
+	public String			GetEstatus(int iPos)		{	return ((Vector)oVm.getVMatrixAll().elementAt(10)).elementAt(iPos)+""; }
+						//	GetIdFuncionarioAnt
+	public int 				GetIdFuncionarioAnt()		{	return iIdFuncionarioAnt; }
+	public int				GetIdFuncionarioAnt(int iPos){	return ((Vector)oVm.getVMatrixAll().elementAt(11)).elementAt(iPos)!=null?java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(11)).elementAt(iPos).toString()):0;	}
+
+	public String			GetCargo() 					{	return sCargo;	}
+	public String			GetCargo(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(12)).elementAt(iPos)!=null?((Vector)oVm.getVMatrixAll().elementAt(12)).elementAt(iPos).toString():"";	}
+	
+	public int 				GetIdUnidadAdministrativa() {	return iIdUnidadAdministrativa;	}
+	public int				GetIdUnidadAdministrativa(int iPos)	{	return ((Vector)oVm.getVMatrixAll().elementAt(13)).elementAt(iPos)!=null?java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(13)).elementAt(iPos).toString()):0;	}
+	
+	public String			GetUnidadAdministrativa() 	{	return sUnidadAdministrativa;	}
+	public String			GetUnidadAdministrativa(int iPos){	return ((Vector)oVm.getVMatrixAll().elementAt(14)).elementAt(iPos)+""; }
+	
+	public int 				GetIdUnidadGobierno()		{	return iIdUnidadGobierno;		}
+	public int				GetIdUnidadGobierno(int iPos){	return ((Vector)oVm.getVMatrixAll().elementAt(15)).elementAt(iPos)!=null?java.lang.Integer.parseInt(((Vector)oVm.getVMatrixAll().elementAt(15)).elementAt(iPos).toString()):0;	}
+	
+	public String			GetUnidadGobierno() 		{	return sUnidadGobierno;			}
+	public String			GetUnidadGobierno(int iPos){	return ((Vector)oVm.getVMatrixAll().elementAt(16)).elementAt(iPos)+""; }
+		
+	public static String	GetEstatusBaja()					{	return sEstatusBaja;	}
+	public static String	GetEstatusActivo()					{	return sEstatusActivo;	}
+	public static String	GetEstatusReActivado()				{	return sEstatusReActivado;	}
+	public static String	GetEstatusRevisandoAntFuncionario()	{	return sRevisandoAntFuncionario;	}
+	
+	public String	GetEstatusDesc(String sDATA){
+		if(sDATA.equals(sEstatusBaja))				return "Baja";
+		else if(sDATA.equals(sEstatusActivo))		return "Activo";
+		else if(sDATA.equals(sEstatusReActivado))	return "ReActivado";
+		else if(sDATA.equals(sRevisandoAntFuncionario))	return "Revisando Anterior Funcionario";
+		else										return "";
+	}
+	
+	public String	GetEstatusPos(int iPos){
+		if(iPos==0)								return "Baja";
+		else if(iPos==1)						return "Activo";
+		else if(iPos==2)						return "ReActivado";
+		else									return "";
+	}
+		
+//Metodos públicos
+	public boolean GetUsuario(int pIdUsuario) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			ResultSet rs;
+	
+			sSql = "SELECT a.IdFuncionario, a.Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, a.IdCargo, " + 
+				"Email, MaxUsuarios, a.Estatus, IdFuncionarioAnt, b.Nombre as Cargo, b.IdUnidadAdministrativa, " + 
+				"c.Nombre as UnidadAdministrativa, c.IdUnidadGobierno, d.Nombre as UnidadGobierno " + 
+				"FROM Funcionario a, Cargo b, UnidadAdministrativa c, UnidadGobierno d " + 
+				"WHERE a.IdCargo = b.IdCargo " +
+				"AND b.IdUnidadAdministrativa = c.IdUnidadAdministrativa " +
+				"AND c.IdUnidadGobierno = d.IdUnidadGobierno " +
+				"AND IdUsuario = " + pIdUsuario;
+			rs = oCnn.Execute(sSql);
+			if(rs.next()){
+				CargaDatos(rs.getInt("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), rs.getString("ApeMaterno"), 
+						rs.getString("FecIni"), rs.getString("FecFin"), rs.getInt("IdUsuario"), rs.getInt("IdCargo"), rs.getString("Email"), 
+						rs.getInt("MaxUsuarios"), rs.getString("Estatus"), rs.getInt("IdFuncionarioAnt"), rs.getString("Cargo"), 
+						rs.getInt("IdUnidadAdministrativa"), rs.getString("UnidadAdministrativa"), rs.getInt("IdUnidadGobierno"), rs.getString("UnidadGobierno"));
+				rs.close();
+				rs = null;
+				oCnn.Close();
+				return true;
+			}	
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return false;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.GetUsuario: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+
+	public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			ResultSet rs;
+			sSql = "SELECT a.IdFuncionario, a.Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, a.IdCargo, " + 
+				"Email, MaxUsuarios, a.Estatus, IdFuncionarioAnt, b.Nombre as Cargo, b.IdUnidadAdministrativa, " + 
+				"c.Nombre as UnidadAdministrativa, c.IdUnidadGobierno, d.Nombre as UnidadGobierno " + 
+				"FROM Funcionario a, Cargo b, UnidadAdministrativa c, UnidadGobierno d " + 
+				"WHERE a.IdCargo = b.IdCargo " +
+				"AND b.IdUnidadAdministrativa = c.IdUnidadAdministrativa " +
+				"AND c.IdUnidadGobierno = d.IdUnidadGobierno " +
+				"AND A.IdFuncionario = " + pIdFuncionario;
+			rs = oCnn.Execute(sSql);
+			if(rs.next()){
+				CargaDatos(rs.getInt("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), rs.getString("ApeMaterno"), 
+						rs.getString("FecIni"), rs.getString("FecFin"), rs.getInt("IdUsuario"), rs.getInt("IdCargo"), rs.getString("Email"), 
+						rs.getInt("MaxUsuarios"), rs.getString("Estatus"), rs.getInt("IdFuncionarioAnt"), rs.getString("Cargo"), 
+						rs.getInt("IdUnidadAdministrativa"), rs.getString("UnidadAdministrativa"), rs.getInt("IdUnidadGobierno"), rs.getString("UnidadGobierno") );
+				rs.close();
+				rs = null;
+				oCnn.Close();
+				return true;
+			}	
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return false;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.GetUsuario: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+	
+	public int GetAll() throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT a.IdFuncionario, a.Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, a.IdCargo, Email, " + 
+						"MaxUsuarios, Estatus, IdFuncionarioAnt, b.Nombre as Cargo, b.IdUnidadAdministrativa, " + 
+						"c.Nombre as UnidadAdministrativa, c.IdUnidadGobierno, d.Nombre as UnidadGobierno " + 
+						"FROM Funcionario a, Cargo b, UnidadAdministrativa c, UnidadGobierno d " + 
+						"WHERE a.IdCargo = b.IdCargo " +
+						"AND b.IdUnidadAdministrativa = c.IdUnidadAdministrativa " +
+						"AND c.IdUnidadGobierno = d.IdUnidadGobierno " +						
+						"ORDER BY a.Nombre, ApePaterno, ApeMaterno, a.IdFuncionario";
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(17);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getString("FecIni"), rs.getString("FecFin"), rs.getString("IdUsuario"), 
+					rs.getString("IdCargo"), rs.getString("Email"), rs.getString("MaxUsuarios"), rs.getString("Estatus"),
+					rs.getString("IdFuncionarioAnt"),
+					rs.getString("Cargo"), rs.getString("IdUnidadAdministrativa"), 
+					rs.getString("UnidadAdministrativa"), rs.getString("IdUnidadGobierno"), rs.getString("UnidadGobierno") };
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Funcionario.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	
+	
+	public int GetPos(int pIdFuncionario) throws SQLException, IOException {
+		GetAll();
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdFuncionario+""), 0);
+	}
+
+	public boolean GetUAdministrativa(int pIdUnidadAdministrativa) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			ResultSet rs;
+			sSql = "SELECT a.IdFuncionario, a.Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, a.IdCargo, " + 
+				"Email, MaxUsuarios, a.Estatus, IdFuncionarioAnt, b.Nombre as Cargo, b.IdUnidadAdministrativa, " + 
+				"c.Nombre as UnidadAdministrativa, c.IdUnidadGobierno, d.Nombre as UnidadGobierno " + 
+				"FROM Funcionario a, Cargo b, UnidadAdministrativa c, UnidadGobierno d " + 
+				"WHERE a.IdCargo = b.IdCargo " +
+				"AND b.IdUnidadAdministrativa = c.IdUnidadAdministrativa " +
+				"AND c.IdUnidadGobierno = d.IdUnidadGobierno " +
+				"AND A.IdFuncionario = b.IdFuncionario " +
+				"AND b.IdUnidadAdministrativa = " + pIdUnidadAdministrativa;
+			rs = oCnn.Execute(sSql);
+			if(rs.next()){
+				CargaDatos(rs.getInt("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), rs.getString("ApeMaterno"), 
+						rs.getString("FecIni"), rs.getString("FecFin"), rs.getInt("IdUsuario"), rs.getInt("IdCargo"), rs.getString("Email"), 
+						rs.getInt("MaxUsuarios"), rs.getString("Estatus"), rs.getInt("IdFuncionarioAnt"), rs.getString("Cargo"), 
+						rs.getInt("IdUnidadAdministrativa"), rs.getString("UnidadAdministrativa"), rs.getInt("IdUnidadGobierno"), rs.getString("UnidadGobierno") );
+				rs.close();
+				rs = null;
+				oCnn.Close();
+				return true;
+			}	
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return false;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.GetUAdministrativa: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+	
+	public int GetAll(int pIdUnidadGobierno) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT a.IdFuncionario, a.Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, " + 
+					"a.IdCargo, Email, MaxUsuarios, a.Estatus, IdFuncionarioAnt " + 
+					"FROM Funcionario a, Cargo b, UnidadAdministrativa c WHERE a.IdCargo = b.IdCargo " +
+					"AND b.IdUnidadAdministrativa = c.IdUnidadAdministrativa AND (IdUnidadGobierno = " + pIdUnidadGobierno + 
+					" OR " + pIdUnidadGobierno + " = 0) ORDER BY c.IdUnidadGobierno, c.Nombre, ApePaterno, ApeMaterno, a.Nombre";
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(12);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getString("FecIni"), rs.getString("FecFin"), rs.getString("IdUsuario"), 
+					rs.getString("IdCargo"), rs.getString("Email"), rs.getString("MaxUsuarios"), rs.getString("Estatus"),
+					rs.getString("IdFuncionarioAnt")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Funcionario.GetAll(int): " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+		
+	public void SetRemove(){
+		oVm.RemoveAll();
+	}
+	
+	public int GetUnidadesAll() throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		String sSql = "";
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			// EXLUYENDO A LOS QUE ESTAN DE BAJA
+			sSql = "SELECT distinct a.IdFuncionario, a.Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, a.IdUsuario, a.IdCargo, " +
+				" Email, MaxUsuarios, a.Estatus, IdFuncionarioAnt, b.Nombre as Cargo, b.IdUnidadAdministrativa " +
+				" FROM Funcionario a, Cargo b, AnexoEstatus c WHERE a.IdCargo = b.IdCargo " + 
+				" AND a.IdFuncionario = c.IdFuncionario ORDER BY Cargo, a.Nombre, ApePaterno, ApeMaterno";
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(14);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdFuncionario"), rs.getString("Nombre"), rs.getString("ApePaterno"), 
+					rs.getString("ApeMaterno"), rs.getString("FecIni"), rs.getString("FecFin"), rs.getString("IdUsuario"), 
+					rs.getString("IdCargo"), rs.getString("Email"), rs.getString("MaxUsuarios"), rs.getString("Estatus"), 
+					rs.getString("IdFuncionarioAnt"), rs.getString("Cargo"), rs.getString("IdUnidadAdministrativa")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Funcionario.GetUnidadesAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	
+	public int Insert(String pNombre, String pApePaterno, String pApeMaterno, String pFecIni, String pFecFin, 
+			int	pIdUsuario, int	pIdCargo, String pEmail, String pMaxUsuarios, String pEstatus ) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			iIdFuncionario = 0;
+			sSql = "SELECT ISNULL(MAX(IdFuncionario), 0) AS MaxId FROM Funcionario";
+			ResultSet oRs;
+			oRs = oCnn.Execute(sSql);
+			if(oRs.next()){ iIdFuncionario = oRs.getInt("MaxId"); }
+			oRs.close();
+			oRs = null;
+			iIdFuncionario++;
+			sSql = "INSERT INTO Funcionario(IdFuncionario, Nombre, ApePaterno, ApeMaterno, FecIni, FecFin, IdUsuario, IdCargo, Email, MaxUsuarios, Estatus) VALUES (" +
+				iIdFuncionario + ", '" + pNombre + "', '" + pApePaterno + "', '" + pApeMaterno + "', " + pFecIni + ", " + 
+				pFecFin + ", " + pIdUsuario + ", " + pIdCargo + ", '" + pEmail + "', " + pMaxUsuarios + ", '" + pEstatus + "')";
+			//System.out.println(sSql);
+			oCnn.Execute(sSql);
+			oCnn.Close();			
+			this.CreaAnexoEstatus(iIdFuncionario);
+			this.CreaEntregaEstatus(iIdFuncionario);
+			this.ActualizaCargo(iIdFuncionario, pIdCargo);
+			//File Attach = new File("");
+			String	sRutaBase		= ConnectionWEB.getDataWeb() + "/Attachment";
+			String	sRutaAcceso1	= sRutaBase + "/Funcionario" + iIdFuncionario;
+			javazoom.upload.UploadBean PasoBean = new javazoom.upload.UploadBean();
+			PasoBean.setFolderstore(sRutaAcceso1);
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.Insert: " + e + " SQL:" + sSql);
+		}
+		return iIdFuncionario;
+	}
+	public boolean Update(int pIdFuncionario, String pNombre, String pApePaterno, String pApeMaterno, String pFecIni, 
+			String pFecFin, int	pIdCargo, String pEmail, String pMaxUsuarios, String pEstatus, int iIdUsuario) throws SQLException, IOException {
+		oCnn.Open();
+		String sSql = "";
+		try {
+			sSql = "UPDATE Funcionario SET Nombre = '" + pNombre + "', ApePaterno = '" + pApePaterno + "', ApeMaterno = '" + pApeMaterno + 
+					"', FecIni = " + pFecIni + ", FecFin = " + pFecFin + ", IdCargo = " + pIdCargo + ", Email = '"  + pEmail + "', MaxUsuarios = " + pMaxUsuarios + ", Estatus = '" + pEstatus + "' WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			Usuario oUsuario = new Usuario();
+			oUsuario.UpdateEstatus(iIdUsuario, pEstatus);
+			
+			if(pEstatus.equals(sEstatusBaja)){
+				UsrLimitado oUsrLimitado = new UsrLimitado();
+				//System.out.println("pIdFuncionario:" + pIdFuncionario + " " + oUsrLimitado.GetAll(pIdFuncionario) );
+				for(int i=0;i<oUsrLimitado.GetAll(pIdFuncionario);i++){
+					oUsuario.UpdateEstatus(oUsrLimitado.GetIdUsuario(i), pEstatus);
+				}
+			}
+			this.ActualizaCargo(iIdFuncionario, pIdCargo);
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.Update: " + e + " SQL:" + sSql);
+		}
+		return false;		
+	}
+	public boolean UpdateEstatus(int pIdFuncionario, String pEstatus, int pIdUsuario) throws SQLException, IOException {
+		oCnn.Open();
+		String sSql = "";
+		try {
+			sSql = "UPDATE Funcionario SET Estatus = '" + pEstatus + "' WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			Usuario oUsuario = new Usuario();
+			
+			oUsuario.UpdateEstatus(iIdUsuario, pEstatus);
+			
+			if(pEstatus.equals(sEstatusBaja) || pEstatus.equals(sRevisandoAntFuncionario) ){
+				UsrLimitado oUsrLimitado = new UsrLimitado();
+				//System.out.println("pIdFuncionario:" + pIdFuncionario + " " + oUsrLimitado.GetAll(pIdFuncionario) );
+				for(int i=0;i<oUsrLimitado.GetAll(pIdFuncionario);i++){
+					oUsuario.UpdateEstatus(oUsrLimitado.GetIdUsuario(i), pEstatus);
+				}
+			}
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.UpdateEstatus: " + e + " SQL:" + sSql);
+		}
+		return false;		
+	}
+	public boolean UpdateFuncionarioAnt(int pIdFuncionario, int pIdFuncionarioAnt) throws SQLException, IOException {
+		oCnn.Open();
+		String sSql = "";
+		try {
+			sSql = "UPDATE Funcionario SET IdFuncionarioAnt = " + pIdFuncionarioAnt + 
+					", Estatus = '" + sRevisandoAntFuncionario + "' WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			this.Get(pIdFuncionario);
+			Usuario oUsuario = new Usuario();
+			oUsuario.UpdateEstatus(this.GetIdUsuario(), sRevisandoAntFuncionario ); 
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.UpdateFuncionarioAnt: " + e + " SQL:" + sSql);
+		}
+		return false;		
+	}
+	public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+		oCnn.Open();
+		String sSql = "";
+		try {
+			sSql = "DELETE FROM Funcionario WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Execute(sSql);
+			Usuario oUsuario = new Usuario();
+			oUsuario.Delete(iIdUsuario);
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.Delete: " + e + " SQL:" + sSql);
+		}
+		oCnn.Close();
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, String pNombre, String pApePaterno, String pApeMaterno, 
+			String pFecIni, String pFecFin, int	pIdUsuario, int	pIdCargo, String pEmail, int pMaxUsuarios, 
+			String pEstatus, int pIdFuncionarioAnt, String pCargo, int pIdUnidadAdministrativa, String pUnidadAdministrativa,
+			int pIdUnidadGobierno, String pUnidadGobierno){
+		iIdFuncionario			= pIdFuncionario;
+		sNombre 				= pNombre;
+		sApePaterno				= pApePaterno;
+		sApeMaterno				= pApeMaterno;
+		dFecIni					= pFecIni;
+		dFecFin					= pFecFin;
+		iIdUsuario				= pIdUsuario;
+		iIdCargo				= pIdCargo;
+		sEmail					= pEmail;
+		iMaxUsuarios			= pMaxUsuarios;
+		sEstatus				= pEstatus;
+		iIdFuncionarioAnt		= pIdFuncionarioAnt;
+		sCargo					= pCargo;
+		iIdUnidadAdministrativa	= pIdUnidadAdministrativa;
+		sUnidadAdministrativa	= pUnidadAdministrativa;
+		iIdUnidadGobierno		= pIdUnidadGobierno;
+		sUnidadGobierno			= pUnidadGobierno;
+	}	
+	private boolean CreaAnexoEstatus(int pIdFuncionario) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			Anexo oAnexo = new Anexo();
+			oAnexo.GetAll();
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			for(int i=0;i<oAnexo.GetAll().getNumRows();i++){
+				oAnexoEstatus.Insert(pIdFuncionario, oAnexo.GetIdAnexo(i), oAnexoEstatus.GetEstatusVacio(), 0, "null", "");
+			}
+			oCnn.Close();
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.CreaAnexoEstatus: " + e + " SQL:" + sSql);
+		}	
+		return true;
+	}	
+	
+	private boolean CreaEntregaEstatus(int pIdFuncionario) throws SQLException, IOException {
+		try {
+			com.consiss.util.Utilerias	oUtil			= new com.consiss.util.Utilerias();
+			com.gob.EntregaEstatus		oEntregaEstatus = new com.gob.EntregaEstatus();
+			//oEntregaEstatus.Insert(pIdFuncionario, oEntregaEstatus.GetEstatusNoIniciada(), oUtil.sGetDate(oUtil.GetFecha(), "yyyyMMddHHmmss"), "Entrega No Iniciada. Captura Diaria de Información");
+			oEntregaEstatus.Insert(pIdFuncionario, EntregaEstatus.GetEstatusSinInformacion(), oUtil.sGetDate(oUtil.GetFecha(), "yyyyMMddHHmmss"), "Entrega Sin Información");
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.CreaEntregaEstatus: " + e );
+		}	
+		return true;
+	}
+	
+	public boolean CambiaFuncionarioAntANvo(int pIdFuncionarioAnt, int pIdFuncionarioNvo) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			// CAMBIAR TOD-oS LOS ESTATUS QUE ESTEN EN NO APLICA AL NUEVO Y DESPUES 
+			//  TODA LA INFORMACION DE LOS ANEXOS AL NUEVO
+			oCnn.Open();
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			sSql = "DELETE AnexoEstatus WHERE IdFuncionario = " + pIdFuncionarioNvo;
+			oCnn.Execute(sSql);
+			 
+			sSql = "UPDATE AnexoEstatus SET IdFuncionario = " + pIdFuncionarioNvo + 
+									", Estatus = '" + oAnexoEstatus.GetEstatusEnProceso() + "' " +
+									", IdUsuario = null, FechaActualizacion = null " +
+					"WHERE IdFuncionario = " + pIdFuncionarioAnt + 
+					" AND Estatus <> '" + oAnexoEstatus.GetEstatusNoAplica() + "'" ;
+			oCnn.Execute(sSql);
+			
+			sSql = "UPDATE AnexoEstatus SET IdFuncionario = " + pIdFuncionarioNvo + 
+									", IdUsuario = null, FechaActualizacion = null " +
+					"WHERE IdFuncionario = " + pIdFuncionarioAnt + 
+					" AND Estatus = '" + oAnexoEstatus.GetEstatusNoAplica() + "'" ;
+			oCnn.Execute(sSql);
+			
+			Anexo oAnexo = new Anexo();
+			oAnexo.GetAll();
+			sSql = "UPDATE Anexo3IV6Empleado SET IdFuncionario = " + pIdFuncionarioNvo +
+				" WHERE IdFuncionario = " + pIdFuncionarioAnt;
+			oCnn.Execute(sSql);
+			
+			sSql = "UPDATE Anexo3IV6Curso SET IdFuncionario = " + pIdFuncionarioNvo +
+				" WHERE IdFuncionario = " + pIdFuncionarioAnt;
+			oCnn.Execute(sSql);
+			
+			for(int i=0;i<oAnexo.GetAll().getNumRows();i++){
+				// PASAR TOD-OS LOS ANEXOS
+				// PRIMERO LOS DETALLES
+				if(oAnexo.GetIdAnexo(i) == 1 || oAnexo.GetIdAnexo(i) == 7 || oAnexo.GetIdAnexo(i) == 9){ 
+					// I.1    II.4.1    II.4.3
+					sSql = "UPDATE Detalle" + oAnexo.GetNombreCorto(i) + 
+						" SET IdFuncionario = " + pIdFuncionarioNvo +
+						" WHERE IdFuncionario = " + pIdFuncionarioAnt;
+					oCnn.Execute(sSql);
+				}
+				
+				if(oAnexo.GetIdAnexo(i) != 22 && oAnexo.GetIdAnexo(i) != 23 
+					&& oAnexo.GetIdAnexo(i) != 35){ //III.4.6  III.5 III.8
+				// Y LA INFORMACION GENERAL
+					sSql = "UPDATE " + oAnexo.GetNombreCorto(i) + 
+							" SET IdFuncionario = " + pIdFuncionarioNvo +
+							" WHERE IdFuncionario = " + pIdFuncionarioAnt;
+					oCnn.Execute(sSql);
+				}
+			}
+			
+			ResultSet rs = null;
+			int iIdCargo = 0;
+			sSql = "SELECT IdCargo FROM Cargo WHERE IdFuncionario = " + pIdFuncionarioAnt;
+			rs = oCnn.Execute(sSql);
+			if (rs.next()) {
+				iIdCargo = null!=rs.getString("IdCargo")?rs.getInt("IdCargo"):0;
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+						
+			this.ActualizaCargo(pIdFuncionarioNvo, iIdCargo);
+			
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.CambiaFuncionarioAntANvo: " + e + " SQL:" + sSql);
+		}	
+		return true;
+	}	
+	
+	public boolean ActualizaCargo(int pIdFuncionario, int pIdCargo){
+		// CONSIDERAR SI EN CARGO ES NULL, ES AUTOMATICO EL CAMBIO
+		// Y REVISAR QUE NO EXISTA EN ALGUN ANTERIOR CARGO, 
+		// PUES SI ES ASI, EL CARGO PASADO CAMBIA A NULL
+		// SI EN EL CARGO ES EL MISMO FUNCIONARIO, NO ACTUALIZAR
+		String sSql = "";
+		try {
+			int iIdCargoFuncionario = 0, iIdFuncionarioCargo = 0;
+			oCnn.Open();			
+			ResultSet rs = null;
+			sSql = "SELECT IdFuncionario FROM Cargo WHERE IdCargo = " + pIdCargo;
+			rs = oCnn.Execute(sSql);
+			if (rs.next()) {
+				iIdFuncionarioCargo = null!=rs.getString("IdFuncionario")?rs.getInt("IdFuncionario"):0;
+			}
+			rs.close();
+			rs = null;
+			
+			if(iIdFuncionarioCargo==0 || iIdFuncionarioCargo!=pIdFuncionario){
+				// SE CAMBIA AL NUEVO Y BUSCAMOS SI EXISTE ALGUN CARGO CON EL FUNCIONARIO Y ACTUALIZAMOS A NULL
+				sSql = "SELECT IdCargo FROM Cargo WHERE IdFuncionario = " + pIdFuncionario;
+				rs = oCnn.Execute(sSql);
+				if (rs.next()) {
+					iIdCargoFuncionario = null!=rs.getString("IdCargo")?rs.getInt("IdCargo"):0;
+				}
+				rs.close();
+				rs = null;
+				
+				sSql = "UPDATE Cargo SET IdFuncionario = NULL WHERE IdFuncionario = " + pIdFuncionario;
+				oCnn.Execute(sSql);
+				
+				sSql = "UPDATE Cargo SET IdFuncionario = " + pIdFuncionario + " WHERE IdCargo = " + pIdCargo;
+				oCnn.Execute(sSql);
+			} 
+			
+			if(iIdCargoFuncionario>0){
+				sSql = "UPDATE Cargo SET IdFuncionario = (SELECT A.IdFuncionario FROM Funcionario A WHERE A.IdCargo = Cargo.IdCargo AND Estatus <> '" + sEstatusBaja + "') WHERE IdCargo = " + iIdCargoFuncionario;
+				oCnn.Execute(sSql);
+			}
+		}catch(Throwable e){
+			System.out.println("Error en oFuncionario.ActualizaCargo: " + e + " SQL:" + sSql);
+		}	
+		return true;
+	}
+}

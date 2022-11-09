@@ -1,0 +1,347 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 26.Nov.2002
+ * Purpose: Defines the Class Anexo2VII
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+
+public class Anexo2VII {
+
+//Declaración de Variables
+private int				iIdAnexo;
+private String 		    sNombreAnexo;
+private int 			iIdFuncionario;
+private String 			sBalanceGeneral;
+private String 			sEstadoResultados;
+private String 			sEstadoOrigen;
+private String 			sLibrosRegistros;
+private String 			sEstadosFinancieros;
+private String 			sQuienAudito;
+private String 			sFechaCierre;
+private String 			sFechaAuditoria;
+private ConnectionJDBC	 	oCnn;
+
+//Inicializacion de la Clase
+public Anexo2VII()  throws SQLException, IOException {
+		String sSql;
+		iIdAnexo				= 0;
+		sNombreAnexo			= "";
+	    iIdFuncionario 	  		= 0;
+		sBalanceGeneral			= "";
+		sEstadoResultados		= "";
+		sEstadoOrigen			= "";
+		sLibrosRegistros		= "";
+  	    sEstadosFinancieros	  	= "";
+		sQuienAudito			= "";
+		sFechaCierre			= "";
+		sFechaAuditoria			= "";
+		oCnn			      	= new ConnectionJDBC();
+		oCnn.Open();
+		ResultSet oRs = null;
+		sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo II.7'";
+		try {
+			oRs = oCnn.Execute(sSql);
+			if (oRs.next()) {
+				iIdAnexo 		= oRs.getInt("IdAnexo");
+				sNombreAnexo	= oRs.getString("Nombre");
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo2VII.init: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+		}
+	}
+//Creación de las Propiedades
+	public int		GetIdAnexo() 					{	return iIdAnexo;			}
+	public String	GetNombreAnexo() 				{	return sNombreAnexo;			}
+
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+		
+	public void 	SetBalanceGeneral(String sDATA) 		{	sBalanceGeneral 		= sDATA;	}
+	public String	GetBalanceGeneral() 					{	return sBalanceGeneral;			}
+		
+	public void 	SetEstadoResultados(String sDATA) 		{	sEstadoResultados 		= sDATA;	}
+	public String	GetEstadoResultados() 					{	return sEstadoResultados;			}
+		
+	public void 	SetEstadoOrigen(String sDATA) 		{	sEstadoOrigen 		= sDATA;	}
+	public String	GetEstadoOrigen() 					{	return sEstadoOrigen;			}
+		
+	public void 	SetLibrosRegistros(String sDATA) 		{	sLibrosRegistros 		= sDATA;	}
+	public String	GetLibrosRegistros() 					{	return sLibrosRegistros;			}
+  		
+	public void 	SetEstadosFinancieros(String sDATA) 		{	sEstadosFinancieros 		= sDATA;	}
+	public String	GetEstadosFinancieros() 					{	return sEstadosFinancieros;			}
+  		
+	public void 	SetQuienAudito(String sDATA) 		{	sQuienAudito 		= sDATA;	}
+	public String	GetQuienAudito() 					{	return sQuienAudito;			}
+		
+	public void 	SetFechaCierre(String sDATA) 		{	sFechaCierre 		= sDATA;	}
+	public String	GetFechaCierre() 					{	return sFechaCierre;			}
+	
+	public void 	SetFechaAuditoria(String sDATA) 		{	sFechaAuditoria 		= sDATA;	}
+	public String	GetFechaAuditoria() 					{	return sFechaAuditoria;			}
+	
+//Metodos públicos
+	public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdFuncionario, BalanceGeneral, EstadoResultados, EstadoOrigen, LibrosRegistros, EstadosFinancieros, QuienAudito, FechaCierre, FechaAuditoria FROM Anexo2VII WHERE IdFuncionario = " + pIdFuncionario;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdFuncionario"), rs.getString("BalanceGeneral"),	rs.getString("EstadoResultados"), 
+					rs.getString("EstadoOrigen"), rs.getString("LibrosRegistros"), rs.getString("EstadosFinancieros"), 
+					rs.getString("QuienAudito"), rs.getString("FechaCierre"), rs.getString("FechaAuditoria")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+
+	public boolean Insert(int pIdFuncionario, String pBalanceGeneral, String pEstadoResultados, String pEstadoOrigen,
+			      		 						String pLibrosRegistros, String pEstadosFinancieros,String pQuienAudito, 
+                            String pFechaCierre, String pFechaAuditoria) throws SQLException, IOException {
+		String sSql;
+	    try{
+		sSql = "INSERT INTO Anexo2VII(IdFuncionario, BalanceGeneral, EstadoResultados, EstadoOrigen, LibrosRegistros, EstadosFinancieros, QuienAudito, FechaCierre, FechaAuditoria) ";
+		sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+		sSql = sSql + "'" + pBalanceGeneral + "', ";
+		sSql = sSql + "'" + pEstadoResultados + "', ";
+		sSql = sSql + "'" + pEstadoOrigen + "', ";
+		sSql = sSql + "'" + pLibrosRegistros + "', ";
+		sSql = sSql + "'" + pEstadosFinancieros + "', ";
+		sSql = sSql + "'" + pQuienAudito + "', ";
+		sSql = sSql + "'" + pFechaCierre + "', ";
+		sSql = sSql + "'" + pFechaAuditoria + "')";
+		oCnn.Open();
+		oCnn.Execute(sSql);
+		oCnn.Close();
+		return true;
+            }catch(Throwable e){
+			System.out.println("Error en Anexo2VII.Insert: ");
+		}
+		return false;
+	}
+	
+	public boolean Update(int pIdFuncionario, String pBalanceGeneral, String pEstadoResultados, String pEstadoOrigen,
+			      String pLibrosRegistros, String pEstadosFinancieros,String pQuienAudito, 
+			      String pFechaCierre, String pFechaAuditoria) throws SQLException, IOException {
+		String sSql;
+		try{
+			sSql = "UPDATE Anexo2VII SET ";
+			sSql = sSql + "BalanceGeneral = '" + pBalanceGeneral + "', ";
+			sSql = sSql + "EstadoResultados = '" + pEstadoResultados + "', ";
+			sSql = sSql + "EstadoOrigen = '" + pEstadoOrigen + "', ";
+			sSql = sSql + "LibrosRegistros = '" + pLibrosRegistros + "', ";
+			sSql = sSql + "EstadosFinancieros = '" + pEstadosFinancieros + "', ";
+			sSql = sSql + "QuienAudito = '" + pQuienAudito + "', ";
+			sSql = sSql + "FechaCierre = '" + pFechaCierre + "', ";
+			sSql = sSql + "FechaAuditoria = '" + pFechaAuditoria + "' ";
+			sSql = sSql + "WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VII.Update: ");
+		}
+		return false;
+	}
+	
+	public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+		  String sSql;
+    try{
+			sSql = "DELETE FROM Anexo2VII WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+    }catch(Throwable e){
+			System.out.println("Error en Anexo2VII.Delete: ");
+		}
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, String pBalanceGeneral, String pEstadoResultados, String pEstadoOrigen,
+			      	 						String pLibrosRegistros, String pEstadosFinancieros,String pQuienAudito, 
+			      							String pFechaCierre, String pFechaAuditoria){
+		iIdFuncionario				 = pIdFuncionario;
+		sBalanceGeneral				 = pBalanceGeneral;
+		sEstadoResultados			 = pEstadoResultados;
+		sEstadoOrigen 				 = pEstadoOrigen;
+		sLibrosRegistros			 = pLibrosRegistros;
+		sEstadosFinancieros			 = pEstadosFinancieros;
+		sQuienAudito				 = pQuienAudito;
+		sFechaCierre				 = pFechaCierre;
+		sFechaAuditoria				 = pFechaAuditoria;
+	}
+
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo2VII.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo2VII.html");
+	
+			sAnexo 					= "II.7";
+			iIdAnexo 				= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 				= oAnexoEstatus.GetEstatus();
+			sAux = "\n				<tr><TD  colspan='3' class='TituloParrafo' width='70%'>ANEXO II.7 - ESTADOS FINANCIEROS DICTAMINADOS</TD></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			sArchivo = "\n<table align='center' cellspacing='0' cellpadding='0' border='0' width='100%'>";
+			sArchivo += "\n<tr><td width='450' align='center' class='TituloMenu'>Concepto</td><td  align='center' class='TituloMenu'>Sí</td><td  align='center' class='TituloMenu'>No</td><td  align='center' class='TituloMenu'>Fecha de cierre de la Información</td></tr>";
+			sArchivo += "\n<tr><TD valign='top' width='450'>";
+			sArchivo += "\n     <TABLE cellPadding='0' cellSpacing='0' width='452' BORDER='0'>";
+			sArchivo += "\n		 <TR height='25'><TD class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Se Entrega (*)</a></TD></TR>";
+			sArchivo += "\n		 <TR height='25'><TD class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Balance General</a></TD></TR>";
+			sArchivo += "\n		 <TR height='25'><TD class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Estado de Resultados</a></TD></TR>";
+			sArchivo += "\n		 <TR height='25'><TD class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Estado de Origen y Aplicación</a></TD></TR>";
+			sArchivo += "\n		 <TR height='25'><TD class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Libros y Registros de Contabilidad al Corriente</a></TD></TR>";
+			sArchivo += "\n		 <TR height='1'><td height='1' bgcolor='Black'></td></tr>";
+			sArchivo += "\n		 <TR height='50'><TD class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Los Estados Financieros fueron auditados externamente</a></TD></TR>";		
+			sArchivo += "\n	  </TABLE></TD>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			sArchivo = "";
+			if(!sEstatus.equals("0")){
+				sArchivo += "\n<TD valign='top'>";
+				sArchivo += "\n	  <TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='0'>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+		
+				Get(iIdFuncionario);
+		//		String vEntrega 			= GetEntrega()!=null?GetEntrega():"";
+				String vBalanceGeneral 		= GetBalanceGeneral()!=null?GetBalanceGeneral():"";
+				String vEstadoResultados	= GetEstadoResultados()!=null?GetEstadoResultados():"";
+				String vEstadoOrigen 		= GetEstadoOrigen()!=null?GetEstadoOrigen():"";
+				String vLibrosRegistros 	= GetLibrosRegistros()!=null?GetLibrosRegistros():"";
+				String vEstadosFinancieros 	= GetEstadosFinancieros()!=null?GetEstadosFinancieros():"";
+				String vQuienAudito		    = GetQuienAudito()!=null?GetQuienAudito():"";
+				String vFechaCierre 		= GetFechaCierre()!=null?GetFechaCierre():"";
+				String vFechaAuditoria 		= GetFechaAuditoria()!=null?GetFechaAuditoria():"";
+
+			//	sArchivo = "\n			<TR height='25'><td>" ;
+			//	sArchivo += (vEntrega.equals("1")) ? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo = "\n			<TR height='25'><td>";
+				sArchivo += (vBalanceGeneral.equals("1"))? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vEstadoResultados.equals("1"))? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vEstadoOrigen.equals("1"))? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vLibrosRegistros.equals("1")) ? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='2'><td height='2'></td></tr>";
+				sArchivo += "\n			<TR height='50'><td>";
+				sArchivo += (vEstadosFinancieros.equals("1"))? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n       </TABLE>";
+				sArchivo += "\n</td>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				sArchivo = "\n<TD valign='top'>";
+				sArchivo += "\n      <TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='0' bgcolor='#eeeeee'>";
+			//	sArchivo += "\n			<TR height='25'><td>";
+			//	sArchivo += (vEntrega.equals("2")) ? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vBalanceGeneral.equals("2")) ? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vEstadoResultados.equals("2")) ? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vEstadoOrigen.equals("2")) ? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='25'><td>";
+				sArchivo += (vLibrosRegistros.equals("2"))? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n			<TR height='2'><td height='2'></td></tr>";
+				sArchivo += "\n			<TR height='50'><td>";
+				sArchivo += (vEstadosFinancieros.equals("2"))? "<img src='" + "Images/VinetaGde.gif'></td></tr>":"</td></tr>";
+				sArchivo += "\n      </TABLE></td>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+				sArchivo = "\n<TD valign='top'>";
+				sArchivo += "\n      <TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='0'>";
+				sArchivo += "\n        	<TR height='25'><td align='center'>";
+				sArchivo += "\n				&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vFechaCierre + "</a>";
+				sArchivo += "\n			</td></tr>";
+				sArchivo += "\n			<TR height='25'><td></td></tr>";
+				sArchivo += "\n			<TR height='25'><td></td></tr>";
+				sArchivo += "\n			<TR height='25'><td></td></tr>";
+				sArchivo += "\n			<TR height='25'><td></td></tr>";
+				sArchivo += "\n			<TR height='2'><td height='2' bgcolor='black'></td></tr>";
+				sArchivo += "\n			<TR height='50' valign='top'><td valign='top'>";
+				sArchivo += "\n			 <TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='0'>";
+				sArchivo += "\n        	    <TR height='25'><td align='center' width='100%' class='TituloMenu'>Fecha de la Auditoría</td></tr>";
+				sArchivo += "\n				<TR height='25'><td  width='100%' align='center'>";
+				sArchivo += "\n				&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vFechaAuditoria + "</a>";
+				sArchivo += "\n				</td></tr>";
+				sArchivo += "\n			 </TABLE></td></tr>";
+				sArchivo += "\n      </TABLE></td>";
+				sArchivo += "\n</tr>";
+				sArchivo += "\n<TR>";
+				sArchivo += "\n	<TD height='25' class='TituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>¿Quién Auditó?</a></TD>";
+				sArchivo += "\n	<td colspan='3'>";
+				sArchivo += "\n	&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + vQuienAudito + "</a>";
+				sArchivo += "\n	</td>";
+				sArchivo += "\n</TR>";
+				sArchivo += "\n<TR>";
+				sArchivo += "\n	<TD height='25' colspan='4' class='SubTituloMenu'>* Adjuntar Últimos Estados Financieros Auditados y Relación de los Estados Financieros Anteriores, Auditados</td>";
+				sArchivo += "\n</TR>";
+				sArchivo += "\n</table>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			} else {
+				sArchivo = "\n	</TABLE>";
+				sArchivo += "\n	<TABLE width='100%'>";
+				sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();	
+	
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2VII.setHistory: " + e );
+			sError = "Anexo2VII.setHistory: " + e ;
+		}
+		return sError;
+	}	
+}

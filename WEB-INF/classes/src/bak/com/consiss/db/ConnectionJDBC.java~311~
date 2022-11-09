@@ -1,0 +1,705 @@
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 13/10/2004 07:23:11 p.m.
+// Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
+// Decompiler options: packimports(3)
+// Source File Name:   ConnectionJDBC.java
+
+package com.consiss.db;
+
+//import com.microsoft.jdbc.sqlserver.SQLServerDriver;
+import oracle.jdbc.*;
+import java.io.PrintStream;
+import java.sql.*;
+
+// Referenced classes of package com.consiss.db:
+//            ConnectionWEB
+
+public class ConnectionJDBC {
+
+  public ConnectionJDBC() {
+    msg = "- No messages! -";
+  }
+
+  public void Close() {
+    try {
+      if (rs != null) {
+        rs.close();
+      }
+    }
+    catch (Throwable throwable) {
+      msg = "Exception: " + throwable;
+      System.out.println(getMsg());
+    }
+    try {
+      if (stmt != null) {
+        stmt.close();
+      }
+    }
+    catch (Throwable throwable1) {
+      msg = "Exception: " + throwable1;
+      System.out.println(getMsg());
+    }
+    try {
+      if (conn != null) {
+        conn.close();
+      }
+    }
+    catch (Throwable throwable2) {
+      msg = "Exception: " + throwable2;
+      System.out.println(getMsg());
+    }
+  }
+
+  /**
+   * Tester de la funcionalidad de los metodos:
+   *  a) convertirProcedureASelectOInsert (...)
+   *  b) split (...)
+   *  c) replaceAll (...)
+   *
+   * @author José Luis Mérquez Salinas
+   * @param args Agumentos de la linea de comandos, por ahora no usados.
+   */
+  public static void main(String[] args) {
+
+    String toSplit = "sel_Anexo1iiCountAll 6";
+    for (int i = 0;
+         i < ConnectionJDBC.split(toSplit, " ", 99).length; i++) {
+      System.out.println(ConnectionJDBC.split(toSplit, " ", 99)[i]);
+      System.out.println(replaceAll(replaceAll(replaceAll(replaceAll(
+          ConnectionJDBC.split(toSplit, " ", 99)[i].toUpperCase(), "SEL_", ""),
+          "COUNTALL", ""), "GETALL", ""), "_SP", ""));
+
+      System.out.println("TEST >>>>> Inicio...............");
+      /*
+            System.out.println("TEST >>>>>" +
+                               convertirProcedureASelectOInsert(
+                "Execute CargaAnexo1II 6"));
+            System.out.println("TEST >>>>>" +
+                               convertirProcedureASelectOInsert(
+                "sel_Anexo1iiCountAll 6"));
+            System.out.println("TEST >>>>>" +
+                               convertirProcedureASelectOInsert(
+                "sel_Anexo1iiGetAll 6"));
+            System.out.println("TEST >>>>>" +
+                               convertirProcedureASelectOInsert(
+                "sel_Anexo1iiGetAll_SP 6"));
+       */
+      System.out.println("TEST >>>>>" +
+                         convertirProcedureASelectOInsert(
+          "sel_Anexo3IV6GetAll_SP 6"));
+      /*
+            System.out.println("TEST >>>>>" +
+           convertirProcedureASelectOInsert("SELECT * FROM DUAL"));
+       */
+      Object elemento = null;
+      System.out.println(
+          (
+          ( (elemento != null) &&
+           ! ( ( (String) elemento).equals(""))) ?
+          java.lang.Integer.parseInt( (String) elemento) :
+          0
+          )
+          );
+
+      elemento = new String("");
+      System.out.println(
+          (
+          ( (elemento != null) &&
+           ! ( ( (String) elemento).equals(""))) ?
+          java.lang.Integer.parseInt( (String) elemento) :
+          0
+          )
+          );
+
+      elemento = new String("34");
+      System.out.println(
+          (
+          ( (elemento != null) &&
+           ! ( ( (String) elemento).equals(""))) ?
+          java.lang.Integer.parseInt( (String) elemento) :
+          0
+          )
+          );
+
+      /*
+            System.out.println(java.lang.Integer.parseInt( (String) ( "")));
+            System.out.println(java.lang.Integer.parseInt( (String) ( null)));
+            System.out.println(java.lang.Integer.parseInt( (String) ( " ")));
+       */
+
+      System.out.println(getOrdenSemantico("ANEXO3V5"));
+
+    }
+  }
+
+  /**
+   * Analogo o simulacion a la funcion:
+   *      java.lang.String.replaceAll(...) de JDK 1.4.
+   * @param toApplyReplace Cadena a procesar.
+   * @param toBeReplaced Cadena a eliminar para dar paso al reemplazo.
+   * @param replace Cadena a insertar como reemplazo.
+   * @return La cadena reemplazada.
+   * @author José Luis Mérquez Salinas
+   * @see java.lang.String
+   */
+  public static String replaceAll(String toApplyReplace, String toBeReplaced,
+                                  String replace) {
+
+    int index = 0;
+    while (index < toApplyReplace.length()) {
+      if (toApplyReplace.startsWith(toBeReplaced, index)) {
+        toApplyReplace = toApplyReplace.substring(0, index) + replace +
+            toApplyReplace.substring(index + toBeReplaced.length(),
+                                     toApplyReplace.length());
+      }
+      index++;
+    }
+    return toApplyReplace;
+  }
+
+  /**
+   * Analogo o simulacion de la funcion java.lang.String.split(...) de JDK 1.4.
+   * @param toSplit Cadena a procesar.
+   * @param splitter Cadena a utilizar como espaciador.
+   * @param times Numero de veces a recurrir la operacion (no usado).
+   * @return Los segmentos de la cadena ya procesada.
+   * @see java.lang.String
+   * @author José Luis Mérquez Salinas
+   */
+  public static String[] split(String toSplit, String splitter, int times) {
+
+    int pieces = 0;
+    int currentIndex = 0;
+    String[] splitted;
+
+    toSplit = toSplit + splitter;
+
+    // analizamos cuantas piezas son para reservar memoria...
+    while (toSplit.indexOf(splitter, currentIndex) != -1) {
+      currentIndex = toSplit.indexOf(splitter, currentIndex) + 1;
+      pieces++;
+    }
+
+    // reservamos la memoria...
+    splitted = new String[pieces];
+
+    // rellenamos la memoria reservada con las piezas...
+    pieces = 0;
+    currentIndex = 0;
+    while (toSplit.indexOf(splitter, currentIndex) != -1) {
+      splitted[pieces] = toSplit.substring(currentIndex,
+                                           toSplit.indexOf(splitter,
+          currentIndex));
+
+      // (jmarquez1974@hotmail.com)(2005/01/26)(15:37:00) Eliminamos cualquier coma de cualquier pieza...
+      splitted[pieces] = replaceAll(splitted[pieces], ",", "");
+
+      currentIndex = toSplit.indexOf(splitter, currentIndex) + 1;
+      pieces++;
+    }
+
+    // retornamos el conjunto de piezas...
+    return splitted;
+  }
+
+  /* (jmarquez1974@hotmail.com)(2004/10/19)(02:49:00)(gmt -06:00)(secomac-siere) */
+  /**
+   * Convierte una llamada a procedimiento MS SQL Server de los tipos:
+   *
+   *  a) EXECUTE CargaAnexoXYZ arg1
+   *  b) sel_AnexoXYZCountAll arg1
+   *  c) sel_AnexoXYZGetAll[_SP] arg1 arg2 arg3 ...
+   *
+   * respectivamente a un DML de Oracle:
+   *
+   *  a) INSERT INTO CARGA ( IDCARGA, ANEXO, IDFUNCIONARIO) VALUES ( NULL, 'CargaAnexoXYZ', arg1)
+   *  b) SELECT COUNT(*) ALLCOUNT FROM AnexoXYZ where idFuncionario = arg1
+   *  c) SELECT * FROM AnexoXYZ where idFuncionario = arg1
+   *
+   *  Ahora se redefine a:
+   *
+   *  c) SELECT *
+   *     from <arg0-nombre-tabla>
+   *     where <arg0-nombre-PK> in (
+   *       select <arg0-nombre-PK>
+   *       from (
+   *         select <arg0-nombre-PK>, rownum x
+   *         from (
+   *           select <arg0-nombre-PK>
+   *           from <arg0-nombre-tabla>
+   *           where idfuncionario = arg1
+   *           order by <arg0-nombre-PK>
+   *         )
+   *       )
+   *       where x between ((<arg2>*(<arg3>-1))+1) and (<arg2>*<arg3>)
+   *     )
+   *     order by 1
+   *
+   * Si no se trata de una llamada a procedimiento MS SQL Server entonces,
+   * retorna el valor de s sin modificar.
+   *
+   * @param s El comando a analizar
+   * @return El nuevo comando tranformado
+   * @author José Luis Mérquez Salinas
+   */
+  public static String convertirProcedureASelectOInsert(String s) {
+    boolean isGetAll = false;
+    if (s.indexOf("GETALL") != -1) {
+      isGetAll = true;
+    }
+    // Service patch de Anexo3IV6...
+    boolean esAnexo3IV6 = false;
+//    boolean esAnexo3X = false;
+//    boolean esAnexo3XI = false;
+//    boolean esAnexo3XII = false;
+
+    String primerSegmentoAnexo3IV6 =
+        "SELECT b.IdCurso , b.Nombre Curso , nvl(c.IdEmpleado , 0) AS IdEmpleado , c.Nombre AS Empleado , nvl( a.Horas , 0) AS Horas , nvl( a.IdEmpleado , -1) AS Ins FROM Anexo3IV6Curso b  INNER JOIN  Anexo3IV6Empleado c ON b.IdFuncionario = c.IdFuncionario LEFT OUTER JOIN Anexo3IV6 a ON c.IdEmpleado = a.IdEmpleado AND b.IdCurso = a.IdCurso WHERE ( b.IdFuncionario = ";
+    String segundoSegmentoAnexo3IV6 =
+        ") ORDER BY c.Nombre , c.IdEmpleado , b.Nombre , b.IdCurso";
+
+  /*  String primerSegmentoAnexo3X =
+        "SELECT * FROM ANEXO3X WHERE idFuncionario = ";
+    String segundoSegmentoAnexo3X =
+        "order by  Clave, Programa";
+
+    String primerSegmentoAnexo3XI =
+        "SELECT * FROM ANEXO3XI WHERE idFuncionario = ";
+    String segundoSegmentoAnexo3XI =
+        "order by  Clave, Programa";
+
+    String primerSegmentoAnexo3XII =
+        "SELECT * FROM ANEXO3XII WHERE idFuncionario = ";
+    String segundoSegmentoAnexo3XII =
+        "order by  Clave, Obra";
+*/
+    System.out.println("jmarquez1974@hotmail.com s a analizar: " + s);
+
+
+    // Tokens clasificados por el analizador sintactico, en contexto de todo el metodo...
+    String anexo = "";
+    String idFuncionario = "";
+    String numeroRenglones = "";
+    String numeroPagina = "";
+    String tipoOrigen = "";
+    // Se trata de un Execute por lo que es candidato
+    // a transformar su llamado a vista..
+    boolean esCarga = false;
+    String[] componentes;
+    String query = "";
+    int indice = 0;
+    // Si existe la palabra EXECUTE procesamos...
+    if (s.substring(0, 4).equalsIgnoreCase("SEL_")
+        || (s.substring(0, 13).equalsIgnoreCase("EXECUTE CARGA"))) {
+
+      // Eliminamos la palabra execute...
+      if (s.substring(0, 13).equalsIgnoreCase("EXECUTE CARGA")) {
+        s = s.substring("EXECUTE ".length());
+      }
+
+      // Depuracion, resulto ser un procedimiento de Seleccion...
+      System.out.println("jmarquez1974@hotmail.com Resulto ser SEL_: " + s);
+
+      // Separamos los componentes (nombres de procedimientos y parametros) interespaciados...
+      componentes = split(s, " ", 10);
+
+      // Debug, resulto exitoso el split o tokenizacion del comando...
+      System.out.println("jmarquez1974@hotmail.com yA EJECUTO EL sPLIT: " + s);
+
+      // Nucleo del algoritmo de transformacion de comando o sentencia..
+      // Procesamos por cada uno de esos componentes interespaciados...
+      while (indice < componentes.length) {
+
+        // Debug, iniciamos el proceso de componentes para este comando...
+        System.out.println("jmarquez1974@hotmail.com s SPLITTED a analizar: >" +
+                           componentes[indice] + "< INDICE=" + indice);
+
+        // Se trata de la palabra reservada EXECUTE...
+        if (indice == -1) {
+          // No procesamos nada...
+        }
+
+        // Se trata del hipotetico nombre del Procedimiento ahora Vista..
+        if (indice == 0) {
+          // Si se trata de un procedimiento de carga entonces (salimos?, ya no!)...
+          if (componentes[indice].toUpperCase().indexOf("CARGA", 0) != -1) {
+            query = query + "INSERT INTO CARGA " +
+                "(IDCARGA, ANEXO, IDFUNCIONARIO) " +
+                " VALUES ( NULL, " + "'";
+            esCarga = true;
+            //return s;
+          }
+          else
+
+          // Si se trata de un procedimiento CountAll...
+          if (componentes[indice].toUpperCase().indexOf("COUNTALL", 0) != -1) {
+            query = query + "SELECT COUNT(*) AS ALLCOUNT FROM ";
+          }
+          // Definitivamente es no procedimiento CountAll...
+          else {
+            query = query + "SELECT * FROM ";
+
+            // Aplicamos el service patch de Anexo3IV6, no afecta la operacion normal del algoritmo...
+            // Recupera el nombre de la tabla de anexo...
+            anexo = getNombreTablaAnexo(componentes[indice]);
+            if (anexo.equals("ANEXO3IV6")) {
+              esAnexo3IV6 = true;
+            }
+/*            if (anexo.equals("ANEXO3X")) {
+              esAnexo3X = true;
+            }
+            if (anexo.equals("ANEXO3XI")) {
+              esAnexo3XI = true;
+            }
+            if (anexo.equals("ANEXO3XII")) {
+              esAnexo3XII = true;
+            }
+ */
+          }
+
+          // Recupera el nombre de la tabla de anexo...
+          anexo = getNombreTablaAnexo(componentes[indice]);
+
+          // Concatena el nombre de la tabla para dicho anexo...
+          query = query + anexo;
+        }
+
+        // Se trata del primer argumento hipoteticamente idFuncionario...
+        if (indice == 1) {
+
+          // Recuperamos el identificador del funcionario para utilizarlo en el contexto global.
+          idFuncionario = componentes[indice];
+          if (esCarga) {
+            query = query + "'" + ", " + "'" + idFuncionario + "'" + ")";
+          }
+          else {
+            query = query + " WHERE idFuncionario = " + "'" + idFuncionario +  "'" + " " +
+            "order by " + getOrdenSemantico(anexo);
+
+            // Aplicamos el service patch de Anexo3IV6, no afecta la operacion normal del algoritmo...
+            if (esAnexo3IV6) {
+              query = primerSegmentoAnexo3IV6 + "'" + componentes[indice] +
+                  "'" + segundoSegmentoAnexo3IV6;
+            }
+          }
+        }
+
+        // Se trata del segundo argumento hipoteticamente numero de renglones o tipo de origen...
+        if (indice == 2) {
+          numeroRenglones = componentes[indice];
+
+        }
+
+        // Se trata del tercer argumento hipoteticamente numero de pagina o numero de renglones...
+        if (indice == 3) {
+          numeroPagina = componentes[indice];
+        }
+
+        // Se trata del cuarto argumento hipoteticamente numero de pagina...
+        if (indice == 4) {
+          // Realizamos un desplazamiento de argumentos...
+          tipoOrigen = numeroRenglones;
+          numeroRenglones = numeroPagina;
+          numeroPagina = componentes[indice];
+        }
+
+        // Avanzamos al siguiente componente...
+        indice++;
+      }
+    }
+
+    // Validacion de que no se avanzo el indice, por lo tanto no se modifico.
+    if (indice == 0) {
+      System.out.println(
+          "jmarquez1974@hotmail.com Query sin modificar a ejecutar: " + s);
+      return s;
+    }
+
+
+     if  (indice == 4) // Parametros funcionario, renglones y pagina
+           {
+
+        // Nuevo nucleo de sustitucion de los metodos GetAll...
+        query = "SELECT *" + " " +
+            "from " + anexo + " " +
+            "where " + getNombrePKAnexo(anexo) + " in (" + " " +
+            "select " + getNombrePKAnexo(anexo) + " " +
+            "from (" + " " +
+            "select " + getNombrePKAnexo(anexo) + ", rownum x" + " " +
+            "from (" + " " +
+            "select " + getNombrePKAnexo(anexo) + ", " + getOrdenSemantico(anexo) + " " +
+            "from " + anexo + " " +
+            "where idfuncionario = " + idFuncionario + " " +
+            "order by " + getOrdenSemantico(anexo) + " " +
+            ")" + " " +
+            ")" + " " +
+            "where x between (" + numeroRenglones + "*(" + numeroPagina +
+            "-1)+1) " +
+            " " +
+            "and (" + numeroRenglones + "*" + numeroPagina + ")" + " " +
+            ")" + " " +
+            "order by " + getOrdenSemantico(anexo);
+      }
+
+
+ /*     if (indice == 5) { // Parametros funcionario, tipoorigen, renglones y pagina
+
+        // Nuevo nucleo de sustitucion de los metodos GetAll...
+        query = "SELECT *" + " " +
+            "from " + anexo + " " +
+            "where " + getNombrePKAnexo(anexo) + " in (" + " " +
+            "select " + getNombrePKAnexo(anexo) + " " +
+            "from (" + " " +
+            "select " + getNombrePKAnexo(anexo) + ", rownum x" + " " +
+            "from (" + " " +
+            "select " + getNombrePKAnexo(anexo) + ", " + getOrdenSemantico(anexo) +
+            " " +
+            "from " + anexo + " " +
+            "where idfuncionario = " + idFuncionario + " " +
+            "and tipoorigen in " + " " + getTipoOrigen(tipoOrigen) + " " +
+            "order by " + getOrdenSemantico(anexo) + " " +
+            ")" + " " +
+            ")" + " " +
+            "where x between (" + numeroRenglones + "*(" + numeroPagina +
+            "-1)+1) " +
+            " " +
+            "and (" + numeroRenglones + "*" + numeroPagina + ")" + " " +
+            ")" + " " +
+            "order by " + getOrdenSemantico(anexo);
+      }
+  */
+      // Debug, escribimos el query modificado...
+      System.out.println(
+          "jmarquez1974@hotmail.com Query MoDiFiCaDo a ejecutar: " + query);
+      return query;
+
+    }
+
+  /**
+   * Retorna el nombre de la tabla de anexo a partir de un componente de token.
+   * @param componente El componente de token.
+   * @return El nombre de la tabla de anexo.
+   */
+  public static String getNombreTablaAnexo(String componente) {
+    return replaceAll(replaceAll(replaceAll(replaceAll(componente.
+        toUpperCase(), "SEL_", ""), "COUNTALL", ""), "GETALL", ""), "_SP",
+                      "");
+  }
+
+  /**
+   * Retorna el nombre de la llave primaria para dicho anexo.
+   * @param anexo el nombre completo de la tabla de anexo.
+   * @return El nombre de la llave primaria para dicho anexo.
+   */
+  public static String getNombrePKAnexo(String anexo) {
+    // Caso A (idRenglon) (default) (aproximadamente 30).
+    String anexoPK = "idRenglon";
+    // Caso B (idFuncionario). (4 anexos).
+    if (anexo.equalsIgnoreCase("ANEXO2I") ||
+        anexo.equalsIgnoreCase("ANEXO2VII") ||
+        anexo.equalsIgnoreCase("ANEXO3I") ||
+        anexo.equalsIgnoreCase("ANEXO3II")) {
+      anexoPK = "idFuncionario";
+    }
+    else // Casos C (idAnexoXYZ). (11 Anexos).
+    if (anexo.equalsIgnoreCase("ANEXO3VII") ||
+        anexo.equalsIgnoreCase("ANEXO3IX") ||
+        anexo.equalsIgnoreCase("ANEXO3X") ||
+        anexo.equalsIgnoreCase("ANEXO3XI") ||
+        anexo.equalsIgnoreCase("ANEXO3XII") ||
+        anexo.equalsIgnoreCase("ANEXO3XIII") ||
+        anexo.equalsIgnoreCase("ANEXO3XIV") ||
+        anexo.equalsIgnoreCase("ANEXO3XV") ||
+        anexo.equalsIgnoreCase("ANEXO3XVI") ||
+        anexo.equalsIgnoreCase("ANEXO3XVII")) {
+      anexoPK = "id" + anexo;
+    }
+    return anexoPK;
+  }
+
+  /**
+   * Retorna el tipo de origen
+   */
+/*
+  public static String getTipoOrigen(String tipoOrigen) {
+    String segmentoTipoOrigen = "(1,2,3,4,5)";
+   if (tipoOrigen.equalsIgnoreCase("1"))
+      segmentoTipoOrigen = "(1)";
+
+    else
+    if (tipoOrigen.equalsIgnoreCase("2"))
+      segmentoTipoOrigen = "(2)";
+
+    else
+    if (tipoOrigen.equalsIgnoreCase("3"))
+      segmentoTipoOrigen = "(3)";
+
+    else
+    if (tipoOrigen.equalsIgnoreCase("4"))
+      segmentoTipoOrigen = "(4)";
+
+    else
+    if (tipoOrigen.equalsIgnoreCase("5"))
+      segmentoTipoOrigen = "(5)";
+
+    return segmentoTipoOrigen;
+  }
+*/
+  /**
+   * Retorna el orden semantico para dicho anexo.
+   * @param anexo el nombre completo de la tabla de anexo.
+   * @return El orden semantico para dicho anexo.
+   */
+  public static String getOrdenSemantico(String anexo) {
+
+    // default...
+    String ordenSemantico = "1";
+
+   /* if (anexo.equalsIgnoreCase("ANEXO1II")) {
+      ordenSemantico = "Numero, IdTipo, FechaSuscripcion";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2III")) {
+      ordenSemantico = "NumeroOficio, Fecha, Concepto";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2IV1")) {
+      ordenSemantico = "NoCuenta, Nombre, Chequera";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2IV2")) {
+      ordenSemantico = "NoCheque, Banco, Beneficiario";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2IV3")) {
+      ordenSemantico = "NoCuenta, NombreInstitucion, Fecha";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2IV")) {
+      ordenSemantico = "NombreInstitucion, NoCuenta, FechaVencimiento";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2V")) {
+      ordenSemantico =
+          "NumeroDocumento, NombreDeudor, FechaVencimiento";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO2VI")) {
+      ordenSemantico =
+          "NumeroDocumento, NombreAcreedor, FechaVencimiento";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3IV1")) {
+      ordenSemantico =
+          "ClaveTipoNomina, Observaciones, Nombre, Puesto, Categoria";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3IV2")) {
+      ordenSemantico = "ClaveTipoNomina, Nomina, Nombre";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3IV5")) {
+      ordenSemantico = "ClaveTipoNomina, Numero, Nombre";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3IX")) {
+      ordenSemantico = "IdAnexo3ix, NoProgresivo, Nombre, NoExpediente";
+    }
+    else
+    */
+    if (anexo.equalsIgnoreCase("ANEXO3V1")) {
+      ordenSemantico = "Resguardante, NoInventario";
+    }
+
+    else if (anexo.equalsIgnoreCase("ANEXO3V2")) {
+      ordenSemantico = "NumFactura, Clave";
+    }
+    /*
+    else if (anexo.equalsIgnoreCase("ANEXO3V3")) {
+      ordenSemantico = "NumFactura, Clave";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3V4")) {
+      ordenSemantico = "Resguardante, NoInventario";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3V5")) {
+      ordenSemantico = "Nombre";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3V6")) {
+      ordenSemantico = "Clave, NumFactura";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3V7")) {
+      ordenSemantico = "Titulo, Fecha, Autores";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3VI")) {
+      ordenSemantico = "NoNombre, Unidad, PrecioUnitario";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3X")) {
+      ordenSemantico = "IdAnexo3x, Clave, Programa";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3XI")) {
+      ordenSemantico = "IdAnexo3xi, Clave, Programa";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3XII")) {
+      ordenSemantico = "IdAnexo3xii, Clave, Obra";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3XV")) {
+      ordenSemantico = "Ubicacion, Identificacion,Expediente, Periodo";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3XVI")) {
+      ordenSemantico =
+          "Ubicacion, Identificacion, Expediente, Periodo";
+    }
+    else if (anexo.equalsIgnoreCase("ANEXO3XVII")) {
+      ordenSemantico = "Expediente, Asunto, FechaInicio";
+    }
+*/
+    return ordenSemantico;
+  }
+
+  /**
+   * Retorna el orden semantico para dicho anexo.
+   * @param anexo el nombre completo de la tabla de anexo.
+   * @return El orden semantico para dicho anexo.
+   */
+
+  public ResultSet Execute(String s) throws SQLException {
+    /* (jmarquez1974@hotmail.com)(2004/10/19)(02:49:00)(gmt -06:00)(secomac-siere) */
+    s = convertirProcedureASelectOInsert(s);
+    /* (jmarquez1974@hotmail.com)(2004/10/19)(02:49:00)(gmt -06:00)(secomac-siere) */
+    if (s.substring(0, 3).equalsIgnoreCase("SEL") ||
+        s.substring(0, 7).equalsIgnoreCase("EXECUTE")) {
+      rs = stmt.executeQuery(s);
+      numCols = rs.getMetaData().getColumnCount();
+      return rs;
+    }
+    else {
+      executeUpdate(s);
+      return null;
+    }
+  }
+
+  public void Open() throws SQLException {
+    ConnectionWEB.setConnection(this);
+  }
+
+  public void executeUpdate(String s) throws SQLException {
+    stmt.execute(s);
+    numCols = 0;
+  }
+
+  public String getMsg() {
+    return msg;
+  }
+
+  public int getNumCols() {
+    return numCols;
+  }
+
+  public void setConnection(String s, String s1, String s2, String s3) throws
+      SQLException {
+    DriverManager.registerDriver(new OracleDriver());
+    conn = DriverManager.getConnection(s + s1, s2, s3);
+    stmt = conn.createStatement();
+  }
+
+  public void setConnection(String s, String s1, String s2, String s3,
+                            String s4) throws SQLException {
+    DriverManager.registerDriver(new OracleDriver());
+    conn = DriverManager.getConnection(s, s3, s4);
+    stmt = conn.createStatement();
+  }
+
+  private ResultSet rs;
+  private Connection conn;
+  private Statement stmt;
+  private int numCols;
+  private String msg;
+}

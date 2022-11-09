@@ -1,0 +1,258 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 28.Oct.2002
+ * Purpose: Defines the Class Unidad Gobierno
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class UnidadAdministrativa {
+
+//Declaración de Variables
+private int 			iIdUnidadAdministrativa;
+private int 			iIdUnidadGobierno;
+private String			sNombre;
+private String			sDireccion;
+private int 			iIdMunicipio;
+private String			sClave;
+
+private VMatrix			vmUnidad;
+private int 			iNumRows;
+private ConnectionJDBC	oCnn;
+//Inicializacion de la Clase
+	public UnidadAdministrativa()  throws SQLException, IOException {
+		iIdUnidadAdministrativa = 0;
+		iIdUnidadGobierno		= 0;
+		sNombre					= "";
+		sDireccion				= "";
+		iIdMunicipio			= 0;
+		sClave					= "";
+		
+		iNumRows				= 0;
+		vmUnidad				= new VMatrix();
+		oCnn					= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+	}
+
+ //Creación de las Propiedades
+ 	
+ 	public void 			SetIdUnidadAdministrativa(int iDATA){	iIdUnidadAdministrativa = iDATA;}
+	public int 				GetIdUnidadAdministrativa() 		{	return iIdUnidadAdministrativa;	}
+	public int				GetIdUnidadAdministrativa(int iPos){
+		int iGetIdUnidadAdministrativa = -1;
+		try { iGetIdUnidadAdministrativa = java.lang.Integer.parseInt((((Vector)vmUnidad.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUnidadAdministrativa.GetIdUnidadAdministrativa: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUnidad.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdUnidadAdministrativa; }
+	}
+	
+	public void 			SetNombre(String sDATA) 			{	sNombre 			= sDATA;}
+	public String			GetNombre() 						{	return sNombre;	}
+	public String			GetNombre(int iPos)					{	return ((Vector)vmUnidad.getVMatrixAll().elementAt(1)).elementAt(iPos)!=null?((Vector)vmUnidad.getVMatrixAll().elementAt(1)).elementAt(iPos).toString():"";	}
+
+	public void 			SetIdUnidadGobierno(int iDATA)		{	iIdUnidadGobierno 	= iDATA;}
+	public int 				GetIdUnidadGobierno() 				{	return iIdUnidadGobierno;	}
+	public int				GetIdUnidadGobierno(int iPos){
+		int iGetIdUnidadGobierno = -1;
+		try { iGetIdUnidadGobierno = java.lang.Integer.parseInt((((Vector)vmUnidad.getVMatrixAll().elementAt(2)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUnidadAdministrativa.GetIdUnidadGobierno: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUnidad.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdUnidadGobierno; }
+	}
+	
+	public void 			SetDireccion(String sDATA) 			{	sDireccion 			= sDATA;}
+	public String			GetDireccion() 						{	return sDireccion;	}
+	public String			GetDireccion(int iPos)				{	return ((Vector)vmUnidad.getVMatrixAll().elementAt(3)).elementAt(iPos).toString();	}
+	
+	public void 			SetIdMunicipio(int iDATA)			{	iIdMunicipio 	= iDATA;}
+	public int 				GetIdMunicipio() 					{	return iIdMunicipio;	}
+	public int				GetIdMunicipio(int iPos){
+		int iGetIdMunicipio = -1;
+		try { iGetIdMunicipio = java.lang.Integer.parseInt((((Vector)vmUnidad.getVMatrixAll().elementAt(4)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oUnidadAdministrativa.GetIdMunicipio: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmUnidad.getVMatrixAll().elementAt(4)).elementAt(iPos)); }
+		finally{ return iGetIdMunicipio; }
+	}
+
+	public void 			SetClave(String sDATA) 				{	sClave 			= sDATA;}
+	public String			GetClave() 							{	return sClave;	}
+	public String			GetClave(int iPos)					{	return ((Vector)vmUnidad.getVMatrixAll().elementAt(5)).elementAt(iPos)+"";	}
+	
+//Metodos públicos
+	public boolean Get(int pIdUnidadAdministrativa) throws SQLException, IOException {
+		String sSql = "";
+		ResultSet rs = null;
+		try {
+			oCnn.Open();
+			sSql = "SELECT IdUnidadAdministrativa, IdUnidadGobierno, Nombre, Direccion, IdMunicipio, Clave FROM UnidadAdministrativa WHERE IdUnidadAdministrativa = " + pIdUnidadAdministrativa;
+			rs = oCnn.Execute(sSql);
+			if(rs.next()){
+				CargaDatos(rs.getInt("IdUnidadAdministrativa"), rs.getInt("IdUnidadGobierno"), rs.getString("Nombre"), rs.getString("Direccion"), rs.getInt("IdMunicipio"), rs.getString("Clave"));
+				rs.close();
+				rs = null;
+				oCnn.Close();
+				return true;
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.GetAll: " + e + " SQL:" + sSql);
+		return false;
+		} 
+		return false;
+	}
+	
+	public int GetAll() throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad.getNumRows();
+		String sSql = "";
+		
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT IdUnidadAdministrativa, Nombre, IdUnidadGobierno, Direccion, IdMunicipio, Clave FROM UnidadAdministrativa ORDER BY Nombre, IdUnidadAdministrativa";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(6);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadAdministrativa"), rs.getString("Nombre"), rs.getString("IdUnidadGobierno"), rs.getString("Direccion"), rs.getString("IdMunicipio"), rs.getString("Clave")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad.getNumRows(); 
+		}
+	}
+	
+	public int GetAll(int pIdUnidadGobierno) throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad.getNumRows();
+		String sSql = "";
+		
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT IdUnidadAdministrativa, a.Nombre, a.IdUnidadGobierno, Direccion, IdMunicipio, Clave, b.Nombre UnidadGobierno " + 
+				"FROM UnidadAdministrativa a, UnidadGobierno b WHERE a.IdUnidadGobierno = b.IdUnidadGobierno " + 
+				"AND (b.IdUnidadGobierno = " + pIdUnidadGobierno + " OR " + pIdUnidadGobierno + " = 0) " + 
+				"ORDER BY b.Nombre, a.Nombre, a.IdUnidadGobierno, a.IdUnidadAdministrativa";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(7);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadAdministrativa"), rs.getString("Nombre"), rs.getString("IdUnidadGobierno"), rs.getString("Direccion"), rs.getString("IdMunicipio"), rs.getString("Clave"), rs.getString("UnidadGobierno")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad.getNumRows(); 
+		}
+	}
+	
+	
+	public int GetAll(int pIdUnidadGobierno, char pTipoUnidad) throws SQLException, IOException {
+		if(vmUnidad.getNumRows()>0) return vmUnidad.getNumRows();
+		String sSql = "";
+		
+		try {
+			oCnn.Open();
+			ResultSet rs = null;
+			sSql = "SELECT IdUnidadAdministrativa, a.Nombre, a.IdUnidadGobierno, Direccion, IdMunicipio, Clave, b.Nombre UnidadGobierno " + 
+				"FROM UnidadAdministrativa a, UnidadGobierno b WHERE TipoUnidad = '" + pTipoUnidad + "' AND a.IdUnidadGobierno = b.IdUnidadGobierno " + 
+				"AND (b.IdUnidadGobierno = " + pIdUnidadGobierno + " OR " + pIdUnidadGobierno + " = 0) " + 
+				"ORDER BY b.Nombre, a.Nombre, a.IdUnidadGobierno, a.IdUnidadAdministrativa";
+			rs = oCnn.Execute(sSql);
+			vmUnidad.setVMatrixNumCols(7);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdUnidadAdministrativa"), rs.getString("Nombre"), rs.getString("IdUnidadGobierno"), rs.getString("Direccion"), rs.getString("IdMunicipio"), rs.getString("Clave"), rs.getString("UnidadGobierno")};
+				vmUnidad.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmUnidad.getNumRows(); 
+		}
+	}
+	
+	public int GetPos(int pIdUnidadAdministrativa) throws SQLException, IOException {
+		GetAll();
+		return ((Vector)vmUnidad.getVMatrixAll().elementAt(0)).indexOf((pIdUnidadAdministrativa+""), 0);
+	}
+	
+	
+	public int Insert(String pNombre, int pIdUnidadGobierno, String pDireccion, int pIdMunicipio, String pClave) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "INSERT INTO UnidadAdministrativa(IdUnidadGobierno, Nombre, Direccion, IdMunicipio, Clave) VALUES (" + pIdUnidadGobierno + ", '" + pNombre + "', '" + pDireccion + "', " + pIdMunicipio + ", '" + pClave + "')";
+			oCnn.Execute(sSql);
+			
+			ResultSet rs = null;
+			sSql = "SELECT Max(IdUnidadAdministrativa) MaxIdUnidadAdministrativa FROM UnidadAdministrativa";
+			rs = oCnn.Execute(sSql);
+			int iIdUnidadAdministrativa = -1;
+			if (rs.next()) {
+				iIdUnidadAdministrativa = rs.getInt("MaxIdUnidadAdministrativa");
+			}
+			rs.close();
+			rs = null;
+			oCnn.Close();
+			return iIdUnidadAdministrativa;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.Insert: " + e + " SQL:" + sSql);
+			return -1;
+		}	
+		
+	}
+	public boolean Update(int pIdUnidadAdministrativa, String pNombre, int pIdUnidadGobierno, String pDireccion, int pIdMunicipio, String pClave) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "UPDATE UnidadAdministrativa SET IdUnidadGobierno = " + pIdUnidadGobierno + ", Nombre = '" + pNombre + 
+				"', Direccion = '" + pDireccion + "', IdMunicipio = " + pIdMunicipio + ", Clave = '" + pClave + 
+				"' WHERE IdUnidadAdministrativa = " + pIdUnidadAdministrativa;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.Update: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+	public boolean Delete(int pIdUnidadAdministrativa) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			oCnn.Open();
+			sSql = "DELETE FROM UnidadAdministrativa WHERE IdUnidadAdministrativa = " + pIdUnidadAdministrativa;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		} catch(Throwable e){
+			System.out.println("Error en oUnidadAdministrativa.Delete: " + e + " SQL:" + sSql);
+			return false;
+		}
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdUnidadAdministrativa, int pIdUnidadGobierno, String pNombre, String pDireccion, int pIdMunicipio, String pClave){
+		iIdUnidadAdministrativa	= pIdUnidadAdministrativa;
+		iIdUnidadGobierno		= pIdUnidadGobierno;
+		sNombre					= pNombre;
+		sDireccion				= pDireccion;
+		iIdMunicipio			= pIdMunicipio;
+		sClave					= pClave;
+	}
+}

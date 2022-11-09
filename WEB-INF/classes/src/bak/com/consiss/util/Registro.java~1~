@@ -1,0 +1,149 @@
+package com.consiss.util;
+
+import java.lang.System;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
+
+public class Registro {
+    private File        oArchivo;
+	private FileReader	fArchivo;
+    private String      sArchivo;
+    private int         iEntreRegistros;
+	private int         iRetorno; // Retorno de carro
+	private int         iC1; // Comilla Doble  "
+	private int         iC2; // Comilla Simple '
+	private int         iC3; // Menor Que      <
+	private int         iC4; // Mayor Que      >
+    private int         iRegistro;
+    private int         iCampo;
+	private boolean     bVacio;
+    private int         iTotalRegistros;
+    private int         iTotalCampos;
+	private int[]		iCorte;
+    private int         iBanderaArchivo;
+
+// Inicializacion
+    public Registro(){
+        sArchivo        = new String();
+        iTotalRegistros = 0;
+        iTotalCampos    = 0;
+        iRegistro       = 0;
+        iCampo          = 0;
+        iBanderaArchivo = 0;
+		iEntreRegistros = 13;
+		iRetorno		= 10; // Retorno de carro
+		iC1 			= 34; // Comilla Doble  "
+		iC2 			= 39; // Comilla Simple '
+		iC3 			= 60; // Menor Que      <
+		iC4 			= 62; // Mayor Que      >
+		bVacio			= false;
+    }
+			
+// Seccion de Propiedades
+    public void setArchivo(String sTemp){
+        sTemp = ValidaRuta(sTemp);
+        sArchivo = sTemp;
+    }
+    public String getArchivo()					{	return sArchivo;			}
+    public void setEntreRegistros(int iTemp)	{	iEntreRegistros = iTemp;	}
+    public int 	getEntreRegistro()				{	return iEntreRegistros;		}
+    public void setCampo(int iTemp)				{	iCampo = iTemp;				}
+    public int 	getCampo()						{	return iCampo;				}
+    public int 	getTotalRegistros()				{	return iTotalRegistros;		}
+    public void	setTotalCampos(int[] Corte){
+		iCorte = null;
+		iCorte = Corte;
+		iTotalCampos = iCorte.length;
+	}
+    public int 	getTotalCampos()				{	return iTotalCampos;		}
+
+// Seccion de Metodos
+    public void AbreArchivo(String sTemp) throws IOException {
+        sTemp = ValidaRuta(sTemp);
+        if(iBanderaArchivo == 0){
+            oArchivo = new File(sTemp);
+			fArchivo = new FileReader(oArchivo);
+            CargaVariables();
+			iBanderaArchivo = 1;
+         }
+    }
+    public void CierraArchivo() throws IOException {
+		fArchivo.close();
+		fArchivo 		= null;
+		iBanderaArchivo = 0;
+    }
+    public void DestruyeArchivo() throws IOException {
+		oArchivo.delete();
+    }
+	public String[] getRegistro()  throws IOException {
+		String sTemp[]  	= new String[iTotalCampos];
+		String sCampo   	= new String();
+		int iTemp       	= 0;
+		int iCaracter;
+		iCampo      		= 0;
+		sCampo  			= "";
+		int w = 0;
+		while((iTemp = fArchivo.read()) != -1 && iTemp != iEntreRegistros){
+			if(iTemp != iRetorno){ 
+				if(iTemp != iC1 && iTemp != iC2 && iTemp != iC3 && iTemp != iC4)
+					sCampo = sCampo + (char) iTemp;
+				else 
+					sCampo = sCampo + " ";
+				w ++;
+			}
+		}
+		bVacio = sCampo.trim().equals("")?true:false;
+		int iInicio = 1;
+		int iAcum	= 0;	
+		for(int i=0; i < iTotalCampos; i++){
+			iAcum += iCorte[i]; // suponiendo que w es len del campo, y que iAcum es el limite del substring, entonces
+			if (w >= iAcum) {
+				sTemp[i] = sCampo.substring(iInicio - 1, iAcum);
+			} else {
+				if( iInicio <= w ) { sTemp[i] = sCampo.substring(iInicio - 1, w); }
+				else sTemp[i] = "";
+			}
+			iInicio += iCorte[i];
+		}
+		return sTemp;
+	}
+	public boolean getVacio(){ 
+		return bVacio;
+	}
+// Seccion de funciones necesitadas por los metodos
+    private void CargaVariables() throws IOException{
+        FileReader  fTemp = new FileReader(oArchivo);
+        int iTemp       = 0;
+        int iReg        = 1;
+        boolean bBandera    = true;
+        while( (iTemp = fTemp.read()) != -1 ){
+             if(iTemp==iEntreRegistros){
+                iReg++;
+                bBandera = false;
+             }
+        }
+        iTotalRegistros = iReg;
+        fTemp.close();
+		fTemp = null;
+     }
+    private String ValidaRuta(String sTemp){
+  	  String RutaCorrecta = "";
+	  char 		ch = (char) 92;
+	  char		chr= (char) 47;
+	  char		chp= (char) 58;
+	  for(int y=0; y<sTemp.length(); y++){
+	  		if(sTemp.charAt(y) == ch){
+				if (sTemp.charAt(y-1) == chp){
+					RutaCorrecta = RutaCorrecta + chr + chr;
+				}else{
+					RutaCorrecta = RutaCorrecta + chr;}
+				}
+			else{
+					RutaCorrecta = RutaCorrecta + sTemp.charAt(y);
+				}
+    	  }
+        return RutaCorrecta;
+     }
+}

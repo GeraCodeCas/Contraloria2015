@@ -1,0 +1,95 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Enrique Martinez Solis
+ * Created: 15.Enero.2003
+ * Purpose: Defines the Class Bitacora
+ ***********************************************************************/
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Bitacora {
+//Declaración de Variables
+private String 		    sUsuario;
+private String 			sFecha;
+private String 			sTipo;
+private String 			sAccion;
+private String 			sDireccionIP;
+private String 			sNombreMaquina;
+private String 			sInfoMaquina;
+private VMatrix		    oVm;
+private ConnectionJDBC	oCnn;
+
+//Inicializacion de la Clase
+public Bitacora()  throws SQLException, IOException {
+		String sSql;
+		sUsuario		= "";
+	    sFecha			= "";
+		sTipo			= "";
+		sAccion			= "";
+		sDireccionIP	= "";
+		sNombreMaquina	= "";
+		sInfoMaquina	= "";
+		oVm				= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+		oCnn.Open();
+	}
+	
+// Propiedades
+	public void 	SetUsuario(String sDATA) 		{	sUsuario 		= sDATA;	}
+	public String	GetUsuario() 					{	return sUsuario;			}
+	public String	GetUsuario(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos);			}
+	
+	public void 	SetFecha(String sDATA) 		{	sFecha 		= sDATA;	}
+	public String	GetFecha() 					{	return sFecha;			}
+	public String	GetFecha(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);			}
+	
+	public void 	SetTipo(String sDATA) 		{	sTipo 		= sDATA;	}
+	public String	GetTipo() 					{	return sTipo;			}
+	public String	GetTipo(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);			}
+	
+	public void 	SetAccion(String sDATA) 		{	sAccion 		= sDATA;	}
+	public String	GetAccion() 					{	return sAccion;			}
+    public String	GetAccion(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);			}
+	
+	public void 	SetDireccionIP(String sDATA) 		{	sDireccionIP 		= sDATA;	}
+	public String	GetDirecionIP() 					{	return sDireccionIP;			}
+	public String	GetDirecionIP(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);			}
+	
+	public void 	SetNombreMaquina(String sDATA) 		{	sNombreMaquina 		= sDATA;	}
+	public String	GetNombreMaquina() 					{	return sNombreMaquina;			}
+	public String	GetNombreMaquina(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);			}
+		
+	public void 	SetInformacionMaquina(String sDATA) 		{	sInfoMaquina 		= sDATA;	}
+	public String	GetInformacionMaquina() 					{	return sInfoMaquina;			}
+	public String	GetInformacionMaquina(int iPos)		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);			}
+	
+	
+	public VMatrix GetAll(String sFechaIni, String sFechaFin, String sTipo) throws SQLException, IOException {
+		if(oVm.getNumRows()>0)  return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT Usuario, Fecha, Tipo, Accion, DireccionIP, NombreMaquina, InformacionMaquina FROM Bitacora WHERE (FechaSys BETWEEN " + sFechaIni + " AND " + sFechaFin + ") AND (Ltrim(Rtrim(Tipo)) = '" + sTipo.trim() + "' OR '" + sTipo.trim() + "' = '') ORDER BY FechaSys, Fecha";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(7);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("Usuario"), rs.getString("Fecha"), rs.getString("Tipo"), rs.getString("Accion"), 
+					rs.getString("DireccionIP"), rs.getString("NombreMaquina"), rs.getString("InformacionMaquina")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Bitacora.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm;
+		}
+	}
+}

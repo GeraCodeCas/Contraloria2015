@@ -1,0 +1,176 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 25.Oct.2002
+ * Purpose: Defines the Class Cargo
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Cargo {
+
+//Declaración de Variables
+private int 			 iIdCargo;
+private String			 sNombre;
+private int 			 iIdUnidadAdministrativa;
+
+private VMatrix			vmCargo;
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public Cargo()  throws SQLException, IOException {
+		iIdCargo				= 0;
+		iIdUnidadAdministrativa = 0;
+		sNombre					= "";
+
+		vmCargo				= new VMatrix();
+		oCnn				= new ConnectionJDBC();
+	}
+
+ //Creación de las Propiedades
+	public void 			SetIdCargo(int iDATA)				{	iIdCargo 	= iDATA;}
+	public int 				GetIdCargo() 						{	return iIdCargo;	}
+	public int				GetIdCargo(int iPos){
+		int iGetIdCargo = -1;
+		try { iGetIdCargo = java.lang.Integer.parseInt((((Vector)vmCargo.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oCargo.GetIdCargo: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmCargo.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetIdCargo; }
+	}
+	
+	public void 			SetNombre(String sDATA) 			{	sNombre 		= sDATA;}
+	public String			GetNombre() 						{	return sNombre;	}
+	public String			GetNombre(int iPos)					{	return ((Vector)vmCargo.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+	public void 			SetIdUnidadAdministrativa(int iDATA){	iIdUnidadAdministrativa 	= iDATA;}
+	public int 				GetIdUnidadAdministrativa() 		{	return iIdUnidadAdministrativa;	}
+	public int				GetIdUnidadAdministrativa(int iPos){
+		int iGetIdUnidadAdministrativa = -1;
+		try { iGetIdUnidadAdministrativa = java.lang.Integer.parseInt((((Vector)vmCargo.getVMatrixAll().elementAt(2)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oCargo.GetIdUnidadAdministrativa: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmCargo.getVMatrixAll().elementAt(2)).elementAt(iPos)); }
+		finally{ return iGetIdUnidadAdministrativa; }
+	}
+	
+//Metodos públicos
+	public boolean Get(int pIdCargo) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdCargo, IdUnidadAdministrativa, Nombre FROM Cargo WHERE IdCargo = " + pIdCargo;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdCargo"), rs.getString("Nombre"), rs.getInt("IdUnidadAdministrativa"));
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+	
+	public int GetAll() throws SQLException, IOException {
+		if(vmCargo.getNumRows()>0) return vmCargo.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdCargo, Nombre, IdUnidadAdministrativa FROM Cargo";
+		try {
+			rs = oCnn.Execute(sSql);
+			vmCargo.setVMatrixNumCols(5);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdCargo"), rs.getString("Nombre"), rs.getString("IdUnidadAdministrativa")};
+				vmCargo.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Cargo.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmCargo.getNumRows(); 
+		}
+	}
+	public int GetPos(int pIdCargo) throws SQLException, IOException {
+		GetAll();
+		return ((Vector)vmCargo.getVMatrixAll().elementAt(0)).indexOf((pIdCargo+""), 0);
+	}
+	public int GetAll(int pIdUnidadGobierno) throws SQLException, IOException {
+		if(vmCargo.getNumRows()>0) return vmCargo.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdCargo, a.Nombre, a.IdUnidadAdministrativa FROM Cargo a, UnidadAdministrativa b " + 
+			"WHERE a.IdUnidadAdministrativa = b.IdUnidadAdministrativa AND (b.IdUnidadGobierno = " + pIdUnidadGobierno + " OR " + pIdUnidadGobierno + " = 0) ORDER BY b.Nombre, a.Nombre";
+		try {
+			rs = oCnn.Execute(sSql);
+			vmCargo.setVMatrixNumCols(5);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdCargo"), rs.getString("Nombre"), rs.getString("IdUnidadAdministrativa")};
+				vmCargo.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en Cargo.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmCargo.getNumRows(); 
+		}
+	}
+	public boolean Insert(int pIdUnidadAdministrativa, String pNombre) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "INSERT INTO Cargo(IdUnidadAdministrativa, Nombre) VALUES (" + 
+				pIdUnidadAdministrativa + ", '" + pNombre + "' )";
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oCargo.Insert: " + e + " SQL:" + sSql);
+			return false;
+		}
+		//return false;
+	}
+	public boolean Update(int pIdCargo, int pIdUnidadAdministrativa, String pNombre) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "UPDATE Cargo SET idUnidadAdministrativa = " + pIdUnidadAdministrativa + 
+					", Nombre = '" + pNombre + "' WHERE IdCargo = " + pIdCargo;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oCargo.Update: " + e + " SQL:" + sSql);
+			return false;
+		}
+		//return false;	
+	}
+	public boolean Delete(int pIdCargo) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "DELETE FROM Cargo WHERE IdCargo = " + pIdCargo;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oCargo.Delete: " + e + " SQL:" + sSql);
+			return false;
+		}	
+		//return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdCargo, String pNombre, int pIdUnidadAdministrativa){
+		iIdCargo				= pIdCargo;
+		sNombre					= pNombre;		
+		iIdUnidadAdministrativa = pIdUnidadAdministrativa;
+	}
+}

@@ -1,0 +1,246 @@
+/************************************************************************
+ * Module:  ErrAnexo3XII.java
+ * Author:  Enrique Martinez
+ * Created: 01.Mayo.2003
+ * Purpose: Defines the Class ErrAnexo3XII
+ ***********************************************************************/
+
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo3XII {
+//Declaración de Variables
+  private int iIdFuncionario;
+  private String sClave;
+  private String sObra;
+  private String sNoContrato;
+  private String sNomContratista;
+  //private String sCostoTotal;
+  private String sAnticipoO;
+  private String sAnticipoA;
+  private String sObservacion;
+  private String sTipoOrigen;
+  private String sSaldo;
+  private String sDescripcion;
+  private ConnectionJDBC oCnn;
+  private VMatrix oVm;
+
+//Inicializacion de la Clase
+  public ErrAnexo3XII() throws SQLException, IOException {
+    String sSql;
+    iIdFuncionario = 0;
+    sClave = "";
+    sObra = "";
+    sNoContrato = "";
+    sNomContratista = "";
+   // sCostoTotal = "";
+    sAnticipoO = "";
+    sAnticipoA = "";
+    sObservacion = "";
+    sTipoOrigen = "";
+    sSaldo = "";
+    sDescripcion = "";
+    oVm = new VMatrix();
+    oCnn = new ConnectionJDBC();
+  }
+
+//Creación de las Propiedades
+  public void SetIdFuncionario(int iDATA) {
+    iIdFuncionario = iDATA;
+  }
+
+  public int GetIdFuncionario() {
+    return iIdFuncionario;
+  }
+
+  public int GetIdFuncionario(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                 elementAt(0)).elementAt(iPos));
+  }
+
+  public void SetClave(String sDATA) {
+    sClave = sDATA;
+  }
+
+  public String GetClave() {
+    return sClave;
+  }
+
+  public String GetClave(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);
+  }
+
+  public void SetObra(String iDATA) {
+    sObra = iDATA;
+  }
+
+  public String GetObra() {
+    return sObra;
+  }
+
+  public String GetObra(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);
+  }
+
+  public void SetNoContrato(String iDATA) {
+    sNoContrato = iDATA;
+  }
+
+  public String GetNoContrato() {
+    return sNoContrato;
+  }
+
+  public String GetNoContrato(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);
+  }
+
+  public void SetNomContratista(String sDATA) {
+    sNomContratista = sDATA;
+  }
+
+  public String GetNomContratista() {
+    return sNomContratista;
+  }
+
+  public String GetNomContratista(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);
+  }
+
+/*  public void SetCostoTotal(String sDATA) {
+    sCostoTotal = sDATA;
+  }
+
+  public String GetCostoTotal() {
+    return sCostoTotal;
+  }
+*/
+ /*ublic String GetCostoTotal(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);
+  }
+*/
+  public void SetAnticipoO(String sDATA) {
+    sAnticipoO = sDATA;
+  }
+
+  public String GetAnticipoO() {
+    return sAnticipoO;
+  }
+
+  public String GetAnticipoO(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);
+  }
+
+  public void SetAnticipoA(String sDATA) {
+    sAnticipoA = sDATA;
+  }
+
+  public String GetAnticipoA() {
+    return sAnticipoA;
+  }
+
+  public String GetAnticipoA(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);
+  }
+
+  public void SetSaldo(String sDATA) {
+    sSaldo = sDATA;
+  }
+
+  public String GetSaldo() {
+    return sSaldo;
+  }
+
+  public String GetSaldo(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(7)).elementAt(iPos);
+  }
+
+  public void SetObservacion(String sDATA) {
+    sObservacion = sDATA;
+  }
+
+  public String GetObservacion() {
+    return sObservacion;
+  }
+
+  public String GetObservacion(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(8)).elementAt(iPos);
+  }
+
+  public void SetTipoOrigen(String sDATA) {
+    sTipoOrigen = sDATA;
+  }
+
+  public String GetTipoOrigen() {
+    return sTipoOrigen;
+  }
+
+  public String GetTipoOrigen(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(9)).elementAt(
+        iPos);
+  }
+
+  public void SetDescripcion(String sDATA) {
+    sDescripcion = sDATA;
+  }
+
+  public String GetDescripcion() {
+    return sDescripcion;
+  }
+
+  public String GetDescripcion(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(10)).elementAt(
+        iPos);
+  }
+
+//Metodos públicos
+  public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+    if (oVm.getNumRows() > 0) {
+      return oVm.getNumRows();
+    }
+    oCnn.Open();
+    ResultSet rs = null;
+    String sSql;
+    sSql = "SELECT IdFuncionario, Clave, Obra, NoContrato, NombreContratista, AnticipoOtorgado, AnticipoAmortizado, Observacion,TipoOrigen, SaldoAnticipoAmortizar, DescripcionError FROM ErrAnexo3XII WHERE IdFuncionario = " +
+        pIdFuncionario;
+    try {
+      rs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(12);
+      oVm.setSwitchTypeKey();
+      while (rs.next()) {
+        String sTabla[] = {
+            rs.getString("IdFuncionario"), rs.getString("Clave"),
+            rs.getString("Obra"),
+            rs.getString("NoContrato"), rs.getString("NombreContratista"),
+  //          rs.getString("CostoTotal"),
+            rs.getString("AnticipoOtorgado"), rs.getString("AnticipoAmortizado"),
+            rs.getString("SaldoAnticipoAmortizar"),
+            rs.getString("Observacion"), rs.getString("TipoOrigen"),
+            rs.getString("DescripcionError")};
+        oVm.setVMatrixRow(sTabla);
+      }
+      rs.close();
+      rs = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oErrAnexo3XII.GetAll: " + e + " SQL:" + sSql);
+    }
+    finally {
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+      return oVm.getNumRows();
+    }
+  }
+
+  public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException,
+      IOException {
+    GetAll(pIdFuncionario);
+    return ( (Vector) oVm.getVMatrixAll().elementAt(0)).indexOf( (pIdRenglon +
+        ""), 0);
+  }
+}

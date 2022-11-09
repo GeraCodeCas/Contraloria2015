@@ -1,0 +1,100 @@
+/************************************************************************
+ * Module:  ErrAnexo3XVII.java
+ * Author:  Enrique Martinez
+ * Created: 23.Abr.2003
+ * Purpose: Defines the Class ErrAnexo3XVII
+ ***********************************************************************/
+ 
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo3XVII {
+//Declaración de Variables
+private int				iIdFuncionario;
+private String 			sExpediente;
+private String			sAsunto;
+private String 			sFechaIni;
+private String			sSituacion;
+private String 			sFechaFin;
+private String			sDescrErr;
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+
+//Inicializacion de la Clase
+	public ErrAnexo3XVII()  throws SQLException, IOException {
+		String sSql;
+		iIdFuncionario	= 0;
+		sExpediente		= "";
+		sAsunto			= "";
+		sFechaIni		= "";
+		sSituacion		= "";
+		sFechaFin		= "";		
+		sDescrErr = "";
+		oVm				= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+	}
+
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA) 	{	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() 				{	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	
+	public void 	SetExpediente(String sDATA) 			{	sExpediente 			= sDATA;	}
+	public String	GetExpediente() 						{	return sExpediente;				}
+	public String	GetExpediente(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);	}
+	
+	public void 	SetAsunto(String sDATA) 	{	sAsunto 	= sDATA;	}
+	public String	GetAsunto() 				{	return sAsunto;			}
+	public String	GetAsunto(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	
+	public void 	SetFechaIni(String iDATA) 			{	sFechaIni			= iDATA;	}
+	public String	GetFechaIni() 						{	return sFechaIni;				}
+	public String	GetFechaIni(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	
+	public void 	SetSituacion(String sDATA) 		{	sSituacion 		= sDATA;	}
+	public String	GetSituacion() 					{	return sSituacion;			}
+	public String	GetSituacion(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+	
+	public void 	SetFechaFin(String sDATA) 		{	sFechaFin		= sDATA;	}
+	public String	GetFechaFin() 					{	return sFechaFin;			}
+	public String	GetFechaFin(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+	
+	public void 	SetDescrErr(String sDATA) 			{	sDescrErr			= sDATA;	}
+	public String	GetDescrErr() 						{	return sDescrErr;			}
+	public String	GetDescrErr(int iPos) 				{	return (String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);	} 
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdFuncionario, Expediente, Asunto, FechaInicio, Situacion, FechaSolucion, DescripcionError FROM ErrAnexo3XVII WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(7);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("IdFuncionario"), rs.getString("Expediente"), rs.getString("Asunto"), 
+									rs.getString("FechaInicio"), rs.getString("Situacion"), rs.getString("FechaSolucion"), 
+									rs.getString("DescripcionError")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo3XVII.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon + ""), 0);
+	}
+}

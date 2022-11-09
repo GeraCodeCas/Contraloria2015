@@ -1,0 +1,925 @@
+/************************************************************************
+ * Module:  Anexo3XI.java
+ * Author:  Jesus Limon
+ * Created: 18.Nov.2002
+ * Purpose: Defines the Class Anexo3XI
+ ***********************************************************************/
+
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo3XI {
+
+//Declaración de Variables
+//public String ErrorVar;
+  private int iIdAnexo;
+  private String sNombreAnexo;
+
+  private int iIdRenglon;
+  private int iIdFuncionario;
+
+  private String sClave;
+  private String sPrograma;
+  //private String sNoAprobacion;
+  private int iNoAprobacion;
+ //private String fInversionAprobada;
+  private String fInversionEjercida;
+  //private int iObrasEntregadas;
+  //private int iObrasPorEntregar;
+  //private String sUnidadMedida;
+  //private String sCantidadTotal;
+  private String sObservacion;
+  private ConnectionJDBC oCnn;
+  private VMatrix oVm;
+  private int iTipoOrigen;
+  private long iGetAllCount;
+
+  private VMatrix oVm2;
+  private int iTipoNvo;
+  private String sTipoDesc;
+
+//Inicializacion de la Clase
+  public Anexo3XI() throws SQLException, IOException {
+    String sSql = "";
+    iIdRenglon = 0;
+    iIdFuncionario = 0;
+    sClave = "";
+    sPrograma = "";
+    iNoAprobacion = 0;
+    //fInversionAprobada = "0";
+    fInversionEjercida = "0";
+    //iObrasEntregadas = 0;
+    //iObrasPorEntregar = 0;
+    //sUnidadMedida = "";
+    //sCantidadTotal = "";
+    sObservacion = "";
+    iTipoOrigen = 0;
+    oVm = new VMatrix();
+    oCnn = new ConnectionJDBC();
+
+    oVm2 = new VMatrix();
+    iTipoNvo = 0;
+    sTipoDesc = "";
+    iGetAllCount = 0;
+
+    /*oCnn.SetDsn("GobiernoER");
+       oCnn.SetUsuario("sa");
+       oCnn.SetClave("");*/
+
+    oCnn.Open();
+    ResultSet oRs = null;
+    sSql =
+        "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo III.11'";
+    try {
+      oRs = oCnn.Execute(sSql);
+      if (oRs.next()) {
+        iIdAnexo = oRs.getInt("IdAnexo");
+        sNombreAnexo = oRs.getString("Nombre");
+      }
+      oRs.close();
+      oRs = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oAnexo3XI.init: " + e + " SQL:" + sSql);
+    }
+    finally {
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+  }
+
+//Creación de las Propiedades
+  public int GetIdAnexo() {
+    return iIdAnexo;
+  }
+
+  public String GetNombreAnexo() {
+    return sNombreAnexo;
+  }
+
+  public long GetAllCount() {
+    return iGetAllCount;
+  }
+
+  public void SetIdRenglon(int iDATA) {
+    iIdRenglon = iDATA;
+  }
+
+  public int GetIdRenglon() {
+    return iIdRenglon;
+  }
+
+  public int GetIdRenglon(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                 elementAt(0)).elementAt(iPos));
+  }
+
+  public void SetIdFuncionario(int iDATA) {
+    iIdFuncionario = iDATA;
+  }
+
+  public int GetIdFuncionario() {
+    return iIdFuncionario;
+  }
+
+  public int GetIdFuncionario(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                 elementAt(1)).elementAt(iPos));
+  }
+
+  public void SetClave(String sDATA) {
+    sClave = sDATA;
+  }
+
+  public String GetClave() {
+    return sClave;
+  }
+
+  public String GetClave(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);
+  }
+
+  public void SetPrograma(String sDATA) {
+    sPrograma = sDATA;
+  }
+
+  public String GetPrograma() {
+    return sPrograma;
+  }
+
+  public String GetPrograma(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);
+  }
+
+
+
+  public void 	SetNoAprobacion(int iDATA) 			{	iNoAprobacion			= iDATA;	}
+  public int		GetNoAprobacion() 					{	return iNoAprobacion;				}
+  public int		GetNoAprobacion(int iPos) 			{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos));	}
+
+  public String GetNoAprobacionDescripcion(int iPos) {
+     String sNoAprobacion = "";
+     switch (java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                   elementAt(4)).elementAt(iPos))) {
+                                                 case 0:
+                                                   sNoAprobacion = "   -------    ";
+                                                   break;
+                                                 case 1:
+                                                   sNoAprobacion = "Abasolo";
+                                                   break;
+                                                 case 2:
+                                                   sNoAprobacion = "Acuña";
+                                                   break;
+                                                 case 3:
+                                                   sNoAprobacion = "Allende";
+                                                   break;
+                                                 case 4:
+                                                   sNoAprobacion = "Arteaga";
+                                                   break;
+                                                 case 5:
+                                                   sNoAprobacion = "Candela";
+                                                   break;
+                                                 case 6:
+                                                   sNoAprobacion = "Castaños";
+                                                   break;
+                                                 case 7:
+                                                   sNoAprobacion = "Cuatrocienegas";
+                                                   break;
+                                                 case 8:
+                                                   sNoAprobacion = "Escobedo";
+                                                   break;
+                                                 case 9:
+                                                   sNoAprobacion = "Francisco I. Madero";
+                                                   break;
+                                                 case 10:
+                                                   sNoAprobacion = "Frontera";
+                                                   break;
+                                                 case 11:
+                                                   sNoAprobacion = "General Cepeda";
+                                                   break;
+                                                 case 12:
+                                                   sNoAprobacion = "Guerrero";
+                                                   break;
+                                                 case 13:
+                                                   sNoAprobacion = "Hidalgo";
+                                                   break;
+                                                 case 14:
+                                                   sNoAprobacion = "Jimenez";
+                                                   break;
+                                                 case 15:
+                                                   sNoAprobacion = "Juarez";
+                                                   break;
+                                                 case 16:
+                                                   sNoAprobacion = "Lamadrid";
+                                                   break;
+                                                 case 17:
+                                                   sNoAprobacion = "Matamoros";
+                                                   break;
+                                                 case 18:
+                                                   sNoAprobacion = "Monclova";
+                                                   break;
+                                                 case 19:
+                                                   sNoAprobacion = "Morelos";
+                                                   break;
+                                                 case 20:
+                                                   sNoAprobacion = "Muzquiz";
+                                                   break;
+                                                 case 21:
+                                                   sNoAprobacion = "Nadadores";
+                                                   break;
+                                                 case 22:
+                                                   sNoAprobacion = "Nava";
+                                                   break;
+                                                 case 23:
+                                                   sNoAprobacion = "Ocampo";
+                                                   break;
+                                                 case 24:
+                                                   sNoAprobacion = "Parras";
+                                                   break;
+                                                 case 25:
+                                                   sNoAprobacion = "Piedras Negras";
+                                                   break;
+                                                 case 26:
+                                                   sNoAprobacion = "Progreso";
+                                                   break;
+                                                 case 27:
+                                                   sNoAprobacion = "Ramos Arizpe";
+                                                   break;
+                                                 case 28:
+                                                   sNoAprobacion = "Sabinas";
+                                                   break;
+                                                 case 29:
+                                                   sNoAprobacion = "Sacramento";
+                                                   break;
+                                                 case 30:
+                                                   sNoAprobacion = "Saltillo";
+                                                   break;
+                                                 case 31:
+                                                   sNoAprobacion = "San Buenaventura";
+                                                   break;
+                                                 case 32:
+                                                   sNoAprobacion = "San Juan de Sabinas";
+                                                   break;
+                                                 case 33:
+                                                   sNoAprobacion = "San Pedro";
+                                                   break;
+                                                 case 34:
+                                                   sNoAprobacion = "Sierra Mojada";
+                                                   break;
+                                                 case 35:
+                                                   sNoAprobacion = "Torreon";
+                                                   break;
+                                                 case 36:
+                                                   sNoAprobacion = "Viesca";
+                                                   break;
+                                                 case 37:
+                                                   sNoAprobacion = "Villaunion";
+                                                   break;
+                                                 case 38:
+                                                   sNoAprobacion = "Zaragoza";
+                                                   break;
+                                               }
+                                               return sNoAprobacion;
+   }
+
+
+/*  public void SetInversionAprobada(String fDATA) {
+    fInversionAprobada = fDATA;
+  }
+
+  public String GetInversionAprobada() {
+    return fInversionAprobada;
+  }
+
+  public String GetInversionAprobada(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);
+  }
+*/
+  public void SetInversionEjercida(String fDATA) {
+    fInversionEjercida = fDATA;
+  }
+
+  public String GetInversionEjercida() {
+    return fInversionEjercida;
+  }
+
+  public String GetInversionEjercida(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);
+  }
+
+/*  public void SetObrasEntregadas(int iDATA) {
+    iObrasEntregadas = iDATA;
+  }
+
+  public int GetObrasEntregadas() {
+    return iObrasEntregadas;
+  }
+
+  public int GetObrasEntregadas(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                 elementAt(7)).elementAt(iPos));
+  }
+
+  public void SetObrasPorEntregar(int iDATA) {
+    iObrasPorEntregar = iDATA;
+  }
+
+  public int GetObrasPorEntregar() {
+    return iObrasPorEntregar;
+  }
+
+  public int GetObrasPorEntregar(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                 elementAt(8)).elementAt(iPos));
+  }
+
+  public void SetUnidadMedida(String sDATA) {
+    sUnidadMedida = sDATA;
+  }
+
+  public String GetUnidadMedida() {
+    return sUnidadMedida;
+  }
+
+  public String GetUnidadMedida(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);
+  }
+
+  public void SetCantidadTotal(String sDATA) {
+    sCantidadTotal = sDATA;
+  }
+
+  public String GetCantidadTotal() {
+    return sCantidadTotal;
+  }
+
+  public String GetCantidadTotal(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(10)).elementAt(
+        iPos);
+  }
+*/
+  public void SetObservacion(String sDATA) {
+    sObservacion = sDATA;
+  }
+
+  public String GetObservacion() {
+    return sObservacion;
+  }
+
+  public String GetObservacion(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(6)).elementAt(
+        iPos);
+  }
+
+  public void SetTipoOrigen(int iDATA) {
+    iTipoOrigen = iDATA;
+  }
+
+  public int GetTipoOrigen() {
+    return iTipoOrigen;
+  }
+
+  public int GetTipoOrigen(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                 elementAt(7)).elementAt(iPos));
+  }
+
+  public void SetTipoNvo(int iDATA) {
+    iTipoNvo = iDATA;
+  }
+
+  public int GetTipoNvo() {
+    return iTipoNvo;
+  }
+
+  public int GetTipoNvo(int iPos) {
+    return java.lang.Integer.parseInt( (String) ( (Vector) oVm2.getVMatrixAll().
+                                                 elementAt(0)).elementAt(iPos));
+  }
+
+  public void SetTipoDesc(String sDATA) {
+    sTipoDesc = sDATA;
+  }
+
+  public String GetTipoDesc() {
+    return sTipoDesc;
+  }
+
+  public String GetTipoDesc(int iPos) {
+    return (String) ( (Vector) oVm2.getVMatrixAll().elementAt(1)).elementAt(
+        iPos);
+  }
+
+  public String GetTipoOrigenDescripcion(int iPos) {
+    String sTipoOrigen = "";
+    switch (java.lang.Integer.parseInt( (String) ( (Vector) oVm.getVMatrixAll().
+                                                  elementAt(7)).elementAt(iPos))) {
+      case 0:
+        sTipoOrigen = "   TODOS    ";
+        break;
+      case 1:
+        sTipoOrigen = "RECURSOS PROPIOS";
+        break;
+      case 2:
+        sTipoOrigen = "PROGRAMA ESTATAL DE INVERSION";
+        break;
+      case 3:
+        sTipoOrigen = "RAMO 23";
+        break;
+      case 4:
+        sTipoOrigen = "RAMO 33";
+        break;
+      case 5:
+        sTipoOrigen = "FEDERALIZADOS";
+        break;
+    }
+    return sTipoOrigen;
+  }
+
+  public int GetTipoOrigenDesc(int pIdFuncionario) throws SQLException,
+      IOException {
+    String iPos;
+    String sTipoOrigen = "";
+    String sSql;
+    oCnn.Open();
+    if (oVm2.getNumRows() > 0) {
+      return oVm2.getNumRows();
+    }
+    ResultSet rs = null;
+    sSql = "SELECT DISTINCT TipoOrigen from Anexo3XI WHERE IdFuncionario = " +
+        pIdFuncionario + " order by TipoOrigen";
+    try {
+      rs = oCnn.Execute(sSql);
+      oVm2.setVMatrixNumCols(2);
+      while (rs.next()) {
+        iPos = rs.getString("TipoOrigen");
+        switch (java.lang.Integer.parseInt(iPos)) {
+          case 0:
+            sTipoOrigen = "   TODOS    ";
+            break;
+          case 1:
+            sTipoOrigen = "RECURSOS PROPIOS";
+            break;
+          case 2:
+            sTipoOrigen = "PROGRAMA ESTATAL DE INVERSION";
+            break;
+          case 3:
+            sTipoOrigen = "RAMO 23";
+            break;
+          case 4:
+            sTipoOrigen = "RAMO 33";
+            break;
+          case 5:
+            sTipoOrigen = "FEDERALIZADOS";
+            break;
+        }
+        String saTabla[] = {
+            iPos, sTipoOrigen};
+        oVm2.setVMatrixRow(saTabla);
+      }
+      rs.close();
+      rs = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oAnexo3X.GetAll: " + e + " SQL:" + sSql);
+    }
+    finally {
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+      return oVm2.getNumRows();
+    }
+  }
+
+//Metodos públicos
+  public int GetAll(int pIdFuncionario, int pTipoOrigen, int pItemsPagina,
+                    int pPagina) throws SQLException, IOException {
+    oVm.RemoveAll();
+
+    ResultSet rs = null;
+    String sSql;
+    //-//sSql = "SELECT IdAnexo3XI, IdFuncionario, Clave, Programa, NoAprobacion, InversionAprobada, InversionEjercida, ObrasEntregadas, ObrasPorEntregar,	UnidadMedida, CantidadTotal, Observacion FROM Anexo3XI WHERE IdFuncionario = " + pIdFuncionario;
+    /*if(pTipoOrigen==0){
+     sSql = "SELECT IdAnexo3XI, IdFuncionario, Clave, Programa, NoAprobacion, InversionAprobada, InversionEjercida, ObrasEntregadas, ObrasPorEntregar,	UnidadMedida, CantidadTotal, Observacion,TipoOrigen FROM Anexo3XI WHERE IdFuncionario = " + pIdFuncionario + " order by TipoOrigen, Clave, Programa, NoAprobacion ";
+       }else{
+     sSql = "SELECT IdAnexo3XI, IdFuncionario, Clave, Programa, NoAprobacion, InversionAprobada, InversionEjercida, ObrasEntregadas, ObrasPorEntregar,	UnidadMedida, CantidadTotal, Observacion,TipoOrigen FROM Anexo3XI WHERE IdFuncionario = " + pIdFuncionario + " and TipoOrigen = " + pTipoOrigen + " order by TipoOrigen, Clave, Programa, NoAprobacion ";
+       }*/
+    sSql = "sel_Anexo3xiCountAll " + pIdFuncionario + ", " + pTipoOrigen;
+
+    //ErrorVar=sSql;
+    try {
+      oCnn.Open();
+      rs = oCnn.Execute(sSql);
+      if (rs.next()) {
+        iGetAllCount = rs.getLong("AllCount");
+      }
+      rs.close();
+      rs = null;
+
+      sSql = "sel_Anexo3xiGetAll " + pIdFuncionario + ", " + pTipoOrigen + ", " +
+          pItemsPagina + ", " + pPagina;
+
+      rs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(13);
+      while (rs.next()) {
+        String saTabla[] = {
+            rs.getString("IdAnexo3XI"), rs.getString("IdFuncionario"),
+            rs.getString("Clave"),
+            rs.getString("Programa"), rs.getString("IdMunicipio"),
+           // rs.getString("InversionAprobada"),
+            rs.getString("InversionEjercida"),
+           /* rs.getString("ObrasEntregadas"), rs.getString("ObrasPorEntregar"),
+            rs.getString("UnidadMedida"),
+            rs.getString("CantidadTotal"),
+            */
+             rs.getString("Observacion"),
+            rs.getString("TipoOrigen")};
+        oVm.setVMatrixRow(saTabla);
+      }
+      rs.close();
+      rs = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oAnexo3XI.GetAll: " + e + " SQL:" + sSql);
+    }
+    finally {
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+      return oVm.getNumRows();
+    }
+  }
+
+  public int GetAll(int pIdFuncionario, int pTipoOrigen) throws SQLException,
+      IOException {
+    oVm.RemoveAll();
+    oCnn.Open();
+    ResultSet rs = null;
+    String sSql;
+    //sSql = "SELECT IdAnexo3XI, IdFuncionario, Clave, Programa, NoAprobacion, InversionAprobada, InversionEjercida, ObrasEntregadas, ObrasPorEntregar,	UnidadMedida, CantidadTotal, Observacion FROM Anexo3XI WHERE IdFuncionario = " + pIdFuncionario;
+    sSql = "sel_Anexo3xiGetAll_SP " + pIdFuncionario + ", " + pTipoOrigen;
+    //ErrorVar=sSql;
+    try {
+      rs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(13);
+      while (rs.next()) {
+        String saTabla[] = {
+            rs.getString("IdAnexo3XI"), rs.getString("IdFuncionario"),
+            rs.getString("Clave"),
+            rs.getString("Programa"), rs.getString("IdMunicipio"),
+           // rs.getString("InversionAprobada"),
+            rs.getString("InversionEjercida"),
+            /*rs.getString("ObrasEntregadas"), rs.getString("ObrasPorEntregar"),
+            rs.getString("UnidadMedida"),
+            rs.getString("CantidadTotal"),
+*/
+            rs.getString("Observacion"),
+            rs.getString("TipoOrigen")};
+        oVm.setVMatrixRow(saTabla);
+      }
+      rs.close();
+      rs = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oAnexo3X.GetAll: " + e + " SQL:" + sSql);
+    }
+    finally {
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+      return oVm.getNumRows();
+    }
+  }
+
+  public int GetPos(int pIdFuncionario, int pIdRenglon, int pTipoOrigen) throws
+      SQLException, IOException {
+    GetAll(pIdFuncionario, pTipoOrigen);
+    return ( (Vector) oVm.getVMatrixAll().elementAt(0)).indexOf( (pIdRenglon +
+        ""), 0);
+  }
+
+  public boolean Insert(int pIdFuncionario, String pClave, String pPrograma,
+                        String pNoAprobacion,
+                        //String pInversionAprobada,
+                        String pInversionEjercida,
+                        /*int pObrasEntregadas, int pObrasPorEntregar,
+                        String pUnidadMedida, String pCantidadTotal,*/
+                        String pObservacion, int pTipoOrigen) throws
+      SQLException, IOException {
+    String sSql;
+
+      pInversionEjercida = pInversionEjercida.replace(',', '.');
+
+    try {
+      sSql = "INSERT INTO Anexo3XI(IdFuncionario, Clave, Programa, IdMunicipio, InversionEjercida, Observacion, TipoOrigen, UltimaCarga) ";
+      sSql += "VALUES (" + pIdFuncionario + ", ";
+      sSql += "'" + pClave + "', ";
+      sSql += "'" + pPrograma + "', ";
+      sSql += "'" + pNoAprobacion + "', ";
+//      sSql += "" + pInversionAprobada + ", ";
+      sSql += "" + pInversionEjercida + ", ";
+  /*    sSql += "" + pObrasEntregadas + ", ";
+      sSql += "" + pObrasPorEntregar + ", ";
+      sSql += "'" + pUnidadMedida + "', ";
+      sSql += "'" + pCantidadTotal + "', ";
+   */
+      sSql += "'" + pObservacion + "', ";
+      sSql += "" + pTipoOrigen + ", 0)";
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3XI.Insert: " + e);
+    }
+    return false;
+  }
+
+  public boolean Update(int pIdRenglon, int pIdFuncionario, String pClave,
+                        String pPrograma, String pNoAprobacion,
+                       // String pInversionAprobada,
+                        String pInversionEjercida,
+                        /*int pObrasEntregadas, int pObrasPorEntregar,
+                        String pUnidadMedida, String pCantidadTotal,*/
+                        String pObservacion, int pTipoOrigen) throws
+      SQLException, IOException {
+  String sSql;
+    try {
+      sSql = "UPDATE Anexo3XI SET ";
+      sSql += "IdFuncionario 	 	= " + pIdFuncionario + ", ";
+      sSql += "Clave				= '" + pClave + "', ";
+      sSql += "Programa			= '" + pPrograma + "', ";
+      sSql += "IdMunicipio				= '" + pNoAprobacion + "', ";
+//      sSql += "InversionAprobada		= " + pInversionAprobada + ", ";
+      sSql += "InversionEjercida		= " + pInversionEjercida + ", ";
+  /*    sSql += "ObrasEntregadas		= " + pObrasEntregadas + ", ";
+      sSql += "ObrasPorEntregar			= " + pObrasPorEntregar + ", ";
+      sSql += "UnidadMedida		= '" + pUnidadMedida + "', ";
+      sSql += "CantidadTotal	= '" + pCantidadTotal + "', ";
+   */
+     if (pTipoOrigen == 0) {
+        sSql += "Observacion		= '" + pObservacion + "' ";
+      }
+      else {
+        sSql += "Observacion		= '" + pObservacion + "', ";
+        sSql += "TipoOrigen		= " + pTipoOrigen + " ";
+      }
+      sSql += ", UltimaCarga = 0 WHERE IdAnexo3XI = " + pIdRenglon;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3XI.Update: " + e);
+    }
+    return false;
+  }
+
+  public boolean Undo(int pIdFuncionario) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      sSql = "DELETE FROM Anexo3XI WHERE IdFuncionario = " + pIdFuncionario +
+          " AND UltimaCarga = 1";
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3XI.Undo: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public boolean DeleteAll(int pIdFuncionario) throws SQLException, IOException {
+    String sSql = "";
+
+    try {
+      sSql = "DELETE FROM Anexo3XI WHERE IdFuncionario = " + pIdFuncionario;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3XI.DeleteAll: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+    String sSql;
+    try {
+      sSql = "DELETE FROM Anexo3XI WHERE IdAnexo3XI = " + pIdRenglon;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3XI.Update: " + e);
+    }
+    return false;
+  }
+
+  public String setHistory(int iIdFuncionario, String sRutaHistoria,
+                           String sRutaAttach, String iProceso,
+                           String hsClave, String hsNombreUA, String hsImagenUG,
+                           String hsNombreUG, String sFuncionarioEntrante,
+                           String sFuncionarioSaliente, String sFecha) {
+    String sArchivo = "";
+    String sError = "";
+    try {
+      AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+      ArchivoHistorico oArchivo = new ArchivoHistorico();
+      ArchivoHistorico oArchivowa = new ArchivoHistorico();
+      char c = '"';
+      String sSalto = "";
+      String sAnexo = "";
+      int iIdAnexo = 0;
+      String sEstatus = "";
+      String sAux = "";
+      oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3XI.html");
+      oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3XI.html");
+
+      java.text.DecimalFormat FormatoDecimal = new java.text.DecimalFormat(
+          "###,##0.00");
+      sAnexo = "III.11";
+      iIdAnexo = GetIdAnexo();
+      oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+      sEstatus = oAnexoEstatus.GetEstatus();
+      int sIdTipoOrigen = 0;
+      sAux = "\n				<tr><TD class='TituloParrafo' width='70%'>&nbsp;&nbsp;ANEXO III.11 - RELACIÓN DE OBRAS TERMINADAS POR PROGRAMA&nbsp;&nbsp;</TD></tr>";
+      /* ENCABEZADO INICIO*/
+      hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+      ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo,
+                              oArchivowa, sAux, iProceso, hsClave, hsNombreUA,
+                              hsImagenUG, hsNombreUG, sFuncionarioEntrante,
+                              sFuncionarioSaliente, sFecha);
+      /* ENCABEZADO FIN*/
+      sArchivo = "\n	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+      sArchivo += "\n		<TR align='middle'>";
+      sArchivo += "\n			<td class='TituloMenu'>Clave</TD>";
+      sArchivo +=
+          "\n			<td class='TituloMenu'>Programa<br>Subprograma<br>Obra Localización</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Municipio</TD>";
+      //sArchivo += "\n			<td class='TituloMenu'>Inversión Aprobada</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Inversión Ejercida</TD>";
+      /*sArchivo += "\n			<td class='TituloMenu'>Saldos</TD>";
+      sArchivo += "\n			<td class='TituloMenu' colspan='2' width='100%' height='100%'><table cellPadding='0' cellSpacing='0' width='100%'  height='100%'> ";
+      sArchivo += "\n									<tr align='middle'><td class='TituloMenu' colspan='2'>Metas</td></tr>";
+      sArchivo += "\n									<tr align='middle' ><td width='50%' class='TituloMenu'>Unidad de Medida</td><td width='50%' class='TituloMenu'>Cantidad Total</td></tr>";
+      sArchivo += "\n									</table></td>";
+      sArchivo += "\n			<td class='TituloMenu' colspan='2' width='100%' height='100%'><table cellPadding='0' cellSpacing='0' width='100%'  height='100%'> ";
+      sArchivo += "\n									<tr align='middle'><td class='TituloMenu' colspan='2'>% Num. Obras</td></tr>";
+      sArchivo += "\n									<tr align='middle' ><td width='50%' class='TituloMenu'>Entregadas</td><td width='50%' class='TituloMenu'>Por Entregar</td></tr>";
+      sArchivo += "\n									</table></td>";
+          */
+      sArchivo += "\n			<td class='TituloMenu'>Observaciones</TD>";
+      sArchivo += "\n		</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      if (!sEstatus.equals("0")) {
+        int vAntTipoOrigen = 0;
+        int intContador = 0;
+        String sBackColor = "";
+        GetAll(iIdFuncionario, sIdTipoOrigen);
+        for (int i = 0; i < GetAll(iIdFuncionario, sIdTipoOrigen); i++) {
+          int iIdRenglon = GetIdRenglon(i) != -1 ? GetIdRenglon(i) : 0;
+          String sClave = GetClave(i) != null ? GetClave(i) + "" : "";
+          String sPrograma = GetPrograma(i) != null ? GetPrograma(i) + "" : "";
+          int iNoAprobacion = GetNoAprobacion(i) != -1 ?
+              GetNoAprobacion(i) : 0;
+          String sNoAprobacion = GetNoAprobacionDescripcion(i);
+/*          int iObrasEntregadas = GetObrasEntregadas(i) != -1 ?
+              GetObrasEntregadas(i) : 0;
+          int iObrasPorEntregar = GetObrasPorEntregar(i) != -1 ?
+              GetObrasPorEntregar(i) : 0;
+          String fInversionAprobada = GetInversionAprobada(i) != null ?
+              GetInversionAprobada(i) : "";
+  */
+              String fInversionEjercida = GetInversionEjercida(i) != null ?
+              GetInversionEjercida(i) : "";
+    /*      String sUnidadMedida = GetUnidadMedida(i) != null ?
+              GetUnidadMedida(i) + "" : "";
+          String sCantidadTotal = GetCantidadTotal(i) != null &&
+              ! (GetCantidadTotal(i) + "").trim().equals("") ?
+              GetCantidadTotal(i) + "" : "0";
+      */
+              String sObservaciones = GetObservacion(i) != null ? GetObservacion(i) :
+              "";
+          int iTipoOrigen = GetTipoOrigen(i) != -1 ? GetTipoOrigen(i) : 0;
+          String sTipoOrigen = GetTipoOrigenDescripcion(i);
+          intContador = intContador + 1;
+          if (intContador % 2 == 0) {
+            sBackColor = "#ffffff";
+          }
+          else {
+            sBackColor = "#eeeeee";
+          }
+          if (sIdTipoOrigen == 0) {
+            if (vAntTipoOrigen != iTipoOrigen) {
+              sArchivo = "\n					<TR bgcolor='#A9A374' align='middle'>";
+              sArchivo += "\n        			<TD colspan='2'></TD><TD colspan='11'>" +
+                  sTipoOrigen + "<TD>";
+              sArchivo += "\n					</tr>";
+              oArchivo.Escribe(sArchivo);
+              oArchivowa.Escribe(sArchivo);
+            }
+            vAntTipoOrigen = iTipoOrigen;
+          }
+          sArchivo = "\n		<TR align='left' bgcolor='" + sBackColor + "'";
+          sArchivo += "\n			onMouseOver = 'MouseDentro(this);'";
+          sArchivo += "\n			onMouseOut  = " + c + "MouseFuera(this,'" +
+              sBackColor + "');" + c + ">";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              sClave + "</a></TD>";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              sPrograma + "</a></TD>";
+          sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              iNoAprobacion + "&nbsp;</a></TD>";
+        /*  sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              FormatoDecimal.format(java.lang.Double.parseDouble(
+              fInversionAprobada)) + "&nbsp;</a></TD>";
+          */
+         sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              FormatoDecimal.format(new Float(!fInversionEjercida.equals("") ?
+                                              fInversionEjercida : "0")) +
+
+            //  FormatoDecimal.format(java.lang.Double.parseDouble(
+            //  fInversionEjercida)) +
+            "&nbsp;</a></TD>";
+         /* sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              FormatoDecimal.format(java.lang.Double.parseDouble(
+              fInversionAprobada) -
+                                    java.lang.Double.parseDouble(
+              fInversionEjercida)) +
+              "&nbsp;</a></TD>";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              sUnidadMedida + "</a></TD>";
+          sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              FormatoDecimal.format(java.lang.Float.parseFloat(sCantidadTotal)) +
+              "&nbsp;</a></TD>";
+          sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              iObrasEntregadas + "&nbsp;</a></TD>";
+          sArchivo += "\n			<TD align='right'><a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              iObrasPorEntregar + "&nbsp;</a></TD>";
+               */
+              sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + "  style='cursor:normal'>" +
+              sObservaciones + "</a></TD>";
+          sArchivo += "\n		</TR>";
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+        }
+        sArchivo = "\n	</TABLE>";
+        oArchivo.Escribe(sArchivo);
+        oArchivowa.Escribe(sArchivo);
+      }
+      else {
+        sArchivo = "\n	</TABLE>";
+        sArchivo += "\n	<TABLE width='100%'>";
+        sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+        sArchivo += "\n	</TABLE>";
+        oArchivo.Escribe(sArchivo);
+        oArchivowa.Escribe(sArchivo);
+      }
+      sArchivo = "\n</td>";
+      sArchivo += "\n</tr>";
+      sArchivo += "\n</table>";
+      sArchivo += "\n</body>";
+      sArchivo += "\n</html>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      oArchivo.CierraArchivo();
+      oArchivowa.CierraArchivo();
+
+      oAnexoEstatus = null;
+      oArchivo = null;
+      oArchivowa = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3XI.setHistory: " + e);
+      sError = " - Anexo3XI.setHistory: " + e;
+    }
+    return sError;
+  }
+}

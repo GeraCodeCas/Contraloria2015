@@ -1,0 +1,168 @@
+package com.consiss.util.tools;
+import java.util.*;
+import java.sql.*;
+import java.text.*;
+
+public class Herramientas
+	{
+	public SimpleDateFormat sdfD = new SimpleDateFormat("dd");
+	public SimpleDateFormat sdfM = new SimpleDateFormat("MM");
+	public SimpleDateFormat sdfMN = new SimpleDateFormat("MMM");
+	public SimpleDateFormat sdfY = new SimpleDateFormat("yyyy");
+	public SimpleDateFormat sdfY2 = new SimpleDateFormat("yy");
+	public SimpleDateFormat sdfDMY = new SimpleDateFormat("dd-MM-yyyy");
+	public SimpleDateFormat sdfYMD = new SimpleDateFormat("yyyy-MM-dd");
+	public java.text.DecimalFormat dfM = new java.text.DecimalFormat("00");
+	public java.text.DecimalFormat dfN = new java.text.DecimalFormat("#####0.00");
+	public java.text.DecimalFormat dfD = new java.text.DecimalFormat("#####0.0000");
+    private java.util.Date today = new java.util.Date();
+
+	public GregorianCalendar getDateG(int year, int month, int day ){
+		GregorianCalendar DateG = (GregorianCalendar)Calendar.getInstance();
+		try{if(year<100) year=year+2000;
+			DateG.clear();
+			DateG.set(year, month-1, day);} 
+		catch(Throwable e){ System.out.println("Error getDateG: " +e + " " + year + " " + month + " " + day); }
+		return DateG; }
+		
+	public GregorianCalendar getDateG(java.util.Date DateD){
+		GregorianCalendar DateG = null;
+		try{DateG = getDateG(Integer.parseInt(sdfY.format(DateD)), Integer.parseInt(sdfM.format(DateD)), Integer.parseInt(sdfD.format(DateD)));} 
+		catch(Throwable e){ System.out.println("Error getDateG: " + e + " " + DateD); }
+		return DateG; }
+
+	public GregorianCalendar getDateymdG(String DateS){
+		GregorianCalendar DateG = (GregorianCalendar)Calendar.getInstance();
+		try{int i=0,j=0;
+			i = DateS.indexOf("-", j);
+			String year = DateS.substring(j, i);
+			j=i+1; i = DateS.indexOf("-", j);
+			String month = DateS.substring(j, i);
+			j=i+1; i = (DateS.trim()).length();
+			String day = DateS.substring(j, i);
+			DateG = getDateG(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));} 
+		catch(Throwable e){ System.out.println("Error getDateG: "+ e + " " + DateS); }
+		return DateG; }
+		
+	public GregorianCalendar getDatedmyG(String DateS){
+		GregorianCalendar DateG = (GregorianCalendar)Calendar.getInstance();
+		try{int i=0,j=0;
+			i = DateS.indexOf("-", j);
+			String day = DateS.substring(j, i);
+			j=i+1; i = DateS.indexOf("-", j);
+			String month = DateS.substring(j, i);
+			j=i+1; i = (DateS.trim()).length();
+			String year = DateS.substring(j, i);
+			DateG = getDateG(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day)); } 
+		catch(Throwable e){ System.out.println("Error getDatedmyG: "+ e + " " + DateS); }
+		return DateG; }
+		
+	public java.util.Date getDateymdD(String DateS){
+		java.util.Date DateD = null;
+		try{GregorianCalendar DateG = getDateymdG(DateS);
+			DateD = DateG.getTime();} 
+		catch(Throwable e){ System.out.println("Error getDateymdD: " + e ); }
+		return DateD;
+	}
+
+	public java.util.Date getDatedmyD(String DateS){
+		java.util.Date DateD = null;
+		try{GregorianCalendar DateG = getDatedmyG(DateS);
+			DateD = DateG.getTime();} 
+		catch(Throwable e){ System.out.println("Error getDatedmyD: " + e ); }
+		return DateD;
+	}
+	
+	public String getDateSymd(String DateSdmy){
+		String DateSymd = null;
+		try{java.util.Date DateD = getDatedmyD(DateSdmy);
+			DateSymd = sdfYMD.format(DateD); } 
+		catch(Throwable e){ System.out.println("Error getDateSymd: " + e + " " + DateSdmy ); }
+		return DateSymd;
+	}
+	
+	public String getCDateJ(GregorianCalendar DateG){
+		String CDate = null;
+		try{CDate = "1" + getY(DateG).substring(2,4) + getDY(DateG);} 
+		catch(Throwable e){ System.out.println("Error getCDateJ: "+e); }
+		return CDate;
+	}
+	
+	public String getJDateCYMD(String JDate){
+		String CDate = null;
+		try{java.util.Date DateD = getJDate(JDate);
+			CDate = sdfYMD.format(DateD);} 
+		catch(Throwable e){ System.out.println("Error getJDateCYMD: "+e); }
+		return CDate;
+	}
+	
+	public java.util.Date getJDate(String JDate){
+		java.util.Date DateD = null;
+		try{int day = Integer.parseInt(JDate.substring(3,6));
+			int year = 2000 + Integer.parseInt(JDate.substring(1,3));
+			GregorianCalendar DateG = getDateG(year, 1, day);
+			DateD=DateG.getTime();} 
+		catch(Throwable e){ System.out.println("Error getJDate: "+e); }
+		return DateD;
+	}
+	
+	public java.util.Date getFecha(){
+		return this.today;
+	}
+	
+	public java.util.Date getAdd(java.util.Date DateD, int day){
+		java.util.Date ayer = null;
+		try{
+			GregorianCalendar DateG = (GregorianCalendar)Calendar.getInstance();
+			DateG.clear();
+			DateG = getDateG(DateD);
+			DateG.add(Calendar.DATE, day);
+			ayer = DateG.getTime();
+		}catch(Throwable e){ System.out.println("Error getBefore: "+e); }
+		return ayer;
+	}
+
+	public String getY(GregorianCalendar DateG){
+		String StrYear = "";
+		try { StrYear = DateG.get(DateG.YEAR) + ""; } 
+		catch(Throwable e){ System.out.println("Error getY: "+e); }
+		return StrYear;
+	}
+	
+	public String getDY(GregorianCalendar DateG){ // Dia del Anio, o sea transcurridos de los 365
+		String StrDay = "";
+		try { StrDay = dfM.format(DateG.get(DateG.DAY_OF_YEAR)); }
+		catch(Throwable e){ System.out.println("Error getDY: "+e); }
+		return StrDay;
+	}
+	
+	public VMatrix getTabla(String SQL, boolean count){
+		com.consiss.util.db.connectors.ibm.as400.AS400JDBC conndb = new com.consiss.util.db.connectors.ibm.as400.AS400JDBC();
+		ResultSet rs = null;
+		VMatrix VM = new VMatrix();
+		try {
+			conndb.setConnection("jdbc:as400://", "192.6.1.71", "MARGEN", "MARGEN", true, false); //DataSource Name.
+			rs = conndb.getResultSet(SQL);
+			int j=0;
+			if(count) j=1;
+			VM.setVMatrixNumCols(conndb.getNumCols()+j);
+			while (rs.next()) {
+				String[] tabla = new String[VM.getNumCols()];
+				if(count) tabla [0] = (VM.getNumRows()+1)+"";
+				for (int i=1;i<=conndb.getNumCols();i++) {
+					if((rs.getMetaData().getColumnTypeName(i)).equals("DATE"))
+						tabla [i+j-1] = rs.getDate(i)!=null?sdfYMD.format(rs.getDate(i)):"";
+					else
+						tabla [i+j-1] = rs.getString(i)!=null?(rs.getString(i)).trim():"null";
+				}
+				VM.setVMatrixRow(tabla);
+			}
+			rs.close();
+		}catch(Throwable e){
+			System.out.println("Error en getTabla: " + e + " SQL:" + SQL);
+		}finally{
+			if(conndb!=null) conndb.closeAll(); 
+			return VM; 
+		}
+	}
+}

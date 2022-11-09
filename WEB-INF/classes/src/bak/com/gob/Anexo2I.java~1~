@@ -1,0 +1,317 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 29.Oct.2002
+ * Purpose: Defines the Class Anexo2I
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo2I {
+
+//Declaración de Variables
+private int				iIdAnexo;
+private String 		sNombreAnexo;
+private int 			iIdFuncionario;
+private String 			sPresupuestoAprobado;
+private String 			sIncrementos;
+private String 			sReducciones;
+private String 			sProgramasEspeciales;
+private String 			sTotalAprobado;
+private String 			sTotalEjercido;
+private String 			sTotalPorEjercer;
+private String 			sObservaciones;
+private VMatrix		 	vmFuncionario;
+private ConnectionJDBC	 	oCnn;
+
+//Inicializacion de la Clase
+public Anexo2I()  throws SQLException, IOException {
+	String sSql;
+	iIdAnexo			= 0;
+	sNombreAnexo		= "";
+	iIdFuncionario 	 	= 0;
+	sPresupuestoAprobado= "";
+	sIncrementos		= "";
+	sReducciones		= "";
+	sProgramasEspeciales= "";
+	sTotalAprobado	  	= "";
+	sTotalEjercido		= "";
+	sTotalPorEjercer	= "";
+	sObservaciones		= "";
+	vmFuncionario	  	= new VMatrix();
+	oCnn			   	= new ConnectionJDBC();
+	oCnn.Open();
+	ResultSet oRs = null;
+	sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo II.1'";
+	try {
+		oRs = oCnn.Execute(sSql);
+		if (oRs.next()) {
+			iIdAnexo 		= oRs.getInt("IdAnexo");
+			sNombreAnexo	= oRs.getString("Nombre");
+		}
+		oRs.close();
+		oRs = null;
+	}catch(Throwable e){
+		System.out.println("Error en oAnexo2I.init: " + e + " SQL:" + sSql);
+	}finally{
+		if(oCnn!=null) oCnn.Close(); 
+	}
+}
+//Creación de las Propiedades
+	public int		GetIdAnexo() 					{	return iIdAnexo;			}
+	public String	GetNombreAnexo() 				{	return sNombreAnexo;			}
+
+	
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos){
+		int iGetIdFuncionario = -1;
+		try { iGetIdFuncionario = java.lang.Integer.parseInt((((Vector)vmFuncionario.getVMatrixAll().elementAt(1)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdFuncionario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmFuncionario.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionario; }
+	}
+	
+	public void 	SetPresupuestoAprobado(String sDATA) 		{	sPresupuestoAprobado 		= sDATA;	}
+	public String	GetPresupuestoAprobado() 					{	return sPresupuestoAprobado;			}
+	public String	GetPresupuestoAprobado(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(2)).elementAt(iPos);			}
+
+	public void 	SetIncrementos(String sDATA) 		{	sIncrementos 		= sDATA;	}
+	public String	GetIncrementos() 					{	return sIncrementos;			}
+	public String	GetIncrementos(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(3)).elementAt(iPos);			}
+	
+	public void 	SetReducciones(String sDATA) 		{	sReducciones 		= sDATA;	}
+	public String	GetReducciones() 					{	return sReducciones;			}
+	public String	GetReducciones(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(4)).elementAt(iPos);			}
+	
+	public void 	SetProgramasEspeciales(String sDATA) 		{	sProgramasEspeciales 		= sDATA;	}
+	public String	GetProgramasEspeciales() 					{	return sProgramasEspeciales;			}
+  	public String	GetProgramasEspeciales(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(5)).elementAt(iPos);			}
+	
+	public void 	SetTotalAprobado(String sDATA) 		{	sTotalAprobado 		= sDATA;	}
+	public String	GetTotalAprobado() 					{	return sTotalAprobado;			}
+  	public String	GetTotalAprobado(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(6)).elementAt(iPos);			}
+	
+	public void 	SetTotalEjercido(String sDATA) 		{	sTotalEjercido 		= sDATA;	}
+	public String	GetTotalEjercido() 					{	return sTotalEjercido;			}
+	public String	GetTotalEjercido(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(7)).elementAt(iPos);			}
+	
+	public void 	SetTotalPorEjercer(String sDATA) 		{	sTotalPorEjercer 		= sDATA;	}
+	public String	GetTotalPorEjercer() 					{	return sTotalPorEjercer;			}
+	public String	GetTotalPorEjercer(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(8)).elementAt(iPos);			}
+
+	public void 	SetObservaciones(String sDATA) 		{	sObservaciones 		= sDATA;	}
+	public String	GetObservaciones() 					{	return sObservaciones;			}
+	public String	GetObservaciones(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(9)).elementAt(iPos);			}
+
+//Metodos públicos
+	public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdFuncionario, PresupuestoAprobado, Incrementos, Reducciones, ProgramasEspeciales, TotalAprobado, TotalEjercido, TotalPorEjercer, Observaciones FROM Anexo2I WHERE IdFuncionario = " + pIdFuncionario;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdFuncionario"), rs.getString("PresupuestoAprobado"),	rs.getString("Incrementos"), 
+					rs.getString("Reducciones"), rs.getString("ProgramasEspeciales"), rs.getString("TotalAprobado"), 
+					rs.getString("TotalEjercido"), rs.getString("TotalPorEjercer"), rs.getString("Observaciones")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+
+	public boolean Insert(int pIdFuncionario, String pPresupuestoAprobado, String pIncrementos, String pReducciones,
+			      		 						String pProgramasEspeciales, String pTotalAprobado,String pTotalEjercido, 
+                            String pTotalPorEjercer, String pObservaciones) throws SQLException, IOException {
+		String sSql;
+	    try{
+		sSql = "INSERT INTO Anexo2I(IdFuncionario, PresupuestoAprobado, Incrementos, Reducciones, ProgramasEspeciales, TotalAprobado, TotalEjercido, TotalPorEjercer, Observaciones) ";
+		sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+		sSql = sSql + "'" + pPresupuestoAprobado + "', ";
+		sSql = sSql + "'" + pIncrementos + "', ";
+		sSql = sSql + "'" + pReducciones + "', ";
+		sSql = sSql + "'" + pProgramasEspeciales + "', ";
+		sSql = sSql + "'" + pTotalAprobado + "', ";
+		sSql = sSql + "'" + pTotalEjercido + "', ";
+		sSql = sSql + "'" + pTotalPorEjercer + "', ";
+		sSql = sSql + "'" + pObservaciones + "')";
+		oCnn.Open();
+		oCnn.Execute(sSql);
+		oCnn.Close();
+		return true;
+            }catch(Throwable e){
+			System.out.println("Error en Anexo2I.Insert: ");
+		}
+		return false;
+	}
+	
+	public boolean Update(int pIdFuncionario, String pPresupuestoAprobado, String pIncrementos, String pReducciones,
+			      String pProgramasEspeciales, String pTotalAprobado,String pTotalEjercido, 
+			      String pTotalPorEjercer, String pObservaciones) throws SQLException, IOException {
+		String sSql;
+		try{
+			sSql = "UPDATE Anexo2I SET ";
+			sSql = sSql + "PresupuestoAprobado = '" + pPresupuestoAprobado + "', ";
+			sSql = sSql + "Incrementos = '" + pIncrementos + "', ";
+			sSql = sSql + "Reducciones = '" + pReducciones + "', ";
+			sSql = sSql + "ProgramasEspeciales = '" + pProgramasEspeciales + "', ";
+			sSql = sSql + "TotalAprobado = '" + pTotalAprobado + "', ";
+			sSql = sSql + "TotalEjercido = '" + pTotalEjercido + "', ";
+			sSql = sSql + "TotalPorEjercer = '" + pTotalPorEjercer + "', ";
+			sSql = sSql + "Observaciones = '" + pObservaciones + "' ";
+			sSql = sSql + "WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2I.Update: ");
+		}
+		return false;
+	}
+	
+	public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+	String sSql;
+    try{
+			sSql = "DELETE FROM Anexo2I WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+    }catch(Throwable e){
+			System.out.println("Error en Anexo2I.Delete: ");
+		}
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, String pPresupuestoAprobado, String pIncrementos, String pReducciones,
+			      	 						String pProgramasEspeciales, String pTotalAprobado,String pTotalEjercido, 
+			      							String pTotalPorEjercer, String pObservaciones){
+		iIdFuncionario			= pIdFuncionario;
+		sPresupuestoAprobado	= pPresupuestoAprobado;
+		sIncrementos			= pIncrementos;
+		sReducciones 			= pReducciones;
+		sProgramasEspeciales	= pProgramasEspeciales;
+		sTotalAprobado			= pTotalAprobado;
+		sTotalEjercido			= pTotalEjercido;
+		sTotalPorEjercer		= pTotalPorEjercer;
+		sObservaciones			= pObservaciones;
+	}
+
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo2I.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo2I.html");
+			java.text.DecimalFormat FormatoDecimal = new java.text.DecimalFormat("###,##0.00");
+			
+			sAnexo 					= "II.1";
+			iIdAnexo 				= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 				= oAnexoEstatus.GetEstatus();
+			sAux = "\n				<tr><TD  colspan='3' class='TituloParrafo' width='70%'>ANEXO II.1 - PRESUPUESTO GLOBAL DEL EJERCICIO</TD></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			
+			sArchivo = "\n		<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+			sArchivo += "\n		<TR><TD class='TituloMenu' align='center'>Concepto</TD><TD class='TituloMenu' align='center'>Importe</TD></TR>";
+			sArchivo += "\n		<TR><TD valign='top'>";
+			sArchivo += "\n				<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>1. Presupuesto Aprobado</a></TD></TR>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>2. Incrementos</a></TD></TR>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>3. Reducciones</a></TD></TR>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>4. Programas Especiales Aprobados</a></TD></TR>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>5. Total Aprobado</a></TD></TR>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>6. Total Ejercido</a></TD></TR>";
+			sArchivo += "\n					 <TR height='25'><TD class='SubTituloMenu'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>7. Total por Ejercer: Presupuesto Disponible</a></TD></TR>";
+			sArchivo += "\n				</TABLE></TD>";
+			sArchivo += "\n			<TD valign='top'>";
+			sArchivo += "\n				<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+		
+			if(!sEstatus.equals("0")){
+				Get(iIdFuncionario);
+				String vPresupuestoAprobado = GetPresupuestoAprobado()!=null?GetPresupuestoAprobado():"";
+				String vIncrementos		    = GetIncrementos()!=null?GetIncrementos():"";
+				String vReducciones 		= GetReducciones()!=null?GetReducciones():"";
+				String vProgramasEspeciales = GetProgramasEspeciales()!=null?GetProgramasEspeciales():"";
+				String vTotalAprobado 		= GetTotalAprobado()!=null?GetTotalAprobado():"";
+				String vTotalEjercido		= GetTotalEjercido()!=null?GetTotalEjercido():"";
+				String vTotalPorEjercer 	= GetTotalPorEjercer()!=null?GetTotalPorEjercer():"";
+				String vObservaciones 		= GetObservaciones()!=null?GetObservaciones():"";
+				sArchivo = "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vPresupuestoAprobado.equals("")?vPresupuestoAprobado:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vIncrementos.equals("")?vIncrementos:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vReducciones.equals("")?vReducciones:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vProgramasEspeciales.equals("")?vProgramasEspeciales:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vTotalAprobado.equals("")?vTotalAprobado:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vTotalEjercido.equals("")?vTotalEjercido:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n		<TR height='25'><TD align='right'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + FormatoDecimal.format(new Float(!vTotalPorEjercer.equals("")?vTotalPorEjercer:"0")) + "</a>&nbsp;&nbsp;</TD></TR>";
+				sArchivo += "\n				</TABLE></TD>";
+				sArchivo += "\n		</TR>";
+				sArchivo += "\n 	</TABLE>";
+				sArchivo += "\n	<br>";
+				sArchivo += "\n	<TABLE align='center' cellPadding='0' cellSpacing='0' width='80%'  BORDER='1' BORDERCOLOR='black'>";
+				sArchivo += "\n		<TR><TD class='TituloMenu' align='center'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Observaciones</a></TD></TR>";
+				sArchivo += "\n		<TR height='100px'><TD height='100px'>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'><textarea readonly cols='80' rows='6' class='txtBox' style='border: 0; background-color: transparent; transparent; width:'300px;' height='100px' name='sObservaciones' id='sObservaciones'>" + vObservaciones + "</textarea></a></TD></TR>";
+				sArchivo += "\n</TABLE>";
+				sArchivo += "\n<br>";
+				sArchivo += "\n<TABLE border=0 cellPadding=0 cellSpacing=0 width='100%'>";
+				sArchivo += "\n			 <TR><TD class='SubTituloMenu'>ADJUNTAR PRESUPUESTOS AUTORIZADOS</TD></TR>";
+				sArchivo += "\n</TABLE>	";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			} else {
+				sArchivo = "\n	<TABLE width='100%'>";
+				sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();
+				
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo2I.setHistory: " + e );
+			sError = "Anexo2I.setHistory: " + e ;
+		}
+		return sError;
+	}
+}

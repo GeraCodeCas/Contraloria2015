@@ -1,0 +1,113 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 29.Oct.2002
+ * Purpose: Defines the Class DetalleAnexo1I
+ * Modify: 4.Dic.2002
+ * By: Jesus Limon
+ * Note: Se cambio el tipo de conexion a la Base de Datos.
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+
+public class DetalleAnexo1I {
+
+//Declaración de Variables
+private int 			iIdFuncionario;
+private String 			sIntegracion;
+private String 			sActasSesion;
+private ConnectionJDBC 	oCnn;
+
+//Inicializacion de la Clase
+public DetalleAnexo1I()  throws SQLException, IOException {
+	  	iIdFuncionario 		= 0;
+		sIntegracion				= "";
+		sActasSesion				= "";
+		oCnn = new ConnectionJDBC();
+		
+	}
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+
+	public void 	SetIntegracion(String sDATA) 		{	sIntegracion 		= sDATA;	}
+	public String	GetIntegracion() 					{	return sIntegracion;			}
+
+	public void 	SetActasSesion(String sDATA) 		{	sActasSesion 		= sDATA;	}
+	public String	GetActasSesion() 					{	return sActasSesion;			}
+//Metodos públicos
+	public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdFuncionario, Integracion, ActasSesion FROM DetalleAnexo1I WHERE IdFuncionario = " + pIdFuncionario;
+		oCnn.Open();
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdFuncionario"), rs.getString("Integracion"), rs.getString("ActasSesion")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+	public boolean Insert(int pIdFuncionario, String pIntegracion, String pActasSesion) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			 sSql = "INSERT INTO DetalleAnexo1I(IdFuncionario, Integracion, ActasSesion) ";
+			 sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+			 sSql = sSql + "'" + pIntegracion + "', ";
+			 sSql = sSql + "'" + pActasSesion + "')";
+			 oCnn.Open();
+			 oCnn.Execute(sSql);
+			 oCnn.Close();
+			 return true;
+		}catch(Throwable e){
+			System.out.println("Error en DetalleAnexo1I.Insert: " + e + " SQL" + sSql);
+		}
+		return false;
+	}
+	public boolean Update(int pIdFuncionario, String pIntegracion, String pActasSesion) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE DetalleAnexo1I SET ";
+			sSql = sSql + "Integracion = '" + pIntegracion + "', ";
+			sSql = sSql + "ActasSesion = '" + pActasSesion + "'";
+			sSql = sSql + "WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en DetalleAnexo1I.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+		String sSql = "";
+        try{		
+			sSql = "DELETE FROM DetalleAnexo1I WHERE IdFuncionario = " + pIdFuncionario;
+
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+
+			return true;
+          }catch(Throwable e){
+			System.out.println("Error en DetalleAnexo1I.Delete: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, String pIntegracion, String pActasSesion){
+		iIdFuncionario		= pIdFuncionario;
+		sIntegracion		= pIntegracion;
+		sActasSesion		= pActasSesion;
+	}
+		
+}

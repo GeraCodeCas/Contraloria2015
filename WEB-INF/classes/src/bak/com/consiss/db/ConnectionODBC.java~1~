@@ -1,0 +1,104 @@
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 18/10/2004 12:33:42 a.m.
+// Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
+// Decompiler options: packimports(3) 
+// Source File Name:   ConnectionODBC.java
+
+package com.consiss.db;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.sql.*;
+import sun.jdbc.odbc.JdbcOdbcDriver;
+
+public class ConnectionODBC
+{
+
+    public ConnectionODBC()
+        throws SQLException, IOException
+    {
+        sDsn = "";
+        sUsuario = "sa";
+        sClave = "";
+        DriverManager.registerDriver(new JdbcOdbcDriver());
+    }
+
+    public void Close()
+    {
+        try
+        {
+            if(oStmt != null)
+            {
+                oStmt.close();
+                oStmt = null;
+            } else
+            {
+                sError += "The Statement is Closed!<br>";
+            }
+            if(oCnn != null)
+            {
+                oCnn.close();
+                oCnn = null;
+            } else
+            {
+                sError += "The Connection is Closed!<br>";
+            }
+        }
+        catch(Throwable _ex)
+        {
+            sError += "No Statement or Connection opened!.<br>";
+        }
+        System.out.println(sError);
+    }
+
+    public ResultSet Execute(String s)
+        throws SQLException, IOException
+    {
+        if(s.substring(0, 6).equalsIgnoreCase("SELECT"))
+        {
+            return oStmt.executeQuery(s);
+        } else
+        {
+            oStmt.executeUpdate(s);
+            return null;
+        }
+    }
+
+    public String GetDsn()
+    {
+        return sDsn;
+    }
+
+    public String GetUsuario()
+    {
+        return sUsuario;
+    }
+
+    public void Open()
+        throws SQLException, IOException
+    {
+        oCnn = DriverManager.getConnection("jdbc:odbc:" + sDsn, sUsuario, sClave);
+        oStmt = oCnn.createStatement();
+    }
+
+    public void SetClave(String s)
+    {
+        sClave = s;
+    }
+
+    public void SetDsn(String s)
+    {
+        sDsn = s;
+    }
+
+    public void SetUsuario(String s)
+    {
+        sUsuario = s;
+    }
+
+    private String sDsn;
+    private String sUsuario;
+    private String sClave;
+    private String sError;
+    private Connection oCnn;
+    private Statement oStmt;
+}

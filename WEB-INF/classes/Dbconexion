@@ -1,0 +1,26 @@
+import javax.servlet.http.*;
+import javax.servlet.ServletOutputStream;
+import java.io.*;
+import java.io.IOException;
+import java.sql.* ;
+import javax.sql.* ;
+import javax.naming.*;
+import java.net.*;
+import java.util.*;
+import java.text.*;
+
+import ChartDirector.*;
+
+
+public class Dbconexion
+{
+  Connection conn ;
+  DataSource ds=null;
+  
+	    public String EstablecerConexion ()
+	    {
+	      
+	      HttpSession session=null;
+		  session=req.getSession();
+	    }
+}

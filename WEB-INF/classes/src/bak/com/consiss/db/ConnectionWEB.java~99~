@@ -1,0 +1,45 @@
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 15/10/2004 01:02:42 p.m.
+// Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
+// Decompiler options: packimports(3)
+// Source File Name:   ConnectionWEB.java
+
+package com.consiss.db;
+
+import java.sql.SQLException;
+
+// Referenced classes of package com.consiss.db:
+//            ConnectionJDBC
+
+public class ConnectionWEB {
+
+  public ConnectionWEB() {
+  }
+
+  public static String getDataWeb() {
+    return "C:\\GobiernoData\\";
+
+
+ }
+
+  public static String getSourceWeb() {
+    //(Warning!)(ultra!)(jmarquez1974@hotmail.com)(gmt -06:00)(2005/02/08)(16:16:00)
+    // Ho olvidar colocar la ruta exacta en donde reside el directorio Operation...
+    return "C:\\oracle\\ora92\\Apache\\Apache\\htdocs\\siere\\Gobierno";
+  }
+
+  public static void setConnection(ConnectionJDBC connectionjdbc) throws
+      SQLException {
+    //connectionjdbc.setConnection("jdbc:microsoft:sqlserver://", "Entrega",
+    //                             "SIERE:1433", "sa", "");
+    connectionjdbc.setConnection("jdbc:oracle:thin:@entrec:1521:siere", "",
+                                 "", "siere", "siere");
+  }
+
+  private static final String PROTOCOL = "jdbc:microsoft:sqlserver://";
+  private static final String DATABASE = "Entrega";
+  private static final String SERVER = "siere:1433";
+  private static final String USERNAME = "sa";
+  private static final String PASSWORD = "";
+  private static final String SOURCEWEB = "C:\\oracle\\ora92\\Apache\\Apache\\htdocs\\siere\\Gobierno";
+  private static final String DATAWEB = "C:\\GobiernoData\\";
+}

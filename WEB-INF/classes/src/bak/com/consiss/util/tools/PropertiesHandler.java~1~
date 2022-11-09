@@ -1,0 +1,45 @@
+package com.consiss.util.tools;
+
+import java.util.*;
+import java.io.*;
+import java.text.*;
+
+public class PropertiesHandler {
+
+	private String StrFileSep = System.getProperty("file.separator");
+	private String StrPath = System.getProperty("user.dir") + StrFileSep;
+	private String StrHome = System.getProperty("user.home") + StrFileSep;
+	private FileInputStream FisFile = null;
+	private Properties Props = null;
+	private boolean isLoaded=false;
+	private String xPath = "";
+
+	public PropertiesHandler() {
+	}
+	
+	public void loadFile(String fileName) {
+		if (!isLoaded) {
+			try {
+				xPath = StrHome + " --> " + StrPath + "properties" + StrFileSep + fileName;
+			    FisFile = new FileInputStream(StrPath + "properties" + StrFileSep + fileName);
+				Props = new Properties();
+				Props.load(FisFile);
+				FisFile.close();
+			}catch(Throwable e){isLoaded=false;System.out.println("Error: No se pudo encontrar el archivo de propiedades: " + StrPath + "properties" + StrFileSep + fileName);}
+			isLoaded = true;
+		}
+	}
+	
+	public String getPath() {
+		return xPath;
+	}
+	
+	public String getProperty(String property) {
+		String prop = "";
+		try {
+			prop = Props.getProperty(property).toString();
+		}catch(NullPointerException e){System.out.println("Error: No se pudo encontrar la propiedad: " + property);}
+		return prop;
+	}
+	
+}

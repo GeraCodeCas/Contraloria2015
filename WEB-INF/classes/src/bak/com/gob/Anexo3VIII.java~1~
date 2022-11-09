@@ -1,0 +1,143 @@
+/************************************************************************
+ * Module:  Anexo3VIII.java
+ * Author:  Jesus Limon
+ * Created: 6.Nov.2002
+ * Purpose: Defines the Class Anexo3VIII
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo3VIII {
+
+//Declaración de Variables
+private int				iIdAnexo;
+private String			sNombreAnexo;
+private int 			iIdFuncionario;
+private int				iIdRenglon;
+private VMatrix		 	vmFuncionario;
+private ConnectionJDBC	 	oCnn;
+
+//Inicializacion de la Clase
+	public Anexo3VIII()  throws SQLException, IOException {
+	  	iIdFuncionario 	  	= 0;
+		iIdRenglon			= 0;
+		vmFuncionario	  	= new VMatrix();
+		oCnn			    = new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		oCnn.Open();
+		ResultSet oRs = null;
+		String sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo III.8'";
+		try {
+			oRs = oCnn.Execute(sSql);
+			if (oRs.next()) {
+				iIdAnexo 		= oRs.getInt("IdAnexo");
+				sNombreAnexo	= oRs.getString("Nombre");
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3VII.init: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+		}
+		
+	}
+//Creación de las Propiedades
+
+	public int		GetIdAnexo() 					{	return iIdAnexo;			}
+	public String	GetNombreAnexo() 				{	return sNombreAnexo;		}
+
+	public void SetIdRenglon(int iDATA)		{	 iIdRenglon 	= iDATA;	}
+	public int 	GetIdRenglon()				{	 return iIdRenglon;			}
+	public void SetIdFuncionario(int iDATA)	{	iIdFuncionario 	= iDATA;	}
+	public int	GetIdFuncionario() 			{	return iIdFuncionario;		}
+
+	
+	
+//Metodos públicos
+	public boolean Get(int pIdRenglon) throws SQLException, IOException {
+		return false;
+	}
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		return 0;
+	}
+	public int GetPos(int pIdFuncionario) throws SQLException, IOException {
+		return 0;
+	}
+	public boolean Insert(int pIdFuncionario) throws SQLException, IOException {
+		return false;
+	}
+	public boolean Update(int pIdRenglon) throws SQLException, IOException {
+		return false;
+	}
+	public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, int	pIdRenglon){
+	}
+	
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3VIII.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3VIII.html");
+			
+			sAnexo 					= "III.8";
+			iIdAnexo 				= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 				= oAnexoEstatus.GetEstatus();
+			sAux = "\n				<tr><TD class='TituloParrafo' width='70%'>&nbsp;&nbsp;ANEXO III.8 - SOBRE CERRADO CON LA COMBINACIÓN DE LAS CAJAS FUERTES&nbsp;&nbsp;</TD></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			if(sEstatus.equals("0")){
+				sArchivo = "\n	<TABLE width='100%'>";
+				sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();			
+			
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3VIII.setHistory: " + e );
+			sError = "Anexo3VIII.setHistory: " + e ;
+		}
+		return sError;
+	}	
+}

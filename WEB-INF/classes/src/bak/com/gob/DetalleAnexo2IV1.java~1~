@@ -1,0 +1,190 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 29.Oct.2002
+ * Purpose: Defines the Class DetalleAnexo2IV1
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class DetalleAnexo2IV1 {
+
+//Declaración de Variables
+private int 			iIdFuncionario;
+private int				iIdRenglon;
+private String 			sNombreFirma;
+private String 			sCargo;
+private VMatrix		    vmFuncionario;
+private ConnectionJDBC	 	oCnn;
+
+//Inicializacion de la Clase
+public DetalleAnexo2IV1()  throws SQLException, IOException {
+	  	iIdFuncionario 		= 0;
+		iIdRenglon		 	 	= 0;
+		sNombreFirma				= "";
+		sCargo				= "";
+		vmFuncionario			= new VMatrix();
+		oCnn				= new ConnectionJDBC();
+		
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		
+	}
+	
+// Propiedades del IdRenglon
+	public void SetIdRenglon(int iDATA){	
+				 iIdRenglon 		= iDATA;	
+	}
+	public int GetIdRenglon(){	
+				 return iIdRenglon;
+	}
+
+//Para el Vmatrix	
+	public int GetIdRenglon(int iPos){	
+		  int iIdRenglon = -1;
+		  try{ 
+		       iIdRenglon = java.lang.Integer.parseInt((((Vector)vmFuncionario.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); 
+		  }
+		  catch(Throwable e){ 
+		        System.out.println("oFuncionario.GetIdTipo: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmFuncionario.getVMatrixAll().elementAt(0)).elementAt(iPos)); 
+		  }
+		  finally{ 
+		        return iIdRenglon; 
+		  }
+	}
+// Propiedades del IdRenglon
+
+
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos){
+		int iGetIdFuncionario = -1;
+		try { iGetIdFuncionario = java.lang.Integer.parseInt((((Vector)vmFuncionario.getVMatrixAll().elementAt(1)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oFuncionario.GetIdFuncionario: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)vmFuncionario.getVMatrixAll().elementAt(1)).elementAt(iPos)); }
+		finally{ return iGetIdFuncionario; }
+	}
+	
+	public void 	SetNombreFirma(String sDATA) 		{	sNombreFirma 		= sDATA;	}
+	public String	GetNombreFirma() 					{	return sNombreFirma;			}
+	public String	GetNombreFirma(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(2)).elementAt(iPos);			}
+	
+	public void 	SetCargo(String sDATA) 		{	sCargo 		= sDATA;	}
+	public String	GetCargo() 					{	return sCargo;			}
+	public String	GetCargo(int iPos)		{	return (String)((Vector)vmFuncionario.getVMatrixAll().elementAt(3)).elementAt(iPos);			}
+	
+	
+//Metodos públicos
+	public boolean Get(int pIdRenglon) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdRenglon, IdFuncionario, NombreFirma, Cargo FROM DetalleAnexo2IV1 WHERE IdRenglon = " + pIdRenglon;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdRenglon"), rs.getInt("IdFuncionario"), rs.getString("NombreFirma"), rs.getString("Cargo")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+
+	
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		  if(vmFuncionario.getNumRows()>0) return vmFuncionario.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdRenglon, IdFuncionario, NombreFirma, Cargo FROM DetalleAnexo2IV1 WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			vmFuncionario.setVMatrixNumCols(4);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdRenglon"), rs.getString("IdFuncionario"), rs.getString("NombreFirma"), rs.getString("Cargo")};
+				vmFuncionario.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en DetalleAnexo2IV1.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return vmFuncionario.getNumRows();
+		}
+	}
+	
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)vmFuncionario.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon+""), 0);
+	}
+	
+	
+	public boolean Insert(int pIdFuncionario, String pNombreFirma, String pCargo) throws SQLException, IOException {
+	 String sSql = "";
+	 try{
+		sSql = "INSERT INTO DetalleAnexo2IV1(IdFuncionario, NombreFirma, Cargo) ";
+		sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+		sSql = sSql + "'" + pNombreFirma + "', ";
+		sSql = sSql + "'" + pCargo + "')";
+		oCnn.Open();
+		oCnn.Execute(sSql);
+		oCnn.Close();
+		return true;
+	 }catch(Throwable e){
+	  	System.out.println("Error en DetalleAnexo2IV1.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Update(int pIdRenglon, String pNombreFirma, String pCargo) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE DetalleAnexo2IV1 SET ";
+			sSql = sSql + "NombreFirma = '" + pNombreFirma + "', ";
+			sSql = sSql + "Cargo = '" + pCargo + "' ";
+			sSql = sSql + "WHERE IdRenglon = " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en DetalleAnexo2IV1.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+		String sSql = "";
+        try{		
+			sSql = "DELETE FROM DetalleAnexo2IV1 WHERE IdRenglon = " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+          }catch(Throwable e){
+			System.out.println("Error en DetalleAnexo2IV1.Delete: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdRenglon, int pIdFuncionario, String pNombreFirma, String pCargo){
+		iIdRenglon 				= pIdRenglon;		
+		iIdFuncionario		= pIdFuncionario;
+		sNombreFirma		= pNombreFirma;
+		sCargo		= pCargo;
+	}
+		
+}

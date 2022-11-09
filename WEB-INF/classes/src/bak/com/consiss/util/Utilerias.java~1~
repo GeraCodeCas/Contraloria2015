@@ -1,0 +1,158 @@
+package com.consiss.util;
+import java.util.*;
+import java.text.*;
+
+public class Utilerias
+	{
+	private java.text.DecimalFormat dfM = new java.text.DecimalFormat("00");
+    private java.util.Date today = new java.util.Date();
+
+	public String GetMesCorto(int pMes){
+		String sMes = "";
+			switch (pMes){
+			case 1: 
+				sMes = "Ene";
+				break;
+			case 2:
+				sMes = "Feb";
+				break;
+			case 3:
+				sMes = "Mar";
+				break;
+			case 4:
+				sMes = "Abr";
+				break;
+			case 5:
+				sMes = "May";
+				break;
+			case 6:
+				sMes = "Jun";
+				break;
+			case 7:
+				sMes = "Jul";
+				break;
+			case 8:
+				sMes = "Ago";
+				break;
+			case 9:
+				sMes = "Sep";
+				break;
+			case 10:
+				sMes = "Oct";
+				break;
+			case 11:
+				sMes = "Nov";
+				break;
+			case 12:
+				sMes = "Dic";
+				break;
+			}
+			return sMes;
+	}
+	public String GetMesLargo(int pMes){
+		String sMes = "";
+			switch (pMes){
+			case 1: 
+				sMes = "Enero";
+				break;
+			case 2:
+				sMes = "Febrero";
+				break;
+			case 3:
+				sMes = "Marzo";
+				break;
+			case 4:
+				sMes = "Abril";
+				break;
+			case 5:
+				sMes = "Mayo";
+				break;
+			case 6:
+				sMes = "Junio";
+				break;
+			case 7:
+				sMes = "Julio";
+				break;
+			case 8:
+				sMes = "Agosto";
+				break;
+			case 9:
+				sMes = "Septiembre";
+				break;
+			case 10:
+				sMes = "Octubre";
+				break;
+			case 11:
+				sMes = "Noviembre";
+				break;
+			case 12:
+				sMes =  "Diciembre";
+				break;
+			}
+			return sMes;
+	}
+	
+	public java.util.Date GetFecha(){
+		return this.today;
+	}
+
+	public String sGetNumToDate(String sFecha, String sFormato){
+		// EL FORMATO ES AAAAMMDD
+		String sFechaSDF = null;
+		try{
+			SimpleDateFormat sdfFormato = new SimpleDateFormat(sFormato);
+			java.util.Date dFecha = dGetNumToDate(sFecha);
+			sFechaSDF = sdfFormato.format(dFecha);
+		} catch(Throwable e){ System.out.println("Error sGetNumToDate: "+ e + " " + sFecha); }
+		  finally{ return sFechaSDF; }
+	}
+	
+	public String sGetDate(java.util.Date dFecha, String sFormato){
+		String sFechaSDF = null;
+		try{
+			SimpleDateFormat sdfFormato = new SimpleDateFormat(sFormato);
+			sFechaSDF = sdfFormato.format(dFecha);
+		} catch(Throwable e){ System.out.println("Error sGetDate: "+ e + " " + sFormato + " " + dFecha); }
+		  finally{ return sFechaSDF; }
+	}
+	
+	public java.util.Date dGetNumToDate(String sFecha){
+		// EL FORMATO ES AAAAMMDD
+		java.util.Date dFecha = null;
+		try{
+			String sAnio = sFecha.substring(0, 4);
+			String sMes  = sFecha.substring(4, 6);
+			String sDia  = sFecha.substring(6, 8);
+			GregorianCalendar gDate = (GregorianCalendar)Calendar.getInstance();
+			gDate = getDate(Integer.parseInt(sAnio), Integer.parseInt(sMes), Integer.parseInt(sDia)); 
+			dFecha = gDate.getTime();
+		} catch(Throwable e){ System.out.println("Error dGetNumToDate: "+ e + " " + sFecha); }
+		  finally{ return dFecha; }
+	}
+	
+	public String sGetDateToNum(String sFecha, String sSeparador){
+		// EL FORMATO ES DD-MM-YYYY
+		String sFechaNum = null;
+		try{int i=0, j=0;	i = sFecha.indexOf(sSeparador, j);
+			int iDia = Integer.parseInt(sFecha.substring(j, i));
+			j = i + 1; 		i = sFecha.indexOf(sSeparador, j);
+			int iMes = Integer.parseInt(sFecha.substring(j, i));
+			j = i + 1;		i = (sFecha.trim()).length();
+			int iAnio = Integer.parseInt(sFecha.substring(j, i));
+			if(iAnio<100) iAnio=iAnio+2000;
+			sFechaNum = iAnio + dfM.format(iMes) + dfM.format(iDia);
+		} catch(Throwable e){ System.out.println("Error sGetDateToNum: " + e + " " + sFecha + " " + sSeparador); }
+		  finally{ return sFechaNum; }
+	}
+	
+	public GregorianCalendar getDate(int iAnio, int iMes, int iDia){
+		GregorianCalendar gDate = (GregorianCalendar)Calendar.getInstance();
+		try{
+			if(iAnio<100) iAnio=iAnio+2000;
+			gDate.clear();
+			gDate.set(iAnio, iMes-1, iDia);
+			} 
+		catch(Throwable e){ System.out.println("Error getDate: " +e + " " + iAnio + " " + iMes + " " + iDia); }
+		return gDate; 
+	}
+}

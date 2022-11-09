@@ -1,0 +1,264 @@
+/************************************************************************
+ * Module:  Anexo.java
+ * Author:  Claudia Sandoval
+ * Created: 14.Nov.2002
+ * Purpose: Defines the Class UsuarioAnexo
+ * Ultima Modificacion:	
+ * By:		
+ ***********************************************************************/
+
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class UsuarioAnexo {
+
+//Declaración de Variables
+  private int iIdAnexo;
+  private String sClave;
+  private String sNombre;
+  private String sNombreCorto;
+  private VMatrix oVm;
+  private ConnectionJDBC oCnn;
+
+//Inicializacion de la Clase
+  public UsuarioAnexo() throws SQLException, IOException {
+    iIdAnexo = 0;
+    sClave = "";
+    sNombre = "";
+    sNombreCorto = "";
+    oVm = new VMatrix();
+    oCnn = new ConnectionJDBC();
+    /*oCnn.SetDsn("GobiernoER");
+       oCnn.SetUsuario("sa");
+       oCnn.SetClave("");*/
+  }
+
+//Creación de las Propiedades
+  public void SetIdAnexo(int iDATA) {
+    iIdAnexo = iDATA;
+  }
+
+  public int GetIdAnexo() {
+    return iIdAnexo;
+  }
+
+  public int GetIdAnexo(int iPos) {
+    int iGetIdAnexo = -1;
+    try {
+      iGetIdAnexo = java.lang.Integer.parseInt( ( ( (Vector) oVm.getVMatrixAll().
+          elementAt(0)).elementAt(iPos) + ""));
+    }
+    catch (Throwable e) {
+      System.out.println("oAnexo.GetIdAnexo: No se ejecutó con exito " + e +
+                         " Pos:" + iPos + " [data]:" +
+                         ( (Vector) oVm.getVMatrixAll().elementAt(0)).elementAt(
+          iPos));
+    }
+    finally {
+      return iGetIdAnexo;
+    }
+  }
+
+  public void SetClave(String iDATA) {
+    sClave = iDATA;
+  }
+
+  public String GetClave() {
+    return sClave;
+  }
+
+  public String GetClave(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(1)).elementAt(iPos).
+        toString();
+  }
+
+  public void SetNombre(String iDATA) {
+    sNombre = iDATA;
+  }
+
+  public String GetNombre() {
+    return sNombre;
+  }
+
+  public String GetNombre(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(2)).elementAt(iPos).
+        toString();
+  }
+
+  public void SetNombreCorto(String iDATA) {
+    sNombreCorto = iDATA;
+  }
+
+  public String GetNombreCorto() {
+    return sNombreCorto;
+  }
+
+  public String GetNombreCorto(int iPos) {
+    return ( (Vector) oVm.getVMatrixAll().elementAt(3)).elementAt(iPos).
+        toString();
+  }
+
+  //public int		GetIdUsuario(int iPos) 		{	return ((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+  public int GetIdUsuario(int iPos) {
+    int iGetIdUsuario = -1;
+    try {
+      iGetIdUsuario = java.lang.Integer.parseInt( ( ( (Vector) oVm.
+          getVMatrixAll().elementAt(4)).elementAt(iPos) + ""));
+    }
+    finally {
+      return iGetIdUsuario;
+    }
+  }
+
+//Metodos públicos
+  /*	public boolean Get(int pIdAnexo) throws SQLException, IOException {
+    ResultSet 	oRs;
+    String 		sSql;
+    sSql = "SELECT IdAnexo, Clave, Nombre, NombreCorto FROM UsuarioAnexo WHERE IdAnexo = " + pIdAnexo;
+    try{
+     oCnn.Open();
+     oRs = oCnn.Execute(sSql);
+     if(oRs.next()){
+      CargaDatos(oRs.getInt("IdAnexo"), oRs.getString("Clave"), oRs.getString("Nombre"), oRs.getString("NombreCorto"));
+      this.Close(oRs);
+     }else
+      this.Close(oRs);
+     return false;	
+    }catch(Throwable e){
+     System.out.println("Error en oAnexo.Get: " + e + " SQL:" + sSql);
+     oCnn.Close();
+    }
+    return false;	
+   }*/
+
+  public VMatrix GetAll(int pIdFuncionario) throws SQLException, IOException {
+    // Utilizados en Asigna Anexos
+    if (oVm.getNumRows() > 0) {
+      return oVm;
+    }
+    String sSql;
+    ResultSet oRs;
+    sSql = "SELECT a.IdAnexo, Clave, Nombre, NombreCorto, IdUsuarioLimitado FROM Anexo a left outer join UsuarioAnexo b " +
+        "on a.IdAnexo = b.IdAnexo and idFuncionario = " + pIdFuncionario +
+        " Order by a.IdAnexo";
+    try {
+      oCnn.Open();
+      oRs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(5);
+      while (oRs.next()) {
+        String sTemp[] = {
+            oRs.getString("IdAnexo"), oRs.getString("Clave"),
+            oRs.getString("Nombre"), oRs.getString("NombreCorto"),
+            oRs.getString("IdUsuarioLimitado")};
+        oVm.setVMatrixRow(sTemp);
+      }
+      this.Close(oRs);
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oAnexo.GetAll: " + e + " SQL:" + sSql);
+    }
+    finally {
+      oCnn.Close();
+      return oVm;
+    }
+  }
+
+  public int GetPos(int pIdAnexo, int pIdFuncionario) throws SQLException,
+      IOException {
+    GetAll(pIdFuncionario);
+    return ( (Vector) oVm.getVMatrixAll().elementAt(0)).indexOf( (pIdAnexo + ""),
+        0);
+  }
+
+  public boolean Save(String pIdAnexo, String pIdFuncionario,
+                      String pIdUsuarioLimitado, String pIdUsuarioLimitadoAnt) throws
+      SQLException, IOException {
+    if (pIdUsuarioLimitadoAnt.equals("null")) {
+      Insert(pIdAnexo, pIdFuncionario, pIdUsuarioLimitado);
+    }
+    if (pIdUsuarioLimitado.equals("null")) {
+      Delete(pIdAnexo, pIdFuncionario, pIdUsuarioLimitadoAnt);
+    }
+    if (!pIdUsuarioLimitadoAnt.equals("null") &&
+        !pIdUsuarioLimitado.equals("null")) {
+      Update(pIdAnexo, pIdFuncionario, pIdUsuarioLimitado);
+
+    }
+    return true;
+  }
+
+  private boolean Insert(String pIdAnexo, String pIdFuncionario,
+                         String pIdUsuarioLimitado) throws SQLException,
+      IOException {
+    String sSql = "";
+    try {
+      sSql =
+          "INSERT INTO UsuarioAnexo (IdAnexo, IdFuncionario, IdUsuarioLimitado) VALUES (" +
+          pIdAnexo + ", " + pIdFuncionario + ", " + pIdUsuarioLimitado + ")";
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oUsuarioAnexo.Insert: " + sSql);
+    }
+    return false;
+  }
+
+  private boolean Update(String pIdAnexo, String pIdFuncionario,
+                         String pIdUsuarioLimitado) throws SQLException,
+      IOException {
+    String sSql = "";
+    try {
+      sSql = "UPDATE UsuarioAnexo SET IdUsuarioLimitado = " +
+          pIdUsuarioLimitado +
+          " WHERE IdAnexo = " + pIdAnexo + " AND IdFuncionario = " +
+          pIdFuncionario;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oUsuarioAnexo.Update: " + sSql);
+    }
+    return false;
+  }
+
+  private boolean Delete(String pIdAnexo, String pIdFuncionario,
+                         String pIdUsuarioLimitado) throws SQLException,
+      IOException {
+    String sSql = "";
+    try {
+      sSql = "DELETE FROM UsuarioAnexo WHERE IdAnexo = " + pIdAnexo +
+          " AND IdFuncionario = " + pIdFuncionario +
+          " AND IdUsuarioLimitado = " + pIdUsuarioLimitado;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en oUsuarioAnexo.Delete: " + sSql);
+    }
+    return false;
+  }
+
+//Metodos Internos
+  /*	private void CargaDatos(int pIdAnexo, String pClave, String pNombre, String pNombreCorto){
+    iIdAnexo		= pIdAnexo;
+    sClave 			= pClave;
+    sNombre			= pNombre;
+    sNombreCorto	= pNombreCorto;
+   }*/
+  private void Close(ResultSet pRs) throws SQLException {
+    pRs.close();
+    pRs = null;
+    oCnn.Close();
+  }
+}

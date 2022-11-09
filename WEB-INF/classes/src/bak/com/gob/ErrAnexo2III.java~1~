@@ -1,0 +1,60 @@
+/************************************************************************
+ * Module:  ErrAnexo2III.java
+ * Author:  Sigifredo VAzquez
+ * Created: 21.Abril.2003
+ * Purpose: Defines the Class ErrAnexo2II
+ ***********************************************************************/
+ 
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class ErrAnexo2III {
+//Declaración de Variables
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+
+//Inicializacion de la Clase
+	public ErrAnexo2III()  throws SQLException, IOException {
+		String sSql;
+		oVm= new VMatrix();
+		oCnn= new ConnectionJDBC();
+	}
+
+//Creación de las Propiedades
+	public String GetNumeroOficio(int iPos)	{return (String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos);}
+	public String GetFecha(int iPos) 		{return (String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);	}
+	public String GetConcepto(int iPos) 	{return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	public String GetImporte(int iPos) 		{return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	public String GetObservacion(int iPos)	{return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+	public String GetDescripcion(int iPos)	{return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+//Metodos públicos
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT NumeroOficio, Fecha, Concepto, Importe, Observaciones, DescripcionError FROM ErrAnexo2III WHERE IdFuncionario = " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(6);
+			oVm.setSwitchTypeKey();
+			while (rs.next()) {
+				String sTabla [] = {rs.getString("NumeroOficio"), rs.getString("Fecha"), rs.getString("Concepto"), 
+					rs.getString("Importe"), rs.getString("Observaciones"), rs.getString("DescripcionError")};
+				oVm.setVMatrixRow(sTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oErrAnexo2III.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+}

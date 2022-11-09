@@ -1,0 +1,115 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 06.Nov.2002
+ * Purpose: Defines the Class DetalleAnexo2II
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+
+public class DetalleAnexo2II {
+
+//Declaración de Variables
+private int 			iIdFuncionario;
+private String 			sFechaCorte;
+private ConnectionJDBC	 	oCnn;
+
+//Inicializacion de la Clase
+public DetalleAnexo2II()  throws SQLException, IOException {
+	  iIdFuncionario 		= 0;
+		sFechaCorte				= "";
+		oCnn				= new ConnectionJDBC();
+		
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		
+	}
+//Creación de las Propiedades
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+
+	public void 	SetFechaCorte(String sDATA) 		{	sFechaCorte 		= sDATA;	}
+	public String	GetFechaCorte() 					{	return sFechaCorte;			}
+
+	
+//Metodos públicos
+	public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdFuncionario, FechaCorte FROM DetalleAnexo2II WHERE IdFuncionario = " + pIdFuncionario;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdFuncionario"), rs.getString("FechaCorte")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+
+	
+	
+	
+	public boolean Insert(int pIdFuncionario, String pFechaCorte) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "INSERT INTO DetalleAnexo2II(IdFuncionario, FechaCorte) ";
+			sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+			sSql = sSql + "'" + pFechaCorte + "')";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en DetalleAnexo2II.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Update(int pIdFuncionario, String pFechaCorte) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE DetalleAnexo2II SET ";
+			sSql = sSql + "FechaCorte = '" + pFechaCorte + "' ";
+			sSql = sSql + "WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en DetalleAnexo2II.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+		String sSql = "";
+        try{		
+			sSql = "DELETE FROM DetalleAnexo2II WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+        }catch(Throwable e){
+			System.out.println("Error en DetalleAnexo2II.Delete: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, String pFechaCorte){
+		iIdFuncionario		= pIdFuncionario;
+		sFechaCorte		= pFechaCorte;
+	}
+		
+}

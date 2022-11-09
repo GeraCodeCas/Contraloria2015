@@ -1,0 +1,7 @@
+<Context privileged="true" antiResourceLocking="false" antiJARLocking="false">
+  <Resource name="jdbc/EVACON01" auth="Container"
+            type="javax.sql.DataSource" username="informix" password="informix"
+			driverClassName="com.informix.jdbc.IfxDriver" url="jdbc:informix-sqli://172.31.26.17:1526/evacon01:INFORMIXSERVER=ol_contramxli210"
+            maxActive="54" maxIdle="16"/>             
+                     
+</Context>

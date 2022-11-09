@@ -1,0 +1,667 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 24.Oct.2002
+ * Purpose: Defines the Class Acta
+ ***********************************************************************/
+
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+import com.consiss.util.*;
+
+public class Acta {
+  //Declaración de Variables
+  private int iIdFuncionario;
+  private String sUnidadGobierno;
+  private String sCiudad;
+  private String sHora;
+  private int dFechaActa;
+  private String sDireccion;
+  private String sNombreEntrega;
+  private String sNombreRecibe;
+  private String sCargo;
+  private int dFechaEntrante;
+  private String sTestigoEntrega;
+  private String sTestigoRecibe;
+  private String sUnidadTestigoEntrega;
+  private String sUnidadTestigoRecibe;
+  private String sPuestoTestigoEntrega;
+  private String sPuestoTestigoRecibe;
+  private String sDireccionTestigoEntrega;
+  private String sDireccionTestigoRecibe;
+  private String sResponsableOrgano;
+  private String sResponsableCoordinacion;
+  private String sResponsableSecretaria;
+  private String sPuestoRepresentante;
+  private String sHoraConclusionActa;
+  private String sObservaciones;
+  private String sNombreExpide;
+  private String sPuestoExpide;
+  private String iTipoActa;
+  private String sArchivoAnexo;
+  private int dFechaFirma;
+
+  private String sDocIdenFSal;
+  private String sDocIdenFEnt;
+  private int dFecActInfCD;
+  private int iNoUnidadDepen;
+  private Utilerias oUtil;
+  private ConnectionJDBC oCnn;
+
+  //Inicializacion de la Clase
+  public Acta() throws SQLException, IOException {
+    iIdFuncionario = 0;
+    sUnidadGobierno = "";
+    sCiudad = "";
+    sHora = "";
+    sDireccion = "";
+    sNombreEntrega = "";
+    sNombreRecibe = "";
+    sCargo = "";
+    sTestigoEntrega = "";
+    sTestigoRecibe = "";
+    sUnidadTestigoEntrega = "";
+    sUnidadTestigoRecibe = "";
+    sPuestoTestigoEntrega = "";
+    sPuestoTestigoRecibe = "";
+    sDireccionTestigoEntrega = "";
+    sDireccionTestigoRecibe = "";
+    sResponsableOrgano = "";
+    sResponsableCoordinacion = "";
+    sResponsableSecretaria = "";
+    sPuestoRepresentante = "";
+    sHoraConclusionActa = "";
+    sNombreExpide = "";
+    sPuestoExpide = "";
+    sArchivoAnexo = "";
+
+    sDocIdenFSal = "";
+    sDocIdenFEnt = "";
+    dFecActInfCD = 0;
+    iNoUnidadDepen = 0;
+    dFechaActa = 0;
+    dFechaEntrante = 0;
+    dFechaFirma = 0;
+    iTipoActa = "";
+    sObservaciones = "";
+
+    oCnn = new ConnectionJDBC();
+    oUtil = new Utilerias();
+  }
+
+  //Creación de las Propiedades
+  public void SetIdFuncionario(int iDATA) {
+    iIdFuncionario = iDATA;
+  }
+
+  public int GetIdFuncionario() {
+    return iIdFuncionario;
+  }
+
+  public void SetUnidadGobierno(String sDATA) {
+    sUnidadGobierno = sDATA;
+  }
+
+  public String GetUnidadGobierno() {
+    return sUnidadGobierno;
+  }
+
+  public void SetCiudad(String sDATA) {
+    sCiudad = sDATA;
+  }
+
+  public String GetCiudad() {
+    return sCiudad;
+  }
+
+  public void SetHora(String sDATA) {
+    sHora = sDATA;
+  }
+
+  public String GetHora() {
+    return sHora;
+  }
+
+  public void SetFechaActa(int sDATA) {
+    dFechaActa = sDATA;
+  }
+
+  public int GetFechaActa() {
+    return dFechaActa;
+  }
+
+  public void SetDireccion(String sDATA) {
+    sDireccion = sDATA;
+  }
+
+  public String GetDireccion() {
+    return sDireccion;
+  }
+
+  public void SetNombreEntrega(String sDATA) {
+    sNombreEntrega = sDATA;
+  }
+
+  public String GetNombreEntrega() {
+    return sNombreEntrega;
+  }
+
+  public void SetNombreRecibe(String sDATA) {
+    sNombreRecibe = sDATA;
+  }
+
+  public String GetNombreRecibe() {
+    return sNombreRecibe;
+  }
+
+  public void SetCargo(String sDATA) {
+    sCargo = sDATA;
+  }
+
+  public String GetCargo() {
+    return sCargo;
+  }
+
+  public void SetFechaEntrante(int sDATA) {
+    dFechaEntrante = sDATA;
+  }
+
+  public int GetFechaEntrante() {
+    return dFechaEntrante;
+  }
+
+  public void SetTestigoEntrega(String sDATA) {
+    sTestigoEntrega = sDATA;
+  }
+
+  public String GetTestigoEntrega() {
+    return sTestigoEntrega;
+  }
+
+  public void SetTestigoRecibe(String sDATA) {
+    sTestigoRecibe = sDATA;
+  }
+
+  public String GetTestigoRecibe() {
+    return sTestigoRecibe;
+  }
+
+  public void SetUnidadTestigoEntrega(String sDATA) {
+    sUnidadTestigoEntrega = sDATA;
+  }
+
+  public String GetUnidadTestigoEntrega() {
+    return sUnidadTestigoEntrega;
+  }
+
+  public void SetUnidadTestigoRecibe(String sDATA) {
+    sUnidadTestigoRecibe = sDATA;
+  }
+
+  public String GetUnidadTestigoRecibe() {
+    return sUnidadTestigoRecibe;
+  }
+
+  public void SetPuestoTestigoEntrega(String sDATA) {
+    sPuestoTestigoEntrega = sDATA;
+  }
+
+  public String GetPuestoTestigoEntrega() {
+    return sPuestoTestigoEntrega;
+  }
+
+  public void SetPuestoTestigoRecibe(String sDATA) {
+    sPuestoTestigoRecibe = sDATA;
+  }
+
+  public String GetPuestoTestigoRecibe() {
+    return sPuestoTestigoRecibe;
+  }
+
+  public void SetDireccionTestigoEntrega(String sDATA) {
+    sDireccionTestigoEntrega = sDATA;
+  }
+
+  public String GetDireccionTestigoEntrega() {
+    return sDireccionTestigoEntrega;
+  }
+
+  public void SetDireccionTestigoRecibe(String sDATA) {
+    sDireccionTestigoRecibe = sDATA;
+  }
+
+  public String GetDireccionTestigoRecibe() {
+    return sDireccionTestigoRecibe;
+  }
+
+  public String GetTipoActa() {
+    return iTipoActa;
+  }
+
+  public void SetTipoActa(String sDATA) {
+    iTipoActa = sDATA;
+  }
+
+  public void SetObservaciones(String sDATA) {
+    sObservaciones = sDATA;
+  }
+
+  public String GetObservaciones() {
+    return sObservaciones;
+  }
+
+  public void SetResponsableOrgano(String sDATA) {
+    sResponsableOrgano = sDATA;
+  }
+
+  public String GetResponsableOrgano() {
+    return sResponsableOrgano;
+  }
+
+  public void SetResponsableCoordinacion(String sDATA) {
+    sResponsableCoordinacion = sDATA;
+  }
+
+  public String GetResponsableCoordinacion() {
+    return sResponsableCoordinacion;
+  }
+
+  public void SetResponsableSecretaria(String sDATA) {
+    sResponsableSecretaria = sDATA;
+  }
+
+  public String GetResponsableSecretaria() {
+    return sResponsableSecretaria;
+  }
+
+  public void SetPuestoRepresentante(String sDATA) {
+    sPuestoRepresentante = sDATA;
+  }
+
+  public String GetPuestoRepresentante() {
+    return sPuestoRepresentante;
+  }
+
+  public void SetHoraConclusionActa(String sDATA) {
+    sHoraConclusionActa = sDATA;
+  }
+
+  public String GetHoraConclusionActa() {
+    return sHoraConclusionActa;
+  }
+
+  public void SetFechaFirma(int sDATA) {
+    dFechaFirma = sDATA;
+  }
+
+  public int GetFechaFirma() {
+    return dFechaFirma;
+  }
+
+  public void SetNombreExpide(String sDATA) {
+    sNombreExpide = sDATA;
+  }
+
+  public String GetNombreExpide() {
+    return sNombreExpide;
+  }
+
+  public void SetPuestoExpide(String sDATA) {
+    sPuestoExpide = sDATA;
+  }
+
+  public String GetPuestoExpide() {
+    return sPuestoExpide;
+  }
+
+  public void SetDocIdenFSal(String sDATA) {
+    sDocIdenFSal = sDATA;
+  }
+
+  public String GetDocIdenFSal() {
+    return sDocIdenFSal;
+  }
+  public void SetDocIdenFEnt(String sDATA) {
+    sDocIdenFEnt = sDATA;
+  }
+
+  public String GetDocIdenFEnt() {
+    return sDocIdenFEnt;
+  }
+
+  public void SetFecActInfCD(int sDATA) {
+    dFecActInfCD = sDATA;
+  }
+
+  public int GetFecActInfCD() {
+    return dFecActInfCD;
+  }
+
+  public void SetNoUnidadDepen(int sDATA) {
+    iNoUnidadDepen = sDATA;
+  }
+
+  public int GetNoUnidadDepen() {
+    return iNoUnidadDepen;
+  }
+
+  public String GetArchivoAnexo() {
+    return sArchivoAnexo;
+  }
+
+//Metodos públicos
+  public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+    ResultSet rs;
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql = "SELECT IdFuncionario, UnidadGobierno, Ciudad, Hora, ";
+      sSql = sSql + "FechaActa, Direccion, NombreEntrega, NombreRecibe, Cargo, ";
+      sSql = sSql + "FechaEntrante, TestigoEntrega, TestigoRecibe, UnidadTestigoEntrega, UnidadTestigoRecibe, PuestoTestigoEntrega, PuestoTestigoRecibe, ";
+      sSql = sSql + "DireccionTestigoEntrega, DireccionTestigoRecibe, ResponsableOrgano, ResponsableCoordinacion,  ResponsableSecretaria, ";
+      sSql = sSql + "PuestoRepresentante, HoraConclusionActa, FechaFirma, TipoActa, NombreExpide, PuestoExpide, DocIdenFuncSaliente, DocIdenFuncEntrante, ";
+      sSql = sSql + "FechaActualInformacion, NumeroUnidadesAdmvas, Observaciones, ArchivoAnexo ";
+      sSql = sSql + "FROM DatosGeneralesActa WHERE IdFuncionario = " +
+          pIdFuncionario;
+      rs = oCnn.Execute(sSql);
+      if (rs.next()) {
+        CargaDatos(rs.getInt("IdFuncionario"), rs.getString("UnidadGobierno"),
+                   rs.getString("Ciudad"), rs.getString("Hora"),
+                   rs.getInt("FechaActa"), rs.getString("Direccion"),
+                   rs.getString("NombreEntrega"), rs.getString("NombreRecibe"),
+                   rs.getString("Cargo"),
+                   rs.getInt("FechaEntrante"), rs.getString("TestigoEntrega"),
+                   rs.getString("TestigoRecibe"),
+                   rs.getString("UnidadTestigoEntrega"),
+                   rs.getString("UnidadTestigoRecibe"),
+                   rs.getString("PuestoTestigoEntrega"),
+                   rs.getString("PuestoTestigoRecibe"),
+                   rs.getString("DireccionTestigoEntrega"),
+                   rs.getString("DireccionTestigoRecibe"),
+                   rs.getString("ResponsableOrgano"),
+                   rs.getString("ResponsableCoordinacion"),
+                   rs.getString("ResponsableSecretaria"),
+                   rs.getString("PuestoRepresentante"),
+                   rs.getString("HoraConclusionActa"), rs.getInt("FechaFirma"),
+                   rs.getString("TipoActa"), rs.getString("NombreExpide"),
+                   rs.getString("PuestoExpide"), rs.getString("DocIdenFuncSaliente"),
+                   rs.getString("DocIdenFuncEntrante"), rs.getInt("FechaActualInformacion"),
+                   rs.getInt("NumeroUnidadesAdmvas"),
+                   rs.getString("Observaciones"), rs.getString("ArchivoAnexo"));
+        rs.close();
+        rs = null;
+        oCnn.Close();
+        return true;
+      }
+    }
+    catch (Throwable e) {
+      System.out.println("oActa.Get: " + e + " SQL:" + sSql);
+    }
+    rs = null;
+    oCnn.Close();
+    return false;
+  }
+
+  public boolean Insert(int pIdFuncionario, String pUnidadGobierno,
+                        String pCiudad, String pHora, int pFechaActa,
+                        String pDireccion, String pNombreEntrega,
+                        String pNombreRecibe, String pCargo, int pFechaEntrante,
+                        String pTestigoEntrega, String pTestigoRecibe,
+                        String pUnidadTestigoEntrega,
+                        String pUnidadTestigoRecibe,
+                        String pPuestoTestigoEntrega,
+                        String pPuestoTestigoRecibe,
+                        String pDireccionTestigoEntrega,
+                        String pDireccionTestigoRecibe,
+                        String pResponsableOrgano,
+                        String pResponsableCoordinacion,
+                        String pResponsableSecretaria,
+                        String pPuestoRepresentante,
+                        String pHoraConclusionActa, int pFechaFirma,
+                        int iTipoActa, String sNombreExpide,
+                        String sPuestoExpide,
+                        String pDocIdenFSal,
+                        String pDocIdenFEnt,
+                        int pFecActInfCD,
+                        int pNoUnidadDepen,
+                        String sObservaciones) throws
+      SQLException, IOException {
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql = "INSERT INTO DatosGeneralesActa(IdFuncionario, UnidadGobierno, Ciudad, Hora, FechaActa, Direccion, NombreEntrega, " +
+          "NombreRecibe,Cargo, FechaEntrante, TestigoEntrega, TestigoRecibe, UnidadTestigoEntrega, UnidadTestigoRecibe, " +
+          "PuestoTestigoEntrega, PuestoTestigoRecibe, DireccionTestigoEntrega, DireccionTestigoRecibe, ResponsableOrgano, " +
+          "ResponsableCoordinacion, ResponsableSecretaria, PuestoRepresentante, HoraConclusionActa, FechaFirma, TipoActa, NombreExpide, PuestoExpide, " +
+          "DocIdenFuncSaliente, DocIdenFuncEntrante, FechaActualInformacion, NumeroUnidadesAdmvas, Observaciones) " +
+          "VALUES (" + pIdFuncionario + ", '" + pUnidadGobierno + "', '" +
+          pCiudad + "', '" + pHora + "', " + pFechaActa + ", '" +
+          pDireccion + "', '" + pNombreEntrega + "', '" + pNombreRecibe +
+          "', '" + pCargo + "', " + pFechaEntrante + ", '" + pTestigoEntrega +
+          "', '" +
+          pTestigoRecibe + "', '" + pUnidadTestigoEntrega + "', '" +
+          pUnidadTestigoRecibe + "', '" + pPuestoTestigoEntrega + "', '" +
+          pPuestoTestigoRecibe + "', '" +
+          pDireccionTestigoEntrega + "', '" + pDireccionTestigoRecibe + "', '" +
+          pResponsableOrgano + "', '" + pResponsableCoordinacion + "', '" +
+          pResponsableSecretaria + "', '" + pPuestoRepresentante + "', '" +
+          pHoraConclusionActa + "', " + pFechaFirma + "," + iTipoActa + ", '" +
+          sNombreExpide + "', '" + sPuestoExpide + "', '" + pDocIdenFSal + "', '" +
+          pDocIdenFEnt + "', " + pFecActInfCD + ", " + pNoUnidadDepen + ", '" + sObservaciones + "')";
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("oActa.Insert: " + e + " SQL:" + sSql);
+      oCnn.Close();
+      return false;
+    }
+  }
+
+  public boolean Update(int pIdFuncionario, String pUnidadGobierno,
+                        String pCiudad, String pHora, int pFechaActa,
+                        String pDireccion,
+                        String pNombreEntrega, String pNombreRecibe,
+                        String pCargo, int pFechaEntrante,
+                        String pTestigoEntrega, String pTestigoRecibe,
+                        String pUnidadTestigoEntrega,
+                        String pUnidadTestigoRecibe,
+                        String pPuestoTestigoEntrega,
+                        String pPuestoTestigoRecibe,
+                        String pDireccionTestigoEntrega,
+                        String pDireccionTestigoRecibe,
+                        String pResponsableOrgano,
+                        String pResponsableCoordinacion,
+                        String pResponsableSecretaria,
+                        String pPuestoRepresentante, String pHoraConclusionActa,
+                        int pFechaFirma, int pTipoActa, String pNombreExpide,
+                        String pPuestoExpide, String pDocIdenFSal,
+                        String pDocIdenFEnt, int pFecActInfCD,
+                        int pNoUnidadDepen, String pObservaciones) throws
+      SQLException, IOException {
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql = "UPDATE DatosGeneralesActa SET UnidadGobierno = '" +
+          pUnidadGobierno + "', " +
+          "Ciudad = '" + pCiudad + "', Hora = '" + pHora + "', " +
+          "FechaActa = " + pFechaActa + ", Direccion = '" + pDireccion + "', " +
+          "NombreEntrega = '" + pNombreEntrega + "', NombreRecibe = '" +
+          pNombreRecibe + "', " +
+          "Cargo = '" + pCargo + "', FechaEntrante = " + pFechaEntrante + ", " +
+          "TestigoEntrega = '" + pTestigoEntrega + "', TestigoRecibe = '" +
+          pTestigoRecibe + "', " +
+          "UnidadTestigoEntrega = '" + pUnidadTestigoEntrega +
+          "', UnidadTestigoRecibe = '" + pUnidadTestigoRecibe + "', " +
+          "PuestoTestigoEntrega = '" + pPuestoTestigoEntrega +
+          "', PuestoTestigoRecibe = '" + pPuestoTestigoRecibe + "', " +
+          "DireccionTestigoEntrega = '" + pDireccionTestigoEntrega +
+          "', DireccionTestigoRecibe = '" + pDireccionTestigoRecibe + "', " +
+          "ResponsableOrgano = '" + pResponsableOrgano +
+          "', ResponsableCoordinacion = '" + pResponsableCoordinacion + "', " +
+          "ResponsableSecretaria = '" + pResponsableSecretaria +
+          "', PuestoRepresentante = '" + pPuestoRepresentante + "', " +
+          "HoraConclusionActa = '" + pHoraConclusionActa + "', FechaFirma = " +
+          pFechaFirma + " , " +
+          "TipoActa = " + pTipoActa + ", NombreExpide = '" + pNombreExpide +
+          "', PuestoExpide = '" + pPuestoExpide + "', DocIdenFuncSaliente = '" + pDocIdenFSal +
+          "', DocIdenFuncEntrante = '" + pDocIdenFEnt + "', FechaActualInformacion = " +
+          pFecActInfCD + ", NumeroUnidadesAdmvas = " + pNoUnidadDepen + ", " +
+          "Observaciones = '" + pObservaciones + "' " +
+          "WHERE IdFuncionario = " + pIdFuncionario;
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("oActa.Update: " + e + " SQL:" + sSql);
+      oCnn.Close();
+      return false;
+    }
+  }
+
+  public boolean UpdateArchivo(int pIdFuncionario, String pArchivoAnexo) throws
+      SQLException, IOException {
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql = "UPDATE DatosGeneralesActa SET ArchivoAnexo = '" + pArchivoAnexo +
+          "' " +
+          "WHERE IdFuncionario = " + pIdFuncionario;
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("oActa.UpdateArchivo: " + e + " SQL:" + sSql);
+      oCnn.Close();
+      return false;
+    }
+  }
+
+  public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      oCnn.Open();
+      sSql = "DELETE FROM DatosGeneralesActa WHERE IdFuncionario = " +
+          pIdFuncionario;
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("oActa.Delete: " + e + " SQL:" + sSql);
+      oCnn.Close();
+      return false;
+    }
+  }
+
+//Metodos internos
+  private void CargaDatos(int pIdFuncionario,
+                          String pUnidadGobierno,
+                          String pCiudad,
+                          String pHora,
+                          int pFechaActa,
+                          String pDireccion,
+                          String pNombreEntrega,
+                          String pNombreRecibe,
+                          String pCargo,
+                          int pFechaEntrante,
+                          String pTestigoEntrega,
+                          String pTestigoRecibe,
+                          String pUnidadTestigoEntrega,
+                          String pUnidadTestigoRecibe,
+                          String pPuestoTestigoEntrega,
+                          String pPuestoTestigoRecibe,
+                          String pDireccionTestigoEntrega,
+                          String pDireccionTestigoRecibe,
+                          String pResponsableOrgano,
+                          String pResponsableCoordinacion,
+                          String pResponsableSecretaria,
+                          String pPuestoRepresentante,
+                          String pHoraConclusionActa,
+                          int pFechaFirma,
+                          String pTipoActa,
+                          String pNombreExpide,
+                          String pPuestoExpide,
+                          String pDocIdenFSal,
+                          String pDocIdenFEnt,
+                          int pFecActInfCD,
+                          int pNoUnidadDepen,
+                          String pObservaciones,
+                          String pArchivoAnexo) {
+    iIdFuncionario = pIdFuncionario;
+    sUnidadGobierno = pUnidadGobierno;
+    sCiudad = pCiudad;
+    sHora = pHora;
+    dFechaActa = pFechaActa;
+    sDireccion = pDireccion;
+    sNombreEntrega = pNombreEntrega;
+    sNombreRecibe = pNombreRecibe;
+    sCargo = pCargo;
+    dFechaEntrante = pFechaEntrante;
+    sTestigoEntrega = pTestigoEntrega;
+    sTestigoRecibe = pTestigoRecibe;
+    sUnidadTestigoEntrega = pUnidadTestigoEntrega;
+    sUnidadTestigoRecibe = pUnidadTestigoRecibe;
+    sPuestoTestigoEntrega = pPuestoTestigoEntrega;
+    sPuestoTestigoRecibe = pPuestoTestigoRecibe;
+    sDireccionTestigoEntrega = pDireccionTestigoEntrega;
+    sDireccionTestigoRecibe = pDireccionTestigoRecibe;
+    sResponsableOrgano = pResponsableOrgano;
+    sResponsableCoordinacion = pResponsableCoordinacion;
+    sResponsableSecretaria = pResponsableSecretaria;
+    sPuestoRepresentante = pPuestoRepresentante;
+    sHoraConclusionActa = pHoraConclusionActa;
+    dFechaFirma = pFechaFirma;
+    iTipoActa = pTipoActa;
+    sNombreExpide = pNombreExpide;
+    sPuestoExpide = pPuestoExpide;
+    sDocIdenFSal = pDocIdenFSal;
+    sDocIdenFEnt = pDocIdenFEnt;
+    dFecActInfCD = pFecActInfCD;
+    iNoUnidadDepen = pNoUnidadDepen;
+    sObservaciones = pObservaciones;
+    sArchivoAnexo = pArchivoAnexo;
+  }
+
+  public String RegresaFecha(int pFecha) {
+    String sFecha = "";
+    if (pFecha == 0) {
+      return "";
+    }
+    else {
+      sFecha = Integer.toString(pFecha);
+      return sFecha.substring(6, 8) + "/" + sFecha.substring(4, 6) + "/" +
+          sFecha.substring(0, 4);
+    }
+  }
+
+  public String RegresaDiayMes(int pFecha) {
+    String sFecha;
+    String sMes;
+    sFecha = "";
+    sMes = "";
+    if (pFecha == 0) {
+      return "";
+    }
+    sFecha = Integer.toString(pFecha);
+    return sFecha.substring(6, 8) + " de " +
+        oUtil.GetMesLargo(Integer.parseInt(sFecha.substring(4, 6)));
+  }
+
+  public String RegresaAnio(int pFecha) {
+    String sFecha;
+    sFecha = "";
+    if (pFecha == 0) {
+      return "";
+    }
+    sFecha = Integer.toString(pFecha);
+    return sFecha.substring(2, 4);
+  }
+
+} //Cierra Clase

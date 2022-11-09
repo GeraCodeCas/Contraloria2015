@@ -1,0 +1,33 @@
+package com.consiss.util;
+//import java.util.*;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+import com.consiss.util.*;
+
+public class Seguridad{
+	public boolean Bitacora(String pUsuario, String pTipo, String pAccion, 
+						String pAddress, String pNombrePc, String pInfoPc) throws SQLException, IOException{
+		String sSql 		= "";
+		ConnectionJDBC oCnn = new ConnectionJDBC();
+		String sTemp        = "";
+		Utilerias		oUtil			= new Utilerias();
+		String sFechaActual = oUtil.sGetDate(oUtil.GetFecha(), "dd/MM/yyyy HH:mm:ss");
+		String sFechaSys = oUtil.sGetDate(oUtil.GetFecha(), "yyyyMMdd");
+		sSql= "INSERT INTO Bitacora(Usuario, Fecha, Tipo, Accion, DireccionIP, NombreMaquina, InformacionMaquina, FechaSys) VALUES('" + pUsuario + "', '" + sFechaActual + "', '" + pTipo + "', '" + pAccion + "', '" + pAddress + "', '" + pNombrePc + "', '" + pInfoPc + "', '" + sFechaSys + "')";
+		try{
+			/*oCnn.SetDsn("GobiernoER");
+			oCnn.SetUsuario("sa");
+			oCnn.SetClave("");*/
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Bitacora: " + e + " SQL:" + sSql);
+			oCnn.Close();
+			return false;
+		}
+	}
+
+}

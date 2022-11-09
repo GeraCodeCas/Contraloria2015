@@ -1,0 +1,87 @@
+package com.consiss.util;
+import java.lang.*;
+import java.io.*;
+
+public class Copy
+{
+	private	static boolean bImagenes = false;
+	private	static int		iIdUnidadGobierno = 0;
+	private	boolean bDirectorio = true;
+	
+	public void CopyImagenes(String sfrom, String sto, int pIdUnidadGobierno) throws Exception{
+		iIdUnidadGobierno = pIdUnidadGobierno;
+		bImagenes = true;
+		copy(new File(sfrom), new File(sto));
+		bImagenes = false;
+	}
+	
+	public static void Copy(String sfrom, String sto) throws Exception{
+		copy(new File(sfrom), new File(sto));
+	}
+	
+	public static void copy(File from, File to) throws Exception{
+		if (from.equals(to)) {
+			throw new Exception(from.getName() + " and " + to.getName() + " are the same file");
+		}
+		if (from.isDirectory()) 
+			copyDir(from, to); 
+		else
+			copyFile(from, to);
+	}
+	public static void copyDir(File from, File to) throws Exception{
+		//System.err.println("creating dir: " + to.getPath());
+		to.mkdirs();
+		File[] files = from.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			if(bImagenes && files[i].getName().length()>=14 
+				&& files[i].getName().substring(0,14).equals("UnidadGobierno")
+				&& !files[i].getName().equals("UnidadGobierno" + iIdUnidadGobierno)) {
+				//SOLO PARA QUE NO COPIE LAS UNIDADES DE GOBIERNO
+			} else {
+				File tmpTo = new File(to, files[i].getName());
+				copy(files[i], tmpTo);
+			}
+		}
+	}
+	public static void copyFile(File from, File to) throws Exception{
+		if (from.equals(to)) {
+			throw new Exception(from.getName() + " and " + to.getName() + " are the same file");
+		}
+		//System.err.println("copy: " + from.getPath() + " -> " + to.getPath());
+		String sName = to.getName();
+		if(bImagenes){
+			sName = sName.replace('á', 'a');
+			sName = sName.replace('é', 'e');
+			sName = sName.replace('í', 'i');
+			sName = sName.replace('ó', 'o');
+			sName = sName.replace('ú', 'u');
+			sName = sName.replace('ñ', 'n');
+			sName = sName.replace('Á', 'A');
+			sName = sName.replace('É', 'E');
+			sName = sName.replace('Í', 'I');
+			sName = sName.replace('Ó', 'O');
+			sName = sName.replace('Ú', 'U');
+			sName = sName.replace('Ñ', 'N');
+			sName = to.getPath().substring(0, to.getPath().length()-sName.length()) + sName;
+			if(!to.getName().equals(sName)){
+				File oRename = new File(sName);
+				to.renameTo(oRename);
+	                        System.out.println("sName:" + sName);
+				to = null;
+				to = new File(sName);
+			}
+		}
+		byte[] buf = new byte[4096];
+		FileInputStream fis = new FileInputStream(from);
+		FileOutputStream fos = new FileOutputStream(to);
+		int i = 0;
+		do {
+			i = fis.read(buf);
+			if (i != -1) {
+				fos.write(buf, 0, i);
+			}
+		} while (i != -1);
+		fis.close();
+		fos.close();
+	}
+}

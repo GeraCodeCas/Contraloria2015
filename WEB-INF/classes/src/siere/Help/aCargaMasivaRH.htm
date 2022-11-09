@@ -1,0 +1,102 @@
+<html>
+<head>
+<title>DISEÑO DE LOS ARCHIVOS PLANOS DE TEXTO DE CAMPOS FIJOS</title>
+<link rel="stylesheet" type="text/css" href="../Styles/Gobierno.css">
+</head>
+
+<body>
+
+<h3 align=center style='text-align:center'><b>DISEÑO DE LOS ARCHIVOS PLANOS DE TEXTO DE CAMPOS FIJOS
+</b></h3>
+
+<h4 align="left">Introducción:</h4>
+
+<table><tr><td style="font-size:12px">
+<p>El sistema de Entrega-Recepción
+incluye una funcionalidad llamada “Cargas Masivas de Información” que permite
+alimentar de manera automática la información concerniente a los anexos
+preparados para este fin.</p>
+
+<p>De los 46 anexos que
+componen una Entrega-Recepción, 3 de ellos están preparados con esta
+funcionalidad de Cargas Masivas desde Recursos Humanos:</p>
+</td></tr></table>
+<p>
+<table cellpadding="0" cellspacing="0" style="margin-left:26.0pt;" width="100%">
+	<tr><td style="font-size:12px;">1)&nbsp;&nbsp;<a href="#a3iv1" style="cursor:normal">Anexo III.4.1 Plantilla de Personal</a></td></tr>
+	<tr><td style="font-size:12px;">2)&nbsp;&nbsp;<a href="#a3iv2" style="cursor:normal">Anexo III.4.2 Personal con Licencia, Permiso o Comisión</a></font><br></td></tr>
+	<tr><td style="font-size:12px;">3)&nbsp;&nbsp;<a href="#a3iv5" style="cursor:normal">Anexo III.4.5 Expedientes de Personal</a></td></tr>
+</td>
+</tr>
+</table>
+</p>
+<table><tr><td style="font-size:12px">
+<p>Este proceso se desarrollo
+con la finalidad de evitar una captura manual de estos anexos que en general
+son los mas voluminosos en cuanto a su contenido. El proceso consiste en
+generar Archivos Planos de Texto de Campos Fijos a partir de la información que
+ya se tenga capturada en alguna Base de Datos.</p>
+
+<p>A continuación se detalla el diseño de los archivos planos de texto de campos fijos.</p>
+<br>
+<h4 align="left">Notas técnicas:</h4>
+
+<p>1) El nombre de los archivos puede ser cualquiera, pero se
+recomienda utilizar nombres claros y cortos con extensión &quot;.TXT&quot;</p>
+
+<p>2) Un renglón en el Archivo de Texto representará un solo Registro
+en la Base de Datos.</p>
+
+<p>3) Un Registro en la Base de Datos se compone de 1 o mas campos
+que deberán concatenarse para formar un Renglón en el Archivo de Texto.</p>
+
+<p>4) Si los datos de cada campo no llenan el número de posiciones definidas
+en el diseño de los archivos, deberá completarse con espacios al final el
+tamaño de cada campo, de tal forma que se complete el numero de posiciones de
+dicho campo.</p>
+
+<p>5) El formato para las fechas debe ser DD/MM/AAAA, ejemplo: 31/12/2002</p>
+
+<p>6) Los siguientes caracteres no son reconocibles para las cargas masivas:<br>
+&nbsp;&nbsp;' (Apóstrofe)<br>
+&nbsp;&nbsp;" (Comillas)<br>
+&nbsp;&nbsp;< (Menor que)<br>
+&nbsp;&nbsp;> (Mayor que)<br>
+     por tal motivo, si algún campo de la Base de Datos los contiene, se deberán reemplazar por otro caracter o por espacio en blanco.
+</p>
+	 
+<p>A continuación se presenta un ejemplo de como generar un renglón:</p>
+
+<p>DISEÑO DEL ARCHIVO DE TEXTO E INFORMACION CONTENIDA EN LA BASE DE DATOS:</p>
+
+<p style='text-autospace:none;font-family:"Courier New"'>TAMAÑO      CAMPO             INFORMACIÓN QUE CONTIENE<br>
+======================================================<br>
+10          No.Empleado       489653<br>
+12          Nombre            Luis Gerardo<br>
+10          Ap.Paterno        Juárez<br>
+10          Ap.Materno        Melchor<br>
+======================================================<br>
+42 posiciones por renglón
+</p>
+
+<p>RENGLON GENERADO SEGUN EL TAMAÑO DE CAMPOS:</p>
+
+<p style='text-autospace:none;font-family:"Courier New"'>Conteo de
+Posiciones:--&gt;123456789012345678901234567890123456789012<br>
+    Renglón Generado:--&gt;489653____Luis_GerardoJuárez____Melchor___</p>
+<br>
+<h4 align="left">Diseño de los Archivos:</h4>
+</td></tr></table>
+<img src="../Images/a3iv1RH.gif">
+<a name=a3iv1></a><br>
+
+<img src="../Images/a3iv2RH.gif">
+<a name=a3iv2></a><br>
+ 
+<img src="../Images/a3iv5RH.gif">
+<a name=a3iv5></a><br>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+package com.consiss.util;
+import java.io.*;
+import java.util.zip.*;
+
+public class Compressor
+{
+	private static int 					iBuffer = 2048;
+	private static byte					bData[] = new byte[iBuffer];
+	private static BufferedInputStream	oOrigin = null;
+	
+	public static void Compress(String sFileZip, String sData) throws Exception{
+		try{
+			FileOutputStream oDest  = new FileOutputStream(sFileZip);
+			ZipOutputStream oOutZip = new ZipOutputStream(new BufferedOutputStream(oDest));
+			oOutZip.setMethod(ZipOutputStream.DEFLATED);
+			
+			File oFile = new File(sData);
+			if (oFile.isDirectory()) {
+				CompressingDir(oOutZip, sData, sData);
+			} else {
+				CompressingFile(oOutZip, sData, sData);
+			}
+			
+			oOutZip.close();
+
+		} catch(Throwable e){
+			System.out.println("Compressor.Compress(" + sFileZip + ", " + sData + ") ERROR:" + e);
+		}
+/*
+try{
+ZipFile zip=new ZipFile(sFileZip);
+for(java.util.Enumeration list=zip.entries();list.hasMoreElements();)  {
+ 	ZipEntry entry = (ZipEntry)(list.nextElement());
+  	System.out.println("Desc oEntry.getName():" + entry.getName());
+	//InputStream in=zip.getInputStream(entry);
+ 				
+	//in.close();
+}
+	zip.close();
+}catch  (IOException ex) {
+System.out.println(ex);
+}*/
+
+	}
+
+	private static void CompressingFile(ZipOutputStream zOutZip, String sFile, String sPath) throws Exception{
+		try {
+			FileInputStream oFis = new FileInputStream(sFile);
+			oOrigin = new  BufferedInputStream(oFis, iBuffer);
+			String sFileTemp = ""	;
+			if(sFile.equals(sPath)){
+				sFileTemp = sFile;
+			} else {
+				sFileTemp = sFile.substring(sPath.length());
+			}
+			sFileTemp = sFileTemp.replace('á', 'a');
+			sFileTemp = sFileTemp.replace('é', 'e');
+			sFileTemp = sFileTemp.replace('í', 'i');
+			sFileTemp = sFileTemp.replace('ó', 'o');
+			sFileTemp = sFileTemp.replace('ú', 'u');
+			sFileTemp = sFileTemp.replace('ñ', 'n');
+			sFileTemp = sFileTemp.replace('Á', 'A');
+			sFileTemp = sFileTemp.replace('É', 'E');
+			sFileTemp = sFileTemp.replace('Í', 'I');
+			sFileTemp = sFileTemp.replace('Ó', 'O');
+			sFileTemp = sFileTemp.replace('Ú', 'U');
+			sFileTemp = sFileTemp.replace('Ñ', 'N');
+
+			ZipEntry oEntry = new ZipEntry(sFileTemp);
+			//System.out.println("oEntry.getName():" + oEntry.getName());
+			zOutZip.putNextEntry(oEntry);
+			int iCount;
+			while((iCount = oOrigin.read(bData, 0, iBuffer)) != -1) { 
+			   zOutZip.write(bData, 0, iCount);
+			}
+			oOrigin.close();
+		} catch(Throwable e){
+			System.out.println("Compressor.CompressingFile(" + zOutZip + ", " + sFile + ", " + sPath + ") ERROR:" + e);
+		}
+	}
+		
+	private static void CompressingDir(ZipOutputStream zOutZip, String sDir, String sPath) throws Exception{
+		try {
+			// get a list of sFiles from current directory
+			File oFilesDir = new File(sDir);
+			String sFiles[] = oFilesDir.list();
+			
+			for (int i = 0; i < sFiles.length; i++) {
+				sFiles[i] = sDir + "\\" + sFiles[i];
+				File oFile = new File(sFiles[i]);
+				if (oFile.isDirectory()) {
+					CompressingDir(zOutZip, sFiles[i], sPath);
+				} else {
+					CompressingFile(zOutZip, sFiles[i], sPath);
+				}
+			}
+		} catch(Throwable e){
+			System.out.println("Compressor.CompressingDir(" + zOutZip + ", " + sDir + ", " + sPath + ") ERROR:" + e);
+		}
+	}
+}

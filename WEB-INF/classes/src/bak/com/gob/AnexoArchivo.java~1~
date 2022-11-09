@@ -1,0 +1,209 @@
+/************************************************************************
+ * Module:  AnexoArchivo.java
+ * Author:  Jesus Limon
+ * Created: 31.Oct.2002
+ * Purpose: Defines the Class AnexoArchivo
+ * Ultima Modificacion:
+ * By:
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class AnexoArchivo {
+
+//Declaración de Variables
+private int				iIdAnexoArchivo;
+private int				iIdAnexo;
+private int 			iIdFuncionario;
+private String 			sRutaAcceso;
+private String			sNombreArchivo;
+private String 			sRutaWeb;
+private VMatrix 		oVm;
+private ConnectionJDBC 	oCnn;
+
+//Inicializacion de la Clase
+	public AnexoArchivo()  throws SQLException, IOException {
+		iIdAnexoArchivo		= 0;
+		iIdAnexo			= 0;
+		iIdFuncionario		= 0;
+		sRutaAcceso			= "";
+		sRutaWeb			= "";
+		sNombreArchivo		= "";
+		oVm			= new VMatrix();
+		oCnn		= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		
+	}
+//Creación de las Propiedades
+	public void 	SetIdAnexoArchivo(int iDATA)	{		iIdAnexoArchivo	= iDATA;	}
+	public int		GetIdAnexoArchivo() 			{		return iIdAnexoArchivo;		}
+	public void 	SetIdAnexo(int iDATA) 			{		iIdAnexo 		= iDATA;	}
+	public int		GetIdAnexo() 					{		return iIdAnexo;			}
+	public void 	SetIdFuncionario(int iDATA) 	{		iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() 				{		return iIdFuncionario;		}
+	public void 	SetRutaAcceso(String sDATA) 	{		sRutaAcceso 	= sDATA;	}
+	public String	GetRutaAcceso() 				{		return sRutaAcceso;			}
+	public void 	SetRutaWeb(String sDATA) 		{		sRutaWeb 		= sDATA;	}
+	public String	GetRutaWeb() 					{		return sRutaWeb;			}
+	public void 	SetNombreArchivo(String sDATA) 	{		sNombreArchivo 	= sDATA;	}
+	public String	GetNombreArchivo() 				{		return sNombreArchivo;		}
+//Metodos públicos
+	public boolean Get(int pIdAnexoArchivo) throws SQLException, IOException {
+		ResultSet 	oRs;
+		String 		sSql;
+		sSql = "SELECT  IdAnexoArchivo, IdAnexo, IdFuncionario, RutaAcceso, NombreArchivo, RutaWeb FROM AnexoArchivo WHERE IdAnexoArchivo = " + pIdAnexoArchivo;
+		try{
+			oCnn.Open();
+			oRs = oCnn.Execute(sSql);
+			
+			if(oRs.next()){
+				CargaDatos(oRs.getInt("IdAnexoArchivo"), oRs.getInt("IdAnexo"), oRs.getInt("IdFuncionario"), oRs.getString("RutaAcceso"), oRs.getString("NombreArchivo"), oRs.getString("RutaWeb"));
+				this.Close(oRs);
+				return true;
+			}	
+			this.Close(oRs);
+			return false;	
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.Get: " + e + " SQL:" + sSql);
+			oCnn.Close();
+		}
+		return false;	
+	}
+	public boolean Get(String pArchivo) throws SQLException, IOException {
+		ResultSet 	oRs;
+		String 		sSql;
+		sSql = "SELECT  IdAnexoArchivo, IdAnexo, IdFuncionario, RutaAcceso, NombreArchivo, RutaWeb FROM AnexoArchivo WHERE RutaAcceso = '" + pArchivo + "'";
+		try{
+			oCnn.Open();
+			oRs = oCnn.Execute(sSql);
+
+			if(oRs.next()){
+				CargaDatos(oRs.getInt("IdAnexoArchivo"), oRs.getInt("IdAnexo"), oRs.getInt("IdFuncionario"), oRs.getString("RutaAcceso"), oRs.getString("NombreArchivo"), oRs.getString("RutaWeb"));
+				this.Close(oRs);
+				return true;
+			}	
+			this.Close(oRs);
+			return false;	
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.Get: " + e + " SQL:" + sSql);
+			oCnn.Close();
+			
+		}
+		return false;	
+	}
+	public VMatrix GetAll(int pIdAnexo, int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		String sSql;
+		ResultSet oRs;
+		sSql = "SELECT IdAnexoArchivo, IdAnexo, IdFuncionario, RutaAcceso, NombreArchivo, RutaWeb FROM AnexoArchivo WHERE IdAnexo = " + pIdAnexo + " AND IdFuncionario = " + pIdFuncionario;
+		try{
+			oCnn.Open();
+			oRs = oCnn.Execute(sSql);
+			
+			oVm.setVMatrixNumCols(6);
+			while (oRs.next()) {
+				String sTemp [] = 	{oRs.getString("IdAnexoArchivo"), 	oRs.getString("IdAnexo"), oRs.getString("IdFuncionario"),  
+									 oRs.getString("RutaAcceso"), oRs.getString("NombreArchivo"), oRs.getString("RutaWeb")};
+				oVm.setVMatrixRow(sTemp);
+			}
+			this.Close(oRs);
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			return oVm; 
+		}
+	}
+	
+	public VMatrix GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		String sSql;
+		ResultSet oRs;
+		sSql = "SELECT IdAnexoArchivo, IdAnexo, IdFuncionario, RutaAcceso, NombreArchivo, RutaWeb FROM AnexoArchivo WHERE IdFuncionario = " + pIdFuncionario;
+		try{
+			oCnn.Open();
+			oRs = oCnn.Execute(sSql);
+			
+			oVm.setVMatrixNumCols(6);
+			while (oRs.next()) {
+				String sTemp [] = 	{oRs.getString("IdAnexoArchivo"), 	oRs.getString("IdAnexo"), oRs.getString("IdFuncionario"),  
+									 oRs.getString("RutaAcceso"), oRs.getString("NombreArchivo"), oRs.getString("RutaWeb")};
+				oVm.setVMatrixRow(sTemp);
+			}
+			this.Close(oRs);
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			return oVm; 
+		}
+	}
+
+	public void Clear(){
+	    oVm.RemoveAll();
+	}
+
+	public boolean Insert(int pIdAnexo, int pIdFuncionario, String pRutaAcceso, String pNombreArchivo, String pRutaWeb) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "INSERT INTO AnexoArchivo(IdAnexo, IdFuncionario, RutaAcceso, NombreArchivo, RutaWeb) VALUES (" + pIdAnexo + ", " + pIdFuncionario + ", '" + 
+					pRutaAcceso + "', '" + pNombreArchivo + "', '" + pRutaWeb + "')";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+
+	public boolean Update() throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE AnexoArchivo SET RutaAcceso = '" + sRutaAcceso + "', NombreArchivo = '" + sNombreArchivo + "', RutaWeb = '" + sRutaWeb + "' WHERE IdAnexoArchivo = " + iIdAnexoArchivo;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.Update: " + e + " SQL: " + sSql);
+		}
+		return false;
+	}
+	public boolean Delete(int pIdAnexoArchivo) throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "DELETE FROM AnexoArchivo WHERE IdAnexoArchivo = " + pIdAnexoArchivo;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en AnexoArchivo.Delete: " + e + " SQL: " + sSql);
+			return false;
+		}
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdAnexoArchivo, int pIdAnexo, int pIdFuncionario, String pRutaAcceso, String pNombreArchivo, String pRutaWeb){
+		iIdAnexoArchivo	= pIdAnexoArchivo;
+		iIdAnexo 		= pIdAnexo;
+		iIdFuncionario	= pIdFuncionario;
+		sRutaAcceso		= pRutaAcceso;
+		sRutaWeb		= pRutaWeb;
+		sNombreArchivo	= pNombreArchivo;
+	}
+	private void Close(ResultSet pRs) throws SQLException{
+		pRs.close();
+		pRs = null;
+		oCnn.Close();
+		
+	}
+	
+}

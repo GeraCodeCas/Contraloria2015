@@ -1,0 +1,147 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 29.May.2003
+ * Purpose: Defines the Class Tipo Nomina
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class TipoNomina {
+
+//Declaración de Variables
+private int 			 iIdTipoNomina;
+private String 			 sClave;
+private String 			 sDescripcion;
+
+private VMatrix			 oVm;
+private ConnectionJDBC	 oCnn;
+//Inicializacion de la Clase
+	public TipoNomina()  throws SQLException, IOException {
+		iIdTipoNomina= 0;
+		sClave		= "";
+		sDescripcion= "";
+		
+		oVm	= new VMatrix();
+		oCnn= new ConnectionJDBC();
+	}
+
+ //Creación de las Propiedades
+	public int 				GetIdTipoNomina() 				{	return iIdTipoNomina;	}
+	public int				GetIdTipoNomina(int iPos)		{
+		int iGetTipoNomina = -1;
+		try { iGetTipoNomina = java.lang.Integer.parseInt((((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)+"")); }
+		catch(Throwable e){ System.out.println("oTipoNomina.GetTipoNomina: No se ejecutó con exito " + e + " Pos:" + iPos + " [data]:" + ((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos)); }
+		finally{ return iGetTipoNomina; }
+	}
+	
+	public String			GetClave() 					{	return sClave;	}
+	public String			GetClave(int iPos)			{	return ((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos).toString();	}
+	
+	public String			GetDescripcion() 			{	return sDescripcion;	}
+	public String			GetDescripcion(int iPos)	{	return ((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos).toString();	}
+		
+//Metodos públicos
+	public boolean Get(int pIdTipoNomina) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdTipoNomina, Clave, Descripcion FROM TipoNomina WHERE IdTipoNomina = " + pIdTipoNomina;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdTipoNomina"), rs.getString("Clave"), rs.getString("Descripcion"));
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+
+	public VMatrix GetAll() throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm;
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "SELECT IdTipoNomina, Clave, Descripcion FROM TipoNomina";
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(3);
+			while (rs.next()) {
+				String saTabla [] = 
+					{rs.getString("IdTipoNomina"), rs.getString("Clave"), rs.getString("Descripcion")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oTipoNomina.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm;
+		}
+	}
+	
+	public int GetPosClave(String sClave) throws SQLException, IOException {
+		GetAll();
+		return ((Vector)oVm.getVMatrixAll().elementAt(1)).indexOf(sClave, 0);
+	}
+	
+	public boolean Insert(String pClave, String pDescripcion) throws SQLException, IOException {
+		String sSql = "";
+		try {	
+			oCnn.Open();
+			sSql = "INSERT INTO TipoNomina(Clave, Descripcion) VALUES ('" +
+				pClave + "', '" + pDescripcion + "')";
+			oCnn.Execute(sSql);
+			oCnn.Close();			
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oTipoNomina.Insert: " + e + " SQL:" + sSql);
+			return false;
+		}
+
+	}
+	public boolean Update(int pIdTipoNomina, String pClave, String pDescripcion) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "UPDATE TipoNomina SET Clave = '" + pClave + "', Descripcion = '" + pDescripcion + 
+					"' WHERE IdTipoNomina = " + pIdTipoNomina;
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oTipoNomina.Update: " + e + " SQL:" + sSql);
+			oCnn.Close();
+			return false;
+		}
+	}
+	
+	public boolean Delete(int pIdTipoNomina) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			oCnn.Open();
+			sSql = "DELETE FROM TipoNomina WHERE IdTipoNomina = " + pIdTipoNomina;
+			oCnn.Execute(sSql);
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oTipoNomina.Delete: " + e + " SQL:" + sSql);
+			oCnn.Close();
+			return false;
+		}
+	}
+//Metodos Internos
+	private void CargaDatos(int pIdTipoNomina, String pClave, String pDescripcion){
+		iIdTipoNomina= pIdTipoNomina;
+		sClave 		 = pClave;
+		sDescripcion = pDescripcion;
+	}
+}

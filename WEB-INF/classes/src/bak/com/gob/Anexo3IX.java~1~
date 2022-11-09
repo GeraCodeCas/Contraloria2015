@@ -1,0 +1,416 @@
+
+/************************************************************************
+ * Module:  Anexo3IX.java
+ * Author:  Jesus Limon
+ * Created: 5.Nov.2002
+ * Purpose: Defines the Class Anexo3IX
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo3IX {
+//Declaración de Variables
+private int				iIdAnexo;
+private String 			sNombreAnexo;
+private int				iIdRenglon;
+private int 			iIdFuncionario;
+private String 			sNoExpediente;
+private String 			sNoProgresivo;
+private String 			sNombre;
+private String 			sDestino;
+private int				iEstadoInmueble;
+private int				iTipoInmueble;
+private int				iTipoAccion;
+private String			sObservaciones;
+private ConnectionJDBC 	oCnn;
+private VMatrix		 	oVm;
+private long			iGetAllCount;
+
+//Inicializacion de la Clase
+	public Anexo3IX()  throws SQLException, IOException {
+		iIdRenglon		= 0;
+		iIdFuncionario	= 0;
+		sNoExpediente	= "";
+		sNoProgresivo	= "";
+		sNombre			= "";
+		sDestino		= "";
+		iEstadoInmueble	= 0;
+		iTipoInmueble	= 0;
+		iTipoAccion		= 0;
+		iGetAllCount	= 0;
+		sObservaciones	= "";
+		oVm				= new VMatrix();
+		oCnn			= new ConnectionJDBC();
+		/*oCnn.SetDsn("GobiernoER");
+		oCnn.SetUsuario("sa");
+		oCnn.SetClave("");*/
+		oCnn.Open();
+		ResultSet oRs = null;
+		String sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo III.9'";
+		try {
+			oRs = oCnn.Execute(sSql);
+			if (oRs.next()) {
+				iIdAnexo 		= oRs.getInt("IdAnexo");
+				sNombreAnexo	= oRs.getString("Nombre");
+			}
+			oRs.close();
+			oRs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3VII.init: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+		}
+	}
+//Creación de las Propiedades
+	public int		GetIdAnexo() 					{	return iIdAnexo;			}
+	public String	GetNombreAnexo() 				{	return sNombreAnexo;		}
+	public long		GetAllCount()					{	return iGetAllCount; }
+	
+	
+	public void 	SetIdRenglon(int iDATA) 		{	iIdRenglon 		= iDATA;	}
+	public int		GetIdRenglon() 					{	return iIdRenglon;			}
+	public int		GetIdRenglon(int iPos) 			{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(0)).elementAt(iPos));	}
+	public void 	SetIdFuncionario(int iDATA) 	{	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() 				{	return iIdFuncionario;		}
+	public int		GetIdFuncionario(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(1)).elementAt(iPos));	}
+	public void 	SetNoExpediente(String sDATA) 	{	sNoExpediente	= sDATA;	}
+	public String	GetNoExpediente() 				{	return sNoExpediente;		}
+	public String	GetNoExpediente(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);	}
+	public void 	SetNoProgresivo(String sDATA) 	{	sNoProgresivo	= sDATA;	}
+	public String	GetNoProgresivo() 				{	return sNoProgresivo;		}
+	public String	GetNoProgresivo(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);	}
+	public void 	SetNombre(String sDATA) 		{	sNombre 		= sDATA;	}
+	public String	GetNombre() 					{	return sNombre;				}
+	public String	GetNombre(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);	}
+	public void 	SetDestino(String sDATA) 		{	sDestino 		= sDATA;	}
+	public String	GetDestino() 					{	return sDestino;			}
+	public String	GetDestino(int iPos) 			{	return (String)((Vector)oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);	}
+	public void 	SetEstadoInmueble(int iDATA)	{	iEstadoInmueble= iDATA;	}
+	public int		GetEstadoInmueble()				{	return iEstadoInmueble;	}
+	public int		GetEstadoInmueble(int iPos)		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos));	}
+	public void 	SetTipoInmueble(int iDATA) 		{	iTipoInmueble	= iDATA;	}
+	public int		GetTipoInmueble() 				{	return iTipoInmueble;		}
+	public int		GetTipoInmueble(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos));	}
+	public String	GetEstadoInmuebleDescripcion(int iPos)	{
+	String sEstadoInmueble = "";
+		switch (java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(6)).elementAt(iPos))){
+			case 1:
+				sEstadoInmueble = "Bueno";
+				break;
+			case 2:
+				sEstadoInmueble = "Malo";
+				break;
+			case 3:
+				sEstadoInmueble = "Regular";
+				break;
+		}
+		return sEstadoInmueble;	
+	}
+	public String	GetTipoInmuebleDescripcion(int iPos)	{
+		String sTipoInmueble = "";
+		switch (java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(7)).elementAt(iPos))){
+			case 1:
+				sTipoInmueble = "Dominio Público";
+				break;
+			case 2:
+				sTipoInmueble = "Dominio Privado";
+				break;
+			case 3:
+				sTipoInmueble = "Otros";
+				break;
+		}
+		return sTipoInmueble;	
+	}
+
+	public void 	SetTipoAccion(int iDATA) 		{	iTipoAccion 	= iDATA;	}
+	public int		GetTipoAccion() 				{	return iTipoAccion;		}
+	public int		GetTipoAccion(int iPos) 		{	return java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos));	}
+	public String	GetTipoAccionDescripcion(int iPos)	{	
+		String sTipoAccion = "";
+				switch (java.lang.Integer.parseInt((String)((Vector)oVm.getVMatrixAll().elementAt(8)).elementAt(iPos))){
+					case 1:
+						sTipoAccion = "Escrituras";
+						break;
+					case 2:
+						sTipoAccion = "Actas de Donación";
+						break;
+					case 3:
+						sTipoAccion = "Diligencias";
+						break;
+					case 4:
+						sTipoAccion = "Otros";
+						break;
+				}
+		return sTipoAccion;	
+	}
+	public void 	SetObservacion(String sDATA) 	{	sObservaciones	= sDATA;	}
+	public String	GetObservacion() 				{	return sObservaciones;		}
+	public String	GetObservacion(int iPos) 		{	return (String)((Vector)oVm.getVMatrixAll().elementAt(9)).elementAt(iPos);	}
+
+//Metodos públicos
+	public int GetAll(int pIdFuncionario, int pItemsPagina, int pPagina) throws SQLException, IOException {
+	if(oVm.getNumRows()>0) return oVm.getNumRows();
+		//oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		//sSql = "SELECT IdAnexo3IX, IdFuncionario, NoExpediente, NoProgresivo, Nombre, Destino, EstadoInmueble, TipoInmueble, TipoAccion, Observaciones FROM Anexo3IX WHERE IdFuncionario = " + pIdFuncionario + " ORDER BY NoExpediente, NoProgresivo, Nombre";
+		sSql = "sel_Anexo3ixCountAll " + pIdFuncionario;
+		try {
+			oCnn.Open();
+			
+			rs = oCnn.Execute(sSql);
+			if (rs.next()) {
+				iGetAllCount = rs.getLong("AllCount");
+			}
+			rs.close();
+			rs = null;
+			
+			sSql = "sel_Anexo3ixGetAll " + pIdFuncionario + ", " + pItemsPagina + ", " + pPagina;
+			
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(10);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdAnexo3IX"), rs.getString("IdFuncionario"), rs.getString("NoExpediente"), 
+									rs.getString("NoProgresivo"), rs.getString("Nombre"), rs.getString("Destino"), rs.getString("EstadoInmueble"), 
+									rs.getString("TipoInmueble"), rs.getString("TipoAccion"), rs.getString("Observaciones")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IX.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+		if(oVm.getNumRows()>0) return oVm.getNumRows();
+		oCnn.Open();
+		ResultSet rs = null;
+		String sSql;
+		sSql = "sel_Anexo3ixGetAll_SP " + pIdFuncionario;
+		try {
+			rs = oCnn.Execute(sSql);
+			oVm.setVMatrixNumCols(10);
+			while (rs.next()) {
+				String saTabla [] = {rs.getString("IdAnexo3IX"), rs.getString("IdFuncionario"), rs.getString("NoExpediente"), 
+									rs.getString("NoProgresivo"), rs.getString("Nombre"), rs.getString("Destino"), rs.getString("EstadoInmueble"), 
+									rs.getString("TipoInmueble"), rs.getString("TipoAccion"), rs.getString("Observaciones")};
+				oVm.setVMatrixRow(saTabla);
+			}
+			rs.close();
+			rs = null;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IX.GetAll: " + e + " SQL:" + sSql);
+		}finally{
+			if(oCnn!=null) oCnn.Close(); 
+			return oVm.getNumRows();
+		}
+	}
+	public int GetPos(int pIdFuncionario, int pIdRenglon) throws SQLException, IOException {
+		GetAll(pIdFuncionario);
+		return ((Vector)oVm.getVMatrixAll().elementAt(0)).indexOf((pIdRenglon+""), 0);
+	}
+	public boolean Insert(int pIdFuncionario, String pNoExpediente, String pNoProgresivo, String pNombre, String pDestino, 
+							int pEstadoInmueble, int pTipoInmueble, int pTipoAccion, String pObservaciones) 
+							throws SQLException, IOException {
+		String sSql = "";
+		try {
+			sSql = "INSERT INTO Anexo3IX(IdFuncionario, NoExpediente, NoProgresivo, Nombre, Destino, EstadoInmueble, TipoInmueble, TipoAccion, Observaciones, UltimaCarga) ";
+			sSql += "VALUES (" + pIdFuncionario + ", ";
+			sSql += "'" + pNoExpediente + "', ";
+			sSql += "'" + pNoProgresivo + "', ";
+			sSql += "'" + pNombre + "', ";
+			sSql += "'" + pDestino + "', ";
+			sSql += "" + pEstadoInmueble + ", ";
+			sSql += "" + pTipoInmueble + ", ";
+			sSql += "" + pTipoAccion + ", ";
+			sSql += "'" + pObservaciones + "', 0)";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en oAnexo3IX.Insert: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	
+	
+	public boolean Update(int pIdRenglon, int pIdFuncionario, String pNoExpediente, String pNoProgresivo, String pNombre, String pDestino, 
+							int pEstadoInmueble, int pTipoInmueble, int pTipoAccion, String pObservaciones) 
+							throws SQLException, IOException {
+		String sSql = "";
+		try{
+			sSql = "UPDATE Anexo3IX SET ";
+			sSql += "IdFuncionario 	 	= " + pIdFuncionario + ", ";
+			sSql += "NoExpediente 		= '" + pNoExpediente + "', ";
+			sSql += "NoProgresivo 		= '" + pNoProgresivo + "', ";
+			sSql += "Nombre 			= '" + pNombre + "', ";
+			sSql += "Destino			= '" + pDestino + "', ";
+			sSql += "EstadoInmueble		= " + pEstadoInmueble + ", ";
+			sSql += "TipoInmueble		= " + pTipoInmueble + ", ";
+			sSql += "TipoAccion			= " + pTipoAccion + ", ";
+			sSql += "Observaciones		= '" + pObservaciones + "', UltimaCarga = 0";
+			sSql += "WHERE IdAnexo3IX = " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IX.Update: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Undo(int pIdFuncionario) throws SQLException, IOException {
+		String sSql = "";
+        try{
+			sSql = "DELETE FROM Anexo3IX WHERE IdFuncionario = " + pIdFuncionario + " AND UltimaCarga = 1";
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IX.Undo: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean DeleteAll(int pIdFuncionario) throws SQLException, IOException {
+	    String sSql = "";
+		
+        try{
+			sSql = "DELETE FROM Anexo3IX WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+         }catch(Throwable e){
+			System.out.println("Error en Anexo3IX.DeleteAll: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+	public boolean Delete(int pIdRenglon) throws SQLException, IOException {
+		String sSql = "";
+		try {
+			sSql = "DELETE FROM Anexo3IX WHERE IdAnexo3IX = " + pIdRenglon;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IX.Delete: " + e + " SQL:" + sSql);
+		}
+		return false;
+	}
+
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3IX.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3IX.html");
+			
+			sAnexo 					= "III.9";
+			iIdAnexo 				= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 				= oAnexoEstatus.GetEstatus();
+			sAux = "\n				<tr><TD class='TituloParrafo' width='70%'>&nbsp;&nbsp;ANEXO III.9 - RELACIÓN BIENES INMUEBLES&nbsp;&nbsp;</TD></tr>";	
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			sArchivo = "\n	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+			sArchivo += "\n		<TR align='middle'>";
+			sArchivo += "\n			<td class='TituloMenu'>No. de Exp. Catastral asignado por cada Municipio</TD><td class='TituloMenu'>No.Progresivo</TD><td class='TituloMenu'>Nombre o Identificación del Bien Inmueble, Ubicación y Superficie</TD><td class='TituloMenu'>Destino</TD><td class='TituloMenu'>Estado que guerda el Inmueble</TD><td class='TituloMenu'>Tipo de Bien Inmueble</TD><td class='TituloMenu'>Tipo de Acción Legal</TD><td class='TituloMenu'>Observaciones</TD></TR>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+
+			if(!sEstatus.equals("0")){
+				int intContador = 0;
+				String sBackColor = "";
+				GetAll(iIdFuncionario);
+				for(int i=0;i<GetAll(iIdFuncionario);i++){
+					int 	iIdRenglon		= GetIdRenglon(i)!=-1?GetIdRenglon(i):0;
+					String 	sNoExpediente	= GetNoExpediente(i)!=null?GetNoExpediente(i)+"":"";
+					String 	sNoProgresivo	= GetNoProgresivo(i)!=null?GetNoProgresivo(i)+"":"";
+					String 	sNombre			= GetNombre(i)!=null?GetNombre(i)+"":"";
+					String 	sDestino		= GetDestino(i)!=null?GetDestino(i)+"":"";
+					int 	iEstadoInmueble = GetEstadoInmueble(i)!=-1?GetEstadoInmueble(i):0;
+					String  sEstadoInmueble	= GetEstadoInmuebleDescripcion(i);
+					int 	iTipoInmueble 	= GetTipoInmueble(i)!=-1?GetTipoInmueble(i):0;
+					String  sTipoInmueble	= GetTipoInmuebleDescripcion(i);
+					int 	iTipoAccion 	= GetTipoAccion(i)!=-1?GetTipoAccion(i):0;
+					String  sTipoAccion		= GetTipoAccionDescripcion(i);
+					String 	sObservacion 	= GetObservacion(i)!=null?GetObservacion(i):"";
+					intContador = intContador + 1;
+					if(intContador%2 == 0){
+						sBackColor = "#ffffff";
+					}else{
+						sBackColor = "#eeeeee";
+					}
+					sArchivo = "\n		<TR align='left' bgcolor='" + sBackColor + "'";
+					sArchivo += "\n			onMouseOver = 'MouseDentro(this);'";
+					sArchivo += "\n			onMouseOut  = " + c + "MouseFuera(this,'" + sBackColor + "');" + c + ">";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sNoExpediente + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sNoProgresivo + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sNombre + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sDestino + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sEstadoInmueble + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sTipoInmueble + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sTipoAccion + "</a></TD>";
+					sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>" + sObservacion + "</a></TD>";
+					sArchivo += "\n		</TR>";
+					oArchivo.Escribe(sArchivo);
+					oArchivowa.Escribe(sArchivo);
+				}
+				sArchivo = "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			} else {
+				sArchivo = "\n	</TABLE>";
+				sArchivo += "\n	<TABLE width='100%'>";
+				sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();			
+			
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3IX.setHistory: " + e );
+			sError = " - Anexo3IX.setHistory: " + e ;
+		}
+		return sError;
+	}
+}

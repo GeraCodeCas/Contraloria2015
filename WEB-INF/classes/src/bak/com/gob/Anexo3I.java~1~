@@ -1,0 +1,200 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Julio Enrique Espinosa Torres
+ * Created: 29.Oct.2002
+ * Purpose: Defines the Class Anexo3I
+ ***********************************************************************/
+ 
+package com.gob;
+import java.sql.*;
+import java.io.*;
+import com.consiss.db.*;
+
+public class Anexo3I {
+
+//Declaración de Variables
+private int				iIdAnexo;
+private String 		sNombreAnexo;
+private int 			iIdFuncionario;
+private String 			sEstructuraOrganizacional;
+private ConnectionJDBC	 	oCnn;
+
+//Inicializacion de la Clase
+public Anexo3I()  throws SQLException, IOException {
+	String sSql;
+	iIdAnexo		= 0;
+	sNombreAnexo	= "";
+	iIdFuncionario  = 0;
+	sEstructuraOrganizacional							= "";
+	oCnn			= new ConnectionJDBC();
+	oCnn.Open();
+	ResultSet oRs = null;
+	sSql = "SELECT IdAnexo, Clave, Nombre FROM Anexo WHERE Clave = 'Anexo III.1'";
+	try {
+		oRs = oCnn.Execute(sSql);
+		if (oRs.next()) {
+			iIdAnexo 		= oRs.getInt("IdAnexo");
+			sNombreAnexo	= oRs.getString("Nombre");
+		}
+		oRs.close();
+		oRs = null;
+	}catch(Throwable e){
+		System.out.println("Error en oAnexo3I.init: " + e + " SQL:" + sSql);
+	}finally{
+		if(oCnn!=null) oCnn.Close(); 
+	}
+}
+//Creación de las Propiedades
+public int		GetIdAnexo() 					{	return iIdAnexo;			}
+	public String	GetNombreAnexo() 				{	return sNombreAnexo;			}
+
+	
+	public void 	SetIdFuncionario(int iDATA){	iIdFuncionario 	= iDATA;	}
+	public int		GetIdFuncionario() {	return iIdFuncionario;		}
+		
+	public void 	SetEstructuraOrganizacional(String sDATA) 		{	sEstructuraOrganizacional 		= sDATA;	}
+	public String	GetEstructuraOrganizacional() 					{	return sEstructuraOrganizacional;			}
+	
+	
+	
+//Metodos públicos
+	public boolean Get(int pIdFuncionario) throws SQLException, IOException {
+		oCnn.Open();
+		ResultSet rs;
+		String sSql;
+		sSql = "SELECT IdFuncionario, EstructuraOrganizacional FROM Anexo3I WHERE IdFuncionario = " + pIdFuncionario;
+		rs = oCnn.Execute(sSql);
+		if(rs.next()){
+			CargaDatos(rs.getInt("IdFuncionario"), rs.getString("EstructuraOrganizacional")) ;
+			rs.close();
+			rs = null;
+			return true;
+		}	
+		rs.close();
+		rs = null;
+		oCnn.Close();
+		return false;
+	}
+
+	public boolean Insert(int pIdFuncionario, String pEstructuraOrganizacional) throws SQLException, IOException {
+		String sSql;
+	    try{
+		sSql = "INSERT INTO Anexo3I(IdFuncionario, EstructuraOrganizacional) ";
+		sSql = sSql + "VALUES (" + pIdFuncionario + ", ";
+		sSql = sSql + "'" + pEstructuraOrganizacional + "')";
+		oCnn.Open();
+		oCnn.Execute(sSql);
+		oCnn.Close();
+		return true;
+            }catch(Throwable e){
+			System.out.println("Error en Anexo3I.Insert: ");
+		}
+		return false;
+	}
+	
+	
+	public boolean Update(int pIdFuncionario, String pEstructuraOrganizacional) throws SQLException, IOException {
+		String sSql;
+		try{
+			sSql = "UPDATE Anexo3I SET ";
+			sSql = sSql + "EstructuraOrganizacional = '" + pEstructuraOrganizacional + "' ";
+			sSql = sSql + "WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3I.Update: ");
+		}
+		return false;
+	}
+	
+	
+	public boolean Delete(int pIdFuncionario) throws SQLException, IOException {
+		  String sSql;
+    try{
+			sSql = "DELETE FROM Anexo3I WHERE IdFuncionario = " + pIdFuncionario;
+			oCnn.Open();
+			oCnn.Execute(sSql);
+			oCnn.Close();
+			return true;
+    }catch(Throwable e){
+			System.out.println("Error en Anexo3I.Delete: ");
+		}
+		return false;
+	}
+
+//Metodos Internos
+	private void CargaDatos(int pIdFuncionario, String pEstructuraOrganizacional){
+		iIdFuncionario							 = pIdFuncionario;
+		sEstructuraOrganizacional				 = pEstructuraOrganizacional;
+	}
+	
+	public String setHistory(int iIdFuncionario, String sRutaHistoria, String sRutaAttach, String iProceso, 
+			String hsClave, String hsNombreUA, String hsImagenUG, String hsNombreUG, String sFuncionarioEntrante,
+			String sFuncionarioSaliente, String sFecha ){
+		String sArchivo = "";
+		String sError = "";
+		try
+			{
+			AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+			ArchivoHistorico oArchivo 	=  new ArchivoHistorico();
+			ArchivoHistorico oArchivowa =  new ArchivoHistorico();
+			char c = '"';
+			String sSalto = "";
+			String sAnexo =  "";
+			int iIdAnexo = 0;
+			String sEstatus = "";
+			String sAux = "";
+			oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3I.html"); 
+			oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3I.html");
+	
+			sAnexo 					= "III.1";
+			iIdAnexo 				= GetIdAnexo();
+			oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+			sEstatus 				= oAnexoEstatus.GetEstatus();
+			sAux = "\n				<tr><TD  colspan='3' class='TituloParrafo' width='70%'>ANEXO III.1 - ESTRUCTURA ORGANIZACIONAL</TD></tr>";
+			/* ENCABEZADO INICIO*/
+			hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+			ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo, 
+				oArchivowa, sAux, iProceso, hsClave, hsNombreUA, 
+				hsImagenUG, hsNombreUG, sFuncionarioEntrante, sFuncionarioSaliente, sFecha);
+			/* ENCABEZADO FIN*/
+			sArchivo = "\n<table align='center' cellspacing='0' cellpadding='0' border='0' width='100%'>";
+			sArchivo += "\n		<TR align='middle'><td class='TituloMenu' colspan='2'><a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'>Estructura Organizacional</a></td></TR>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			if(!sEstatus.equals("0")){
+				Get(iIdFuncionario);
+				String vEstructuraOrganizacional = GetEstructuraOrganizacional()!=null?GetEstructuraOrganizacional():"";
+				sArchivo = "\n		<TR><TD>&nbsp;<a onmouseover=" + c + "this.style.cursor='hand'" + c + " style='cursor:normal'><textarea readonly class='txtBox' style='border: 0; background-color: transparent; overflow-y:hidden; width:100%; height=100%' name='sEstructuraOrganizacional' id='sEstructuraOrganizacional'>" + vEstructuraOrganizacional + "</textarea></a></TD></TR>";
+				sArchivo += "\n</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			} else {
+				sArchivo = "\n	<TABLE width='100%'>";
+				sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+				sArchivo += "\n	</TABLE>";
+				oArchivo.Escribe(sArchivo);
+				oArchivowa.Escribe(sArchivo);
+			}
+			sArchivo = "\n</td>";
+			sArchivo += "\n</tr>";
+			sArchivo += "\n</table>";
+			sArchivo += "\n</body>";
+			sArchivo += "\n</html>";
+			oArchivo.Escribe(sArchivo);
+			oArchivowa.Escribe(sArchivo);
+			oArchivo.CierraArchivo();
+			oArchivowa.CierraArchivo();	
+	
+			oAnexoEstatus = null;
+			oArchivo = null;
+			oArchivowa = null;
+		}catch(Throwable e){
+			System.out.println("Error en Anexo3I.setHistory: " + e );
+			sError = "Anexo3I.setHistory: " + e ;
+		}
+		return sError;
+	}	
+}

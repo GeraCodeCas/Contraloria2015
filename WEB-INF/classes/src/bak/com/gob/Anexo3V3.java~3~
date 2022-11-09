@@ -1,0 +1,472 @@
+/************************************************************************
+ * Module:  Connection.java
+ * Author:  Claudia Sandoval
+ * Created: 02.Nov.2002
+ * Purpose: Defines the Class Anexo1II
+ ***********************************************************************/
+
+package com.gob;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import com.consiss.db.*;
+import com.consiss.util.tools.*;
+
+public class Anexo3V3 {
+
+//Declaración de Variables
+  private VMatrix oVm;
+  private VMatrix oVmTipo;
+  private VMatrix oVmResumen;
+  private long iGetAllCount;
+  private ConnectionJDBC oCnn;
+
+//Inicializacion de la Clase
+  public Anexo3V3() throws SQLException, IOException {
+    oVm = new VMatrix();
+    oVmTipo = new VMatrix();
+    oVmResumen = new VMatrix();
+    oCnn = new ConnectionJDBC();
+    iGetAllCount = 0;
+
+  }
+
+//Creación de las Propiedades
+
+//	LEE EL ID ANEXO DE LA TABLA DE ANEXO DE LA BASE DE DATOS
+  public int GetIdAnexo() {
+    return 28;
+  }
+
+  public long GetAllCount() {
+    return iGetAllCount;
+  }
+
+//Para el Vmatrix
+  public VMatrix GetVM() {
+    return oVm;
+  }
+
+  public long GetIdRenglon(int iPos) {
+    return java.lang.Long.parseLong( (String) ( (Vector) oVm.getVMatrixAll().
+                                               elementAt(0)).elementAt(iPos));
+  }
+
+  public String GetClave(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(1)).elementAt(iPos);
+  }
+
+  public String GetNumFactura(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(2)).elementAt(iPos);
+  }
+
+  public String GetFecha(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(3)).elementAt(iPos);
+  }
+
+  public String GetConcepto(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(4)).elementAt(iPos);
+  }
+
+  public String GetImporte(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(5)).elementAt(iPos);
+  }
+
+  public String GetTipo(int iPos) {
+    return (String) ( (Vector) oVm.getVMatrixAll().elementAt(6)).elementAt(iPos);
+  }
+
+  public String GetIdTipo(int iPos) {
+    return (String) ( (Vector) oVmTipo.getVMatrixAll().elementAt(0)).elementAt(
+        iPos);
+  }
+
+  public String GetDesTipo(int iPos) {
+    return (String) ( (Vector) oVmTipo.getVMatrixAll().elementAt(1)).elementAt(
+        iPos);
+  }
+
+  public String GetTipoResumen(int iPos) {
+    return (String) ( (Vector) oVmResumen.getVMatrixAll().elementAt(0)).
+        elementAt(iPos);
+  }
+
+  public String GetCantResumen(int iPos) {
+    return iPos >= 0 ?
+        (String) ( (Vector) oVmResumen.getVMatrixAll().elementAt(1)).elementAt(
+        iPos) : "0";
+  }
+
+  public int GetResumen(String sTipo) {
+    int iGetCantResumen = 0;
+    try {
+      iGetCantResumen = java.lang.Integer.parseInt(GetCantResumen(GetResumenPos(
+          sTipo)));
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.GetResumen: " + e);
+    }
+    return iGetCantResumen;
+  }
+
+//Metodos públicos
+  public int GetAll(int pIdFuncionario, int pItemsPagina, int pPagina) throws
+      SQLException, IOException {
+    if (oVm.getNumRows() > 0) {
+      return oVm.getNumRows();
+    }
+    String sSql = "";
+    ResultSet oRs;
+    try {
+      oCnn.Open();
+      sSql = "sel_Anexo3v3CountAll " + pIdFuncionario;
+      oRs = oCnn.Execute(sSql);
+      if (oRs != null) {
+        if (oRs.next()) {
+          iGetAllCount = oRs.getLong("AllCount");
+        }
+        oRs.close();
+        oRs = null;
+      }
+      else {
+        System.out.println("Nulo");
+      }
+      sSql = "sel_Anexo3v3GetAll " + pIdFuncionario + ", " + pItemsPagina +
+          ", " + pPagina;
+      oRs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(7);
+      while (oRs.next()) {
+        String sTemp[] = {
+            oRs.getString("IdRenglon"), oRs.getString("Clave"),
+            oRs.getString("NumFactura"),
+            oRs.getString("Fecha"), oRs.getString("Concepto"),
+            oRs.getString("Importe"), oRs.getString("Tipo")};
+        oVm.setVMatrixRow(sTemp);
+      }
+      oRs.close();
+      oCnn.Close();
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.GetAll: " + sSql + " e:" + e);
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+    return oVm.getNumRows();
+  }
+
+  public int GetAll(int pIdFuncionario) throws SQLException, IOException {
+    if (oVm.getNumRows() > 0) {
+      return oVm.getNumRows();
+    }
+    String sSql = "";
+    ResultSet oRs;
+    try {
+      oCnn.Open();
+      sSql = "sel_Anexo3v3GetAll_SP " + pIdFuncionario;
+      oRs = oCnn.Execute(sSql);
+      oVm.setVMatrixNumCols(7);
+      while (oRs.next()) {
+        String sTemp[] = {
+            oRs.getString("IdRenglon"), oRs.getString("Clave"),
+            oRs.getString("NumFactura"),
+            oRs.getString("Fecha"), oRs.getString("Concepto"),
+            oRs.getString("Importe"), oRs.getString("Tipo")};
+        oVm.setVMatrixRow(sTemp);
+      }
+      oRs.close();
+      oCnn.Close();
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.GetAll: " + sSql + " e:" + e);
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+    return oVm.getNumRows();
+  }
+
+  public boolean Insert(int pIdFuncionario, String pClave, String pNumFactura,
+                        String pFecha,
+                        String pConcepto, String pImporte, String pTipo) throws
+      SQLException, IOException {
+    String sSql = "";
+    try {
+      sSql = "INSERT INTO Anexo3V3(IdFuncionario, Clave, NumFactura, Fecha, Concepto, Importe, Tipo, UltimaCarga) " +
+          "VALUES (" + pIdFuncionario + ", '" + pClave + "', '" + pNumFactura +
+          "', '" + pFecha +
+          "', '" + pConcepto + "', '" + pImporte + "', '" + pTipo + "', 0)";
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.Insert: " + sSql + " e:" + e);
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+    return false;
+  }
+
+  public boolean Update(int pIdRenglon, String pClave, String pNumFactura,
+                        String pFecha,
+                        String pConcepto, String pImporte, String pTipo) throws
+      SQLException, IOException {
+    String sSql = "";
+    try {
+      sSql = "UPDATE Anexo3V3 SET Clave = '" + pClave + "', NumFactura = '" +
+          pNumFactura + "', " +
+          "Fecha = '" + pFecha + "', Concepto = '" + pConcepto +
+          "', Importe = '" + pImporte + "', Tipo = '" + pTipo +
+          "', UltimaCarga = 0 " +
+          "WHERE IdRenglon = " + pIdRenglon;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.Update: " + sSql + " e:" + e);
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+    return false;
+  }
+
+  public boolean Delete(long pIdRenglon) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      sSql = "DELETE FROM Anexo3V3 WHERE IdRenglon = " + pIdRenglon;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.Delete: " + sSql + " e:" + e);
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+    return false;
+  }
+
+  public boolean Undo(int pIdFuncionario) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      sSql = "DELETE FROM Anexo3V3 WHERE IdFuncionario = " + pIdFuncionario +
+          " AND UltimaCarga = 1";
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.Undo: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public boolean DeleteAll(int pIdFuncionario) throws SQLException, IOException {
+    String sSql = "";
+    try {
+      sSql = "DELETE FROM Anexo3V3 WHERE IdFuncionario = " + pIdFuncionario;
+      oCnn.Open();
+      oCnn.Execute(sSql);
+      oCnn.Close();
+      return true;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.DeleteAll: " + e + " SQL:" + sSql);
+    }
+    return false;
+  }
+
+  public int GetTipoAll() {
+    if (oVmTipo.getNumRows() > 0) {
+      return oVmTipo.getNumRows();
+    }
+    oVmTipo.setVMatrixNumCols(2);
+    String sTemp1[] = {
+        "1", "Monitores"};
+    oVmTipo.setVMatrixRow(sTemp1);
+    String sTemp2[] = {
+        "2", "Videocaseteras"};
+    oVmTipo.setVMatrixRow(sTemp2);
+    String sTemp3[] = {
+        "3", "Cámaras"};
+    oVmTipo.setVMatrixRow(sTemp3);
+    String sTemp4[] = {
+        "4", "Proyectores"};
+    oVmTipo.setVMatrixRow(sTemp4);
+    return oVmTipo.getNumRows();
+  }
+
+  public int GetTipoPos(String pIdTipo) throws SQLException, IOException {
+    GetTipoAll();
+    return ( (Vector) oVmTipo.getVMatrixAll().elementAt(0)).indexOf(pIdTipo, 0);
+  }
+
+  public int GetResumen(int pIdFuncionario) throws SQLException, IOException {
+    if (oVmResumen.getNumRows() > 0) {
+      return oVmResumen.getNumRows();
+    }
+    String sSql = "";
+    ResultSet oRs;
+    try {
+      sSql =
+          "SELECT Tipo, count(*) 'Cantidades' FROM Anexo3V3 WHERE IdFuncionario = " +
+          pIdFuncionario + " GROUP BY Tipo";
+      oCnn.Open();
+      oRs = oCnn.Execute(sSql);
+      oVmResumen.setVMatrixNumCols(2);
+      while (oRs.next()) {
+        String sTemp[] = {
+            oRs.getString("Tipo"), oRs.getString("Cantidades")};
+        oVmResumen.setVMatrixRow(sTemp);
+      }
+      oRs.close();
+      oCnn.Close();
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.GetResumen: " + sSql + " e:" + e);
+      if (oCnn != null) {
+        oCnn.Close();
+      }
+    }
+    return oVmResumen.getNumRows();
+  }
+
+  public int GetResumenPos(String pIdTipo) throws SQLException, IOException {
+    return ( (Vector) oVmResumen.getVMatrixAll().elementAt(0)).indexOf( (
+        pIdTipo + ""), 0);
+  }
+
+  public String setHistory(int iIdFuncionario, String sRutaHistoria,
+                           String sRutaAttach, String iProceso,
+                           String hsClave, String hsNombreUA, String hsImagenUG,
+                           String hsNombreUG, String sFuncionarioEntrante,
+                           String sFuncionarioSaliente, String sFecha) {
+    String sArchivo = "";
+    String sError = "";
+    try {
+      AnexoEstatus oAnexoEstatus = new AnexoEstatus();
+      ArchivoHistorico oArchivo = new ArchivoHistorico();
+      ArchivoHistorico oArchivowa = new ArchivoHistorico();
+      char c = '"';
+      String sSalto = "";
+      String sAnexo = "";
+      int iIdAnexo = 0;
+      String sEstatus = "";
+      String sAux = "";
+      oArchivo.AbreArchivo(sRutaHistoria, "fAnexo3V3.html");
+      oArchivowa.AbreArchivo(sRutaAttach, "fAnexo3V3.html");
+
+      java.text.DecimalFormat FormatoDecimal = new java.text.DecimalFormat(
+          "###,##0.00");
+      sAnexo = "III.5.3";
+      iIdAnexo = GetIdAnexo();
+      oAnexoEstatus.Get(iIdFuncionario, iIdAnexo);
+      sEstatus = oAnexoEstatus.GetEstatus();
+      sAux = "\n				<tr><TD colspan='3' class='TituloParrafo' width='100%'>&nbsp;&nbsp;ANEXO III.5.3 - RELACIÓN DE EQUIPO DE VIDEO</TD></tr>";
+      /* ENCABEZADO INICIO*/
+      hHeaderAnexo ohHeaderAnexo = new hHeaderAnexo();
+      ohHeaderAnexo.SetHeader(iIdFuncionario, iIdAnexo, sAnexo, oArchivo,
+                              oArchivowa, sAux, iProceso, hsClave, hsNombreUA,
+                              hsImagenUG, hsNombreUG, sFuncionarioEntrante,
+                              sFuncionarioSaliente, sFecha);
+      /* ENCABEZADO FIN*/
+      sArchivo = "\n	<TABLE cellPadding='0' cellSpacing='0' width='100%' BORDER='1' BORDERCOLOR='white'>";
+      sArchivo += "\n		<TR align='middle'>";
+      sArchivo += "\n			<td class='TituloMenu'>Clave<br>Inventario</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Número de<br>Factura</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Fecha<BR>Factura</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Concepto</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Importe</TD>";
+      sArchivo += "\n			<td class='TituloMenu'>Tipo</TD>";
+      sArchivo += "\n		</TR>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      if (!sEstatus.equals("0")) { // DETALLE DE ANEXO	
+        int intContador = 0;
+        String sBackColor = "";
+        GetAll(iIdFuncionario);
+
+        for (int i = 0; i < GetAll(iIdFuncionario); i++) {
+          String vIdRenglon = GetIdRenglon(i) != -1 ? GetIdRenglon(i) + "" :
+              "0";
+          intContador = intContador + 1;
+          if (intContador % 2 == 0) {
+            sBackColor = "#ffffff";
+          }
+          else {
+            sBackColor = "#eeeeee";
+          }
+          sArchivo = "\n		<TR align='left' bgcolor='" + sBackColor +
+              "' onMouseOver = 'MouseDentro(this);' onMouseOut  = " + c +
+              "MouseFuera(this,'" + sBackColor + "');" + c + ">";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal'>";
+          sArchivo += GetClave(i) != null ? GetClave(i) + "</a></TD>" :
+              "</a></TD>";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal'>";
+          sArchivo += GetNumFactura(i) != null ? GetNumFactura(i) + "</a></TD>" :
+              "</a></TD>";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal'>";
+          sArchivo += GetFecha(i) != null ? GetFecha(i) + "</a></TD>" :
+              "</a></TD>";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal'>";
+          sArchivo += GetConcepto(i) != null ? GetConcepto(i) + "</a></TD>" :
+              "</a></TD>";
+          sArchivo += "\n			<TD align='right'>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal'>" +
+              FormatoDecimal.format(new Float(GetImporte(i) != null ?
+                                              GetImporte(i) : "0")) +
+              "</a></TD>";
+          sArchivo += "\n			<TD>&nbsp;<a onmouseover=" + c +
+              "this.style.cursor='hand'" + c + " style='cursor:normal'>" +
+              GetDesTipo(GetTipoPos(GetTipo(i))) + "</a></TD>";
+          sArchivo += "\n		</TR>";
+          oArchivo.Escribe(sArchivo);
+          oArchivowa.Escribe(sArchivo);
+        }
+        sArchivo = "\n	</TABLE>";
+        oArchivo.Escribe(sArchivo);
+        oArchivowa.Escribe(sArchivo);
+      }
+      else {
+        sArchivo = "\n	</TABLE>";
+        sArchivo += "\n	<TABLE width='100%'>";
+        sArchivo += "\n		<TR><TD align='center'><H1 style='size=+2'><br>ESTE ANEXO NO APLICA</H1></TD></TR>";
+        sArchivo += "\n	</TABLE>";
+        oArchivo.Escribe(sArchivo);
+        oArchivowa.Escribe(sArchivo);
+      }
+      sArchivo = "\n</td>";
+      sArchivo += "\n</tr>";
+      sArchivo += "\n</table>";
+      sArchivo += "\n</body>";
+      sArchivo += "\n</html>";
+      oArchivo.Escribe(sArchivo);
+      oArchivowa.Escribe(sArchivo);
+      oArchivo.CierraArchivo();
+      oArchivowa.CierraArchivo();
+
+      oAnexoEstatus = null;
+      oArchivo = null;
+      oArchivowa = null;
+    }
+    catch (Throwable e) {
+      System.out.println("Error en Anexo3V3.setHistory: " + e);
+      sError = " - Anexo3V3.setHistory: " + e;
+    }
+    return sError;
+  }
+}
